@@ -1,31 +1,205 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# SquadLink Backend API
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+## Features
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+- **User Registration & Login** with email/password
+- **Google OAuth 2.0** authentication
+- **JWT** token-based authentication
+- **PostgreSQL** database with TypeORM
+- **Password hashing** with bcrypt
+- **Input validation** with class-validator
 
-## Description
+## API Endpoints
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+### Authentication
+
+#### Register
+```
+POST /auth/register
+Content-Type: application/json
+
+{
+  "firstName": "John",
+  "lastName": "Doe",
+  "email": "john@example.com",
+  "password": "password123",
+  "age": 25
+}
+```
+
+#### Login
+```
+POST /auth/login
+Content-Type: application/json
+
+{
+  "email": "john@example.com",
+  "password": "password123"
+}
+```
+
+#### Google OAuth
+```
+GET /auth/google
+```
+Redirects to Google for authentication
+
+```
+GET /auth/google/callback
+```
+Google callback URL (handled automatically)
+
+### Users (Protected Routes - Require JWT Token)
+
+#### Get Current User Profile
+```
+GET /users/profile
+Authorization: Bearer <your-jwt-token>
+```
+
+#### Get All Users
+```
+GET /users
+Authorization: Bearer <your-jwt-token>
+```
+
+## Setup Instructions
+
+### 1. Install PostgreSQL
+
+Make sure PostgreSQL is installed and running on your system.
+
+### 2. Create Database
+
+```bash
+createdb squadlink
+```
+
+Or using psql:
+```sql
+CREATE DATABASE squadlink;
+```
+
+### 3. Configure Environment Variables
+
+Update the `.env` file with your credentials:
+
+```env
+# Database Configuration
+DATABASE_HOST=localhost
+DATABASE_PORT=5432
+DATABASE_USER=postgres
+DATABASE_PASSWORD=your-postgres-password
+DATABASE_NAME=squadlink
+
+# JWT Configuration
+JWT_SECRET=your-super-secret-jwt-key-change-this-in-production
+JWT_EXPIRATION=7d
+
+# Google OAuth
+GOOGLE_CLIENT_ID=102051266377-7kb1q31opfv6aaoooes397vgtj8juktq.apps.googleusercontent.com
+GOOGLE_CLIENT_SECRET=your-google-client-secret-here
+GOOGLE_CALLBACK_URL=http://localhost:3001/auth/google/callback
+
+# Application
+PORT=3001
+FRONTEND_URL=http://localhost:3000
+```
+
+### 4. Get Google OAuth Credentials
+
+1. Go to [Google Cloud Console](https://console.cloud.google.com/)
+2. Create a new project or select existing
+3. Enable Google+ API
+4. Go to Credentials → Create Credentials → OAuth Client ID
+5. Configure OAuth consent screen
+6. Add these URIs:
+   - **Authorized JavaScript origins**: `http://localhost:3001`
+   - **Authorized redirect URIs**: `http://localhost:3001/auth/google/callback`
+7. Copy the Client Secret and update `.env`
+
+### 5. Install Dependencies
+
+```bash
+npm install
+```
+
+### 6. Run the Application
+
+Development mode:
+```bash
+npm run start:dev
+```
+
+Production mode:
+```bash
+npm run build
+npm run start:prod
+```
+
+The API will be running on `http://localhost:3001`
+
+## User Model
+
+```typescript
+{
+  id: string (UUID)
+  firstName: string
+  lastName: string
+  email: string (unique)
+  password: string (hashed, nullable for Google users)
+  age: number
+  googleId: string (nullable)
+  profilePicture: string (nullable)
+  provider: string ('local' | 'google')
+  createdAt: Date
+  updatedAt: Date
+}
+```
+
+## Testing with cURL
+
+### Register a new user:
+```bash
+curl -X POST http://localhost:3001/auth/register \
+  -H "Content-Type: application/json" \
+  -d '{
+    "firstName": "John",
+    "lastName": "Doe",
+    "email": "john@example.com",
+    "password": "password123",
+    "age": 25
+  }'
+```
+
+### Login:
+```bash
+curl -X POST http://localhost:3001/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "john@example.com",
+    "password": "password123"
+  }'
+```
+
+### Get profile (use token from login response):
+```bash
+curl http://localhost:3001/users/profile \
+  -H "Authorization: Bearer YOUR_JWT_TOKEN_HERE"
+```
+
+## Tech Stack
+
+- **NestJS** - Progressive Node.js framework
+- **TypeORM** - ORM for TypeScript
+- **PostgreSQL** - Database
+- **Passport** - Authentication middleware
+- **JWT** - Token-based authentication
+- **bcrypt** - Password hashing
+- **class-validator** - DTO validation
 
 ## Project setup
+
 
 ```bash
 $ npm install
