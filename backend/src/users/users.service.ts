@@ -49,4 +49,48 @@ export class UsersService {
   async remove(id: string): Promise<void> {
     await this.userModel.findByIdAndDelete(id).exec();
   }
+
+  async updateGamePreferences(email: string, gamePreferences: string[]): Promise<User | null> {
+    return this.userModel.findOneAndUpdate(
+      { email },
+      { gamePreferences },
+      { new: true }
+    ).select('-password').exec();
+  }
+
+  async addGamePreference(email: string, game: string): Promise<User | null> {
+    return this.userModel.findOneAndUpdate(
+      { email },
+      { $addToSet: { gamePreferences: game } },
+      { new: true }
+    ).select('-password').exec();
+  }
+
+  async removeGamePreference(email: string, game: string): Promise<User | null> {
+    return this.userModel.findOneAndUpdate(
+      { email },
+      { $pull: { gamePreferences: game } },
+      { new: true }
+    ).select('-password').exec();
+  }
+
+  async updateProfilePicture(email: string, profilePicture: string): Promise<User | null> {
+    return this.userModel.findOneAndUpdate(
+      { email },
+      { profilePicture },
+      { new: true }
+    ).select('-password').exec();
+  }
+
+  async updateThemePreference(email: string, theme: string): Promise<User | null> {
+    return this.userModel.findOneAndUpdate(
+      { email },
+      { themePreference: theme },
+      { new: true }
+    ).select('-password').exec();
+  }
+
+  async getFullProfile(email: string): Promise<User | null> {
+    return this.userModel.findOne({ email }).select('-password').exec();
+  }
 }

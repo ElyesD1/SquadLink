@@ -27,6 +27,12 @@ export class User extends Document {
   @Prop({ default: 'local' })
   provider: string; // 'local' or 'google'
 
+  @Prop({ type: [String], default: [] })
+  gamePreferences: string[];
+
+  @Prop({ default: 'dark' })
+  themePreference: string; // 'light' or 'dark'
+
   createdAt?: Date;
   updatedAt?: Date;
 }

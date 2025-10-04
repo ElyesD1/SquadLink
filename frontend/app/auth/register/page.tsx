@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -25,6 +26,7 @@ import {
 } from 'lucide-react';
 import { FcGoogle } from 'react-icons/fc';
 import { differenceInYears, startOfDay } from 'date-fns';
+import { AnimatedLogo } from '@/components/ui/AnimatedLogo';
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -169,12 +171,7 @@ export default function RegisterPage() {
         >
           <div className="space-y-6">
             <Link href="/" className="flex items-center gap-3 group">
-              <div className="w-16 h-16 bg-gradient-to-br from-purple-600 to-blue-500 rounded-2xl flex items-center justify-center shadow-2xl group-hover:scale-110 transition-transform">
-                <Zap className="w-8 h-8 text-white" />
-              </div>
-              <span className="text-3xl font-black bg-gradient-to-r from-purple-600 to-blue-500 bg-clip-text text-transparent">
-                SquadLink
-              </span>
+              <AnimatedLogo size="lg" />
             </Link>
 
             <div className="space-y-4">
@@ -185,40 +182,101 @@ export default function RegisterPage() {
                 </span>
               </h1>
               <p className="text-xl text-muted-foreground leading-relaxed">
-                Create your account and start connecting with gamers around the world. Your adventure begins now.
+                Join a community of passionate gamers. Connect, compete, and conquer together.
               </p>
             </div>
 
-            {/* Features */}
+            {/* Supported Games */}
             <div className="space-y-4 mt-8">
-              {[
-                { icon: Users, text: 'Connect with 50K+ gamers worldwide' },
-                { icon: Zap, text: 'Real-time squad matchmaking' },
-                { icon: CheckCircle, text: 'Free forever, no credit card required' }
-              ].map((feature, index) => (
-                <motion.div
-                  key={index}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.3 + index * 0.1 }}
-                  className="flex items-center gap-3"
-                >
-                  <div className="w-10 h-10 rounded-lg bg-purple-500/10 flex items-center justify-center">
-                    <feature.icon className="w-5 h-5 text-purple-600 dark:text-purple-400" />
-                  </div>
-                  <span className="text-foreground font-medium">{feature.text}</span>
-                </motion.div>
-              ))}
+              <h3 className="text-lg font-bold text-foreground">Supported Games</h3>
+              <div className="grid grid-cols-1 gap-3">
+                {[
+                  { 
+                    icon: '/league.png', 
+                    name: 'League of Legends',
+                    description: 'Strategic team battles',
+                    gradient: 'from-blue-600 to-gold-400'
+                  },
+                  { 
+                    icon: '/valorant.png', 
+                    name: 'Valorant',
+                    description: 'Tactical FPS gameplay',
+                    gradient: 'from-red-500 to-orange-400'
+                  },
+                  { 
+                    icon: '/fortnite.png', 
+                    name: 'Fortnite',
+                    description: 'Build, battle, survive',
+                    gradient: 'from-purple-500 to-pink-400'
+                  }
+                ].map((game, index) => (
+                  <motion.div
+                    key={index}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.3 + index * 0.1 }}
+                    className="flex items-center gap-4 p-3 rounded-xl border border-border/50 hover:border-purple-500/30 hover:bg-purple-500/5 transition-all duration-300"
+                  >
+                    <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${game.gradient} flex items-center justify-center p-1`}>
+                      <Image
+                        src={game.icon}
+                        alt={game.name}
+                        width={32}
+                        height={32}
+                        className="w-8 h-8 object-contain"
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <span className="text-foreground font-semibold">{game.name}</span>
+                      <p className="text-sm text-muted-foreground">{game.description}</p>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
             </div>
 
-            {/* Gaming Image */}
+            {/* Gaming Community Visual */}
             <div className="relative mt-12">
               <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-blue-500 rounded-3xl blur-3xl opacity-20" />
-              <img
-                src="https://images.unsplash.com/photo-1493711662062-fa541adb3fc8?w=600&q=80"
-                alt="Gaming"
-                className="relative rounded-2xl shadow-2xl border-2 border-purple-500/20"
-              />
+              <div className="relative bg-gradient-to-br from-purple-900/20 to-blue-900/20 rounded-2xl p-8 border-2 border-purple-500/20 backdrop-blur-sm">
+                <div className="text-center space-y-6">
+                  <div className="flex justify-center items-center gap-4">
+                    <div className="w-16 h-16 bg-gradient-to-br from-blue-600 to-gold-400 rounded-xl flex items-center justify-center p-2">
+                      <Image
+                        src="/league.png"
+                        alt="League of Legends"
+                        width={48}
+                        height={48}
+                        className="w-12 h-12 object-contain"
+                      />
+                    </div>
+                    <div className="w-16 h-16 bg-gradient-to-br from-red-500 to-orange-400 rounded-xl flex items-center justify-center p-2">
+                      <Image
+                        src="/valorant.png"
+                        alt="Valorant"
+                        width={48}
+                        height={48}
+                        className="w-12 h-12 object-contain"
+                      />
+                    </div>
+                    <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-400 rounded-xl flex items-center justify-center p-2">
+                      <Image
+                        src="/fortnite.png"
+                        alt="Fortnite"
+                        width={48}
+                        height={48}
+                        className="w-12 h-12 object-contain"
+                      />
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <h3 className="text-xl font-bold text-foreground">Your Gaming Journey Starts Here</h3>
+                    <p className="text-sm text-muted-foreground">
+                      Connect with players across League of Legends, Valorant, and Fortnite
+                    </p>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </motion.div>
@@ -232,13 +290,8 @@ export default function RegisterPage() {
           <Card className="border-2 border-border shadow-2xl">
             <CardHeader className="space-y-1 pb-6">
               <div className="flex items-center justify-center lg:hidden mb-4">
-                <Link href="/" className="flex items-center gap-2">
-                  <div className="w-10 h-10 bg-gradient-to-br from-purple-600 to-blue-500 rounded-xl flex items-center justify-center">
-                    <Zap className="w-5 h-5 text-white" />
-                  </div>
-                  <span className="text-xl font-bold bg-gradient-to-r from-purple-600 to-blue-500 bg-clip-text text-transparent">
-                    SquadLink
-                  </span>
+                <Link href="/">
+                  <AnimatedLogo size="md" />
                 </Link>
               </div>
               <CardTitle className="text-3xl font-black text-center">Create Account</CardTitle>
