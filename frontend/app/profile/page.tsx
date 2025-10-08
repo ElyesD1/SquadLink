@@ -11,6 +11,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { FiLogOut, FiEdit, FiPlus, FiTrash2, FiX, FiChevronDown } from 'react-icons/fi';
 import { Zap, Sun, Moon } from 'lucide-react';
 import { AnimatedLogo } from '@/components/ui/AnimatedLogo';
+import NavigationDrawer from '@/components/ui/NavigationDrawer';
 import { useTheme } from 'next-themes';
 
 interface UserProfile {
@@ -203,7 +204,8 @@ export default function ProfilePage() {
   );
 
   return (
-    <div className="min-h-screen bg-background relative overflow-hidden">
+    <NavigationDrawer>
+      <div className="min-h-screen bg-background relative overflow-hidden">
       {/* Animated Background Elements */}
       <div className="fixed inset-0 -z-10 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 via-transparent to-blue-500/10 dark:from-purple-900/20 dark:to-blue-900/20" />
@@ -241,20 +243,8 @@ export default function ProfilePage() {
       {/* Content */}
       <div className="relative z-10 min-h-screen p-6">
         {/* Header */}
-        <header className="max-w-7xl mx-auto flex items-center justify-between mb-12">
+        <header className="max-w-7xl mx-auto flex items-center justify-center mb-12">
           <AnimatedLogo size="md" />
-          
-          <div className="flex items-center gap-4">
-            <div className={`${getSecondaryTextClass(currentTheme)} text-sm`}>
-              Welcome, {userProfile.firstName}
-            </div>
-            <button
-              onClick={handleLogout}
-              className={`p-2 ${getSecondaryTextClass(currentTheme)} hover:${getTextClass(currentTheme)} hover:bg-white/10 rounded-lg transition-colors`}
-            >
-              <FiLogOut className="w-5 h-5" />
-            </button>
-          </div>
         </header>
 
         {/* Main Content */}
@@ -404,6 +394,33 @@ export default function ProfilePage() {
             </Card>
           </div>
         </div>
+        
+        {/* Logout Section */}
+        <div className="max-w-6xl mx-auto mt-8">
+          <Card className="border-2 border-red-500/20 shadow-2xl shadow-red-500/10 backdrop-blur-sm bg-card/95">
+            <CardHeader>
+              <CardTitle className={`${getTextClass(currentTheme)} text-center flex items-center justify-center gap-2`}>
+                <FiLogOut className="w-5 h-5 text-red-500" />
+                Account Actions
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="text-center">
+                <p className={`${getSecondaryTextClass(currentTheme)} mb-4`}>
+                  Ready to take a break? You can sign out of your account here.
+                </p>
+                <Button
+                  onClick={handleLogout}
+                  variant="destructive"
+                  className="bg-red-600 hover:bg-red-700 text-white px-8 py-2 rounded-xl transition-all duration-300 hover:shadow-lg hover:shadow-red-500/30"
+                >
+                  <FiLogOut className="w-4 h-4 mr-2" />
+                  Sign Out
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
       </div>
 
       {/* Avatar Selector Modal */}
@@ -493,5 +510,6 @@ export default function ProfilePage() {
         </div>
       )}
     </div>
+    </NavigationDrawer>
   );
 }
