@@ -51,4 +51,20 @@ export class UsersController {
   async getFullProfile(@Body() body: { email: string }) {
     return this.usersService.getFullProfile(body.email);
   }
+
+  // League of Legends Account Linking
+  @Post('lol-account/link')
+  async linkLolAccount(@Body() body: { email: string; gameName: string; tagline: string; region?: string }) {
+    return this.usersService.linkLolAccount(body.email, body.gameName, body.tagline, body.region);
+  }
+
+  @Delete('lol-account/unlink')
+  async unlinkLolAccount(@Body() body: { email: string }) {
+    return this.usersService.unlinkLolAccount(body.email);
+  }
+
+  @Post('lol-account/refresh')
+  async refreshLolAccount(@Body() body: { email: string }) {
+    return this.usersService.refreshLolAccount(body.email);
+  }
 }

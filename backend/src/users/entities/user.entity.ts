@@ -33,6 +33,44 @@ export class User extends Document {
   @Prop({ default: 'dark' })
   themePreference: string; // 'light' or 'dark'
 
+  // League of Legends account data
+  @Prop({
+    type: {
+      puuid: String,
+      gameName: String,
+      tagLine: String,
+      region: String,
+      summonerLevel: Number,
+      profileIconId: Number,
+      rankedData: [{
+        queueType: String,
+        tier: String,
+        rank: String,
+        leaguePoints: Number,
+        wins: Number,
+        losses: Number,
+      }],
+      lastUpdated: Date,
+    }
+  })
+  lolAccount?: {
+    puuid: string;
+    gameName: string;
+    tagLine: string;
+    region: string;
+    summonerLevel: number;
+    profileIconId: number;
+    rankedData: Array<{
+      queueType: string;
+      tier: string;
+      rank: string;
+      leaguePoints: number;
+      wins: number;
+      losses: number;
+    }>;
+    lastUpdated: Date;
+  };
+
   createdAt?: Date;
   updatedAt?: Date;
 }

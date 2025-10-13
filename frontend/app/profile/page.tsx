@@ -8,11 +8,14 @@ import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { FiLogOut, FiEdit, FiPlus, FiTrash2, FiX, FiChevronDown } from 'react-icons/fi';
+import { FiLogOut, FiEdit, FiPlus, FiTrash2, FiX, FiChevronDown, FiLink } from 'react-icons/fi';
 import { Zap, Sun, Moon } from 'lucide-react';
 import { AnimatedLogo } from '@/components/ui/AnimatedLogo';
 import NavigationDrawer from '@/components/ui/NavigationDrawer';
+import LolAccountLinking from '@/components/ui/LolAccountLinking';
+import LolProfileDisplay from '@/components/ui/LolProfileDisplay';
 import { useTheme } from 'next-themes';
+import { lolService, type LolAccount } from '@/lib/lol-service';
 
 interface UserProfile {
   firstName: string;
@@ -21,6 +24,7 @@ interface UserProfile {
   profilePicture?: string;
   themePreference: string;
   gamePreferences: string[];
+  lolAccount?: LolAccount;
 }
 
 interface Game {
@@ -51,6 +55,7 @@ export default function ProfilePage() {
   const [selectedAvatar, setSelectedAvatar] = useState<string>('👤');
   const [showGameSelector, setShowGameSelector] = useState(false);
   const [selectedGames, setSelectedGames] = useState<string[]>([]);
+  const [showLolLinking, setShowLolLinking] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   // Use the current theme from next-themes
@@ -182,6 +187,26 @@ export default function ProfilePage() {
     signOut({ callbackUrl: '/' });
   };
 
+  const handleLolAccountSuccess = (accountData: any) => {
+    // Refresh the user profile to get the updated LoL account data
+    fetchUserProfile();
+    setShowLolLinking(false);
+  };
+
+  const handleLolAccountRefresh = (accountData: LolAccount) => {
+    setUserProfile(prev => prev ? {
+      ...prev,
+      lolAccount: accountData
+    } : null);
+  };
+
+  const handleLolAccountUnlink = () => {
+    setUserProfile(prev => prev ? {
+      ...prev,
+      lolAccount: undefined
+    } : null);
+  };
+
   if (!mounted || status === 'loading' || isLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-[#0A0118] via-[#1A0B2E] to-[#0A0118] flex items-center justify-center">
@@ -202,6 +227,18 @@ export default function ProfilePage() {
   const availableGamesToAdd = availableGames.filter(game => 
     !userProfile.gamePreferences.includes(game.id)
   );
+
+  // Show LoL Account Linking if requested
+  if (showLolLinking) {
+    return (
+      <LolAccountLinking
+        userEmail={userProfile.email}
+        currentTheme={currentTheme}
+        onBack={() => setShowLolLinking(false)}
+        onSuccess={handleLolAccountSuccess}
+      />
+    );
+  }
 
   return (
     <NavigationDrawer>
@@ -390,6 +427,47 @@ export default function ProfilePage() {
                     })}
                   </div>
                 )}
+
+                {/* League of Legends Account Section */}
+                {userProfile.gamePreferences.includes('league-of-legends') && (
+                  <div className="mt-6 pt-6 border-t border-border/20">
+                    <div className="flex items-center justify-between mb-4">
+                      <h3 className={`${getTextClass(currentTheme)} text-lg font-semibold flex items-center gap-2`}>
+                        <Image
+                          src="/logo.png"
+                          alt="League of Legends"
+                          width={24}
+                          height={24}
+                          className="w-6 h-6"
+                        />
+                        League of Legends Account
+                      </h3>
+                    </div>
+
+                    {userProfile.lolAccount ? (
+                      <LolProfileDisplay
+                        lolAccount={userProfile.lolAccount}
+                        userEmail={userProfile.email}
+                        currentTheme={currentTheme}
+                        onRefresh={handleLolAccountRefresh}
+                        onUnlink={handleLolAccountUnlink}
+                      />
+                    ) : (
+                      <div className="text-center py-8">
+                        <div className={`${getSecondaryTextClass(currentTheme)} text-sm mb-4`}>
+                          Link your League of Legends account to show your rank and stats
+                        </div>
+                        <Button
+                          onClick={() => setShowLolLinking(true)}
+                          className="bg-blue-600 hover:bg-blue-700 text-white"
+                        >
+                          <FiLink className="w-4 h-4 mr-2" />
+                          Link LoL Account
+                        </Button>
+                      </div>
+                    )}
+                  </div>
+                )}
               </CardContent>
             </Card>
           </div>
@@ -508,6 +586,16 @@ export default function ProfilePage() {
             </div>
           </motion.div>
         </div>
+      )}
+
+      {/* LoL Account Linking Modal */}
+      {showLolLinking && (
+        <LolAccountLinking
+          userEmail={userProfile.email}
+          onSuccess={handleLolAccountSuccess}
+          onBack={() => setShowLolLinking(false)}
+          currentTheme={currentTheme}
+        />
       )}
     </div>
     </NavigationDrawer>

@@ -6,6 +6,7 @@ import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { RiotEsportsModule } from './riot-esports/riot-esports.module';
+import { RiotApiModule } from './riot-api/riot-api.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { RiotEsportsModule } from './riot-esports/riot-esports.module';
     AuthModule,
     UsersModule,
     RiotEsportsModule,
+    RiotApiModule,
   ],
   controllers: [AppController],
   providers: [AppService],
