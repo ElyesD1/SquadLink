@@ -44,8 +44,18 @@ export class PartyController {
   }
 
   @Get()
-  async findAll(@Query() filters: PartyFiltersDto) {
-    const result = await this.partyService.findAll(filters);
+  async findAll(@Query() filters: PartyFiltersDto, @Request() req?: any) {
+    // If user is authenticated, include their userId to show their closed parties
+    let userId = req?.user?.userId;
+
+    // Also check for userId in query params (for frontend calls)
+    if (!userId && filters.userId) {
+      userId = filters.userId;
+    }
+
+    const enhancedFilters = { ...filters, userId };
+
+    const result = await this.partyService.findAll(enhancedFilters);
     return {
       success: true,
       data: result.parties,

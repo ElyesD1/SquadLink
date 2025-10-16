@@ -159,15 +159,15 @@ export default function PartiesPage() {
 
     if (status === 'authenticated') {
       const initializeData = async () => {
-        await fetchCurrentUser();
-        fetchParties();
+        const userId = await fetchCurrentUser();
+        fetchParties(userId);
       };
       initializeData();
     }
   }, [status, router]);
 
   const fetchCurrentUser = async () => {
-    if (!session?.user?.email) return;
+    if (!session?.user?.email) return null;
     
     try {
       const response = await fetch('http://localhost:3001/users/profile/full', {
@@ -182,11 +182,13 @@ export default function PartiesPage() {
         const data = await response.json();
         setCurrentUserId(data._id);
         setHasLolAccount(!!data.lolAccount);
-        setHasDiscordAccount(!!data.discordId); // Check if user has Discord linked
+        setHasDiscordAccount(!!data.discordId);
+        return data._id; // Return the userId
       }
     } catch (error) {
       console.error('Error fetching current user:', error);
     }
+    return null;
   };
 
   // Listen for real-time party updates
@@ -216,7 +218,7 @@ export default function PartiesPage() {
     }
   }, [selectedGameMode]);
 
-  const fetchParties = async () => {
+  const fetchParties = async (userId?: string) => {
     try {
       setIsLoading(true);
       const queryParams = new URLSearchParams();
@@ -224,13 +226,21 @@ export default function PartiesPage() {
         queryParams.append('gameMode', selectedGameMode);
       }
       
+      // Include current user ID to show their closed parties
+      const userIdToUse = userId || currentUserId;
+      if (userIdToUse) {
+        queryParams.append('userId', userIdToUse);
+      }
+      
+      // Fetch parties (now includes user's closed parties)
       const response = await fetch(`http://localhost:3001/party?${queryParams}`);
-
+      
       if (response.ok) {
         const data = await response.json();
         console.log('Fetched parties response:', data);
-        const partiesData = data.data || data;
+        let partiesData = data.data || data;
         console.log('Parties data:', partiesData);
+        
         setParties(Array.isArray(partiesData) ? partiesData : []);
         
         // Convert join requests from owned parties into notifications
@@ -785,7 +795,7 @@ export default function PartiesPage() {
 
                     {/* Refresh Button */}
                     <Button
-                      onClick={fetchParties}
+                      onClick={() => fetchParties()}
                       className="bg-white/5 hover:bg-white/10 border border-white/10 px-4"
                     >
                       <RefreshCw className={`w-5 h-5 ${isLoading ? 'animate-spin' : ''}`} />

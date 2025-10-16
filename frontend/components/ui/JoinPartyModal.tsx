@@ -32,6 +32,7 @@ export default function JoinPartyModal({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [availableRoles, setAvailableRoles] = useState<Position[]>([]);
   const [isLoadingRoles, setIsLoadingRoles] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const requiresRole = gameMode !== 'aram';
 
@@ -41,6 +42,7 @@ export default function JoinPartyModal({
     } else {
       setSelectedRole(null);
       setMessage('');
+      setError(null);
     }
   }, [isOpen, partyId, requiresRole]);
 
@@ -81,16 +83,17 @@ export default function JoinPartyModal({
       });
 
       if (response.ok) {
+        setError(null);
         alert('✅ Join request sent successfully!');
         onSuccess();
         onClose();
       } else {
-        const error = await response.json();
-        alert(error.message || 'Failed to send join request');
+        const errorData = await response.json();
+        setError(errorData.message || 'Failed to send join request');
       }
     } catch (error) {
       console.error('Error sending join request:', error);
-      alert('Failed to send join request');
+      setError('Failed to send join request. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
@@ -159,6 +162,40 @@ export default function JoinPartyModal({
 
               {/* Content */}
               <div className="space-y-6">
+                {/* Error Message */}
+                {error && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className={`
+                      p-4 rounded-xl border-2
+                      ${
+                        theme === 'light'
+                          ? 'bg-red-50 border-red-200 text-red-800'
+                          : 'bg-red-500/10 border-red-500/30 text-red-400'
+                      }
+                    `}
+                  >
+                    <div className="flex items-start gap-3">
+                      <div className="flex-shrink-0">
+                        <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                        </svg>
+                      </div>
+                      <div className="flex-1">
+                        <h4 className="font-semibold mb-1">Unable to Join Party</h4>
+                        <p className="text-sm">{error}</p>
+                      </div>
+                      <button
+                        onClick={() => setError(null)}
+                        className="flex-shrink-0 p-1 hover:bg-red-500/20 rounded transition-colors"
+                      >
+                        <X className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </motion.div>
+                )}
+
                 {/* Role Selection */}
                 {requiresRole && (
                   <div>

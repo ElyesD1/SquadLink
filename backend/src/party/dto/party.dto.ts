@@ -115,8 +115,8 @@ export class UpdateMemberStatusDto {
 
 export class PartyFiltersDto {
   @IsOptional()
-  @IsEnum(GameMode)
-  gameMode?: GameMode;
+  @IsString()
+  gameMode?: string;
 
   @IsOptional()
   @IsBoolean()
@@ -136,4 +136,8 @@ export class PartyFiltersDto {
   @IsInt()
   @Min(0)
   offset?: number;
+
+  @IsOptional()
+  @IsString()
+  userId?: string; // For showing user's own closed parties
 }

@@ -205,10 +205,6 @@ export class PartyService {
       query.gameMode = filters.gameMode;
     }
 
-    if (filters.availableOnly !== false) {
-      query.$expr = { $lt: [{ $size: '$members' }, '$maxPlayers'] };
-    }
-
     if (filters.search) {
       query.$or = [
         { name: { $regex: filters.search, $options: 'i' } },
@@ -217,21 +213,42 @@ export class PartyService {
       ];
     }
 
-    // Don't show private parties in public listing
-    query.isPrivate = { $ne: true };
+    // Build visibility query
+    let finalQuery: any = { ...query };
+
+    if (filters.userId) {
+      // If userId is provided, show:
+      // 1. All open parties (public)
+      // 2. Closed parties where the user is a member
+      finalQuery.$or = [
+        { status: PartyStatus.OPEN },
+        {
+          status: PartyStatus.CLOSED,
+          'members.userId': filters.userId
+        }
+      ];
+    } else {
+      // If no userId, only show open parties
+      finalQuery.status = PartyStatus.OPEN;
+    }
+
+    // Don't show private parties in public listing (unless user is a member)
+    if (!filters.userId) {
+      finalQuery.isPrivate = { $ne: true };
+    }
 
     const limit = filters.limit || 20;
     const offset = filters.offset || 0;
 
     const [parties, total] = await Promise.all([
       this.partyModel
-        .find(query)
+        .find(finalQuery)
         .populate('creatorId', 'firstName lastName email profilePicture lolAccount')
         .sort({ createdAt: -1 })
         .limit(limit)
         .skip(offset)
         .exec(),
-      this.partyModel.countDocuments(query),
+      this.partyModel.countDocuments(finalQuery),
     ]);
 
     // Transform parties to include creator object
@@ -434,6 +451,12 @@ export class PartyService {
       throw new BadRequestException('You already have a pending request for this party');
     }
 
+    // Check rank requirements for ranked game modes
+    const rankCheck = this.checkRankRequirement(user, party as any);
+    if (!rankCheck.meets) {
+      throw new BadRequestException(rankCheck.message);
+    }
+
     // Validate position for non-ARAM modes
     if (party.gameMode !== GameMode.ARAM) {
       if (!requestDto.requestedPosition) {
@@ -540,6 +563,7 @@ export class PartyService {
     const joinRequest = party.joinRequests[requestIndex];
 
     if (requestDto.accept) {
+      if (requestDto.accept) {
       // Accept the request - add user to party
       if (party.members.length >= party.maxPlayers) {
         throw new BadRequestException('Party is full');
@@ -579,6 +603,17 @@ export class PartyService {
       };
 
       party.members.push(member);
+
+      // Check if party is now full and close it
+      if (party.members.length >= party.maxPlayers) {
+        party.status = PartyStatus.CLOSED;
+      }
+    }
+
+      // Check if party is now full and close it
+      if (party.members.length >= party.maxPlayers) {
+        party.status = PartyStatus.CLOSED;
+      }
     }
 
     // Remove the request (whether accepted or rejected)
@@ -622,6 +657,11 @@ export class PartyService {
     
     // Also remove any pending join request from this user
     party.joinRequests = party.joinRequests.filter(request => request.userId !== userId);
+
+    // If party was closed and is no longer full, reopen it
+    if (party.status === PartyStatus.CLOSED && party.members.length < party.maxPlayers) {
+      party.status = PartyStatus.OPEN;
+    }
 
     const savedParty = await party.save();
     
@@ -683,6 +723,12 @@ export class PartyService {
     }
 
     party.members = party.members.filter(member => member.userId !== kickDto.userId);
+    
+    // If party was closed and is no longer full, reopen it
+    if (party.status === PartyStatus.CLOSED && party.members.length < party.maxPlayers) {
+      party.status = PartyStatus.OPEN;
+    }
+    
     const savedParty = await party.save();
     
     // Notify via WebSocket
@@ -805,5 +851,106 @@ export class PartyService {
       default:
         return 5;
     }
+  }
+
+  private getRankValue(tier: string, rank: string): number {
+    // Define rank hierarchy
+    const tierValues: { [key: string]: number } = {
+      'IRON': 0,
+      'BRONZE': 400,
+      'SILVER': 800,
+      'GOLD': 1200,
+      'PLATINUM': 1600,
+      'EMERALD': 2000,
+      'DIAMOND': 2400,
+      'MASTER': 2800,
+      'GRANDMASTER': 2900,
+      'CHALLENGER': 3000,
+    };
+
+    const rankValues: { [key: string]: number } = {
+      'IV': 0,
+      'III': 100,
+      'II': 200,
+      'I': 300,
+    };
+
+    const tierValue = tierValues[tier.toUpperCase()] || 0;
+    const rankValue = rankValues[rank.toUpperCase()] || 0;
+
+    return tierValue + rankValue;
+  }
+
+  private checkRankRequirement(user: any, party: Party): { meets: boolean; message?: string } {
+    // If no minimum rank requirement, allow join
+    if (!party.preferences?.minRank) {
+      return { meets: true };
+    }
+
+    // User must have LoL account linked
+    if (!user.lolAccount || !user.lolAccount.rankedData || user.lolAccount.rankedData.length === 0) {
+      return { 
+        meets: false, 
+        message: 'You must have a League of Legends account linked with ranked data to join this party' 
+      };
+    }
+
+    // Parse minimum rank requirement
+    // Handle both formats: "Platinum" (tier only) or "PLATINUM IV" (tier + division)
+    const minRankParts = party.preferences.minRank.trim().split(' ');
+    let minTier: string;
+    let minRank: string;
+
+    if (minRankParts.length === 1) {
+      // Just tier provided (e.g., "Platinum") - assume IV (lowest division)
+      minTier = minRankParts[0];
+      minRank = 'IV';
+    } else if (minRankParts.length === 2) {
+      // Tier and division provided (e.g., "PLATINUM II")
+      [minTier, minRank] = minRankParts;
+    } else {
+      // Invalid format, allow join
+      return { meets: true };
+    }
+
+    const minRankValue = this.getRankValue(minTier, minRank);
+
+    // Check appropriate queue type based on game mode
+    let queueType: string;
+    let queueLabel: string;
+
+    if (party.gameMode === GameMode.RANKED_SOLO_DUO) {
+      queueType = 'RANKED_SOLO_5x5';
+      queueLabel = 'Solo/Duo';
+    } else if (party.gameMode === GameMode.RANKED_FLEX) {
+      queueType = 'RANKED_FLEX_SR';
+      queueLabel = 'Flex';
+    } else {
+      // For non-ranked modes, no rank check needed
+      return { meets: true };
+    }
+
+    // Find user's rank for the appropriate queue
+    const userRankData = user.lolAccount.rankedData.find(
+      (data: any) => data.queueType === queueType
+    );
+
+    if (!userRankData) {
+      return { 
+        meets: false, 
+        message: `You must have a ${queueLabel} rank to join this party. Minimum required: ${party.preferences.minRank}` 
+      };
+    }
+
+    const userRankValue = this.getRankValue(userRankData.tier, userRankData.rank);
+
+    if (userRankValue < minRankValue) {
+      return { 
+        meets: false, 
+        message: `Your ${queueLabel} rank (${userRankData.tier} ${userRankData.rank}) does not meet the minimum requirement: ${party.preferences.minRank}` 
+      };
+    }
+
+    return { meets: true };
   }
 }
