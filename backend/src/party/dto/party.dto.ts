@@ -1,5 +1,5 @@
 import { IsString, IsEnum, IsOptional, IsBoolean, IsDateString, IsArray, MaxLength, MinLength, IsInt, Min, Max } from 'class-validator';
-import { GameMode } from '../entities/party.entity';
+import { GameMode, Position } from '../entities/party.entity';
 
 export class CreatePartyDto {
   @IsString()
@@ -34,6 +34,10 @@ export class CreatePartyDto {
 
   @IsString()
   creatorEmail: string;
+
+  @IsOptional()
+  @IsEnum(Position)
+  creatorPosition?: Position;
 }
 
 export class UpdatePartyDto {
@@ -75,6 +79,10 @@ export class JoinPartyRequestDto {
   @IsString()
   @MaxLength(100)
   message?: string;
+
+  @IsOptional()
+  @IsEnum(Position)
+  requestedPosition?: Position;
 }
 
 export class HandleJoinRequestDto {

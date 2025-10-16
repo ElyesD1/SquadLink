@@ -18,6 +18,7 @@ import {
 import { AnimatedLogo } from '@/components/ui/AnimatedLogo';
 import NavigationDrawer from '@/components/ui/NavigationDrawer';
 import { useTheme } from 'next-themes';
+import RoleSelector, { Position } from '@/components/ui/RoleSelector';
 
 interface PartyFormData {
   name: string;
@@ -25,6 +26,7 @@ interface PartyFormData {
   gameMode: string;
   isPrivate: boolean;
   scheduledFor?: string;
+  creatorPosition?: Position;
   preferences: {
     minRank?: string;
     voiceChat?: boolean;
@@ -112,6 +114,12 @@ export default function CreatePartyPage() {
     
     if (!formData.name || !formData.gameMode) {
       alert('Please fill in all required fields');
+      return;
+    }
+
+    // Validate role selection for non-ARAM modes
+    if (formData.gameMode !== 'aram' && !formData.creatorPosition) {
+      alert('Please select your role');
       return;
     }
 
@@ -292,6 +300,21 @@ export default function CreatePartyPage() {
                         ))}
                       </div>
                     </div>
+
+                    {/* Role Selection - Only for non-ARAM modes */}
+                    {formData.gameMode && formData.gameMode !== 'aram' && (
+                      <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="p-6 bg-white/5 rounded-xl border border-white/10"
+                      >
+                        <RoleSelector
+                          selectedRole={formData.creatorPosition || null}
+                          onRoleSelect={(role) => setFormData({ ...formData, creatorPosition: role })}
+                          theme={currentTheme}
+                        />
+                      </motion.div>
+                    )}
 
                     {/* Privacy Setting */}
                     <div>

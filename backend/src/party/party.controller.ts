@@ -93,6 +93,15 @@ export class PartyController {
     };
   }
 
+  @Get(':id/available-positions')
+  async getAvailablePositions(@Param('id') id: string) {
+    const positions = await this.partyService.getAvailablePositions(id);
+    return {
+      success: true,
+      data: positions,
+    };
+  }
+
   @Put(':id')
   async update(
     @Param('id') id: string, 

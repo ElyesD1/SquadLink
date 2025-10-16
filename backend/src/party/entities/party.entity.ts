@@ -16,12 +16,21 @@ export enum PartyStatus {
   CLOSED = 'closed',
 }
 
+export enum Position {
+  TOP = 'top',
+  JUNGLE = 'jungle',
+  MID = 'mid',
+  BOT = 'bot',
+  SUPPORT = 'support',
+}
+
 export interface PartyMember {
   userId: string;
   username: string;
   profilePicture?: string;
   joinedAt: Date;
   isReady: boolean;
+  position?: Position;
   lolAccount?: {
     gameName: string;
     tagLine: string;
@@ -42,6 +51,7 @@ export interface JoinRequest {
   profilePicture?: string;
   requestedAt: Date;
   message?: string;
+  requestedPosition?: Position;
   lolAccount?: {
     gameName: string;
     tagLine: string;

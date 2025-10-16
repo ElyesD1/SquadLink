@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException, BadRequestException, ForbiddenException, forwardRef, Inject } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
-import { Party, PartyDocument, GameMode, PartyStatus, PartyMember, JoinRequest } from './entities/party.entity';
+import { Party, PartyDocument, GameMode, PartyStatus, PartyMember, JoinRequest, Position } from './entities/party.entity';
 import { CreatePartyDto, UpdatePartyDto, JoinPartyRequestDto, HandleJoinRequestDto, PartyFiltersDto, KickMemberDto, UpdateMemberStatusDto } from './dto/party.dto';
 import { User } from '../users/entities/user.entity';
 import { DiscordService } from '../discord/discord.service';
@@ -107,6 +107,16 @@ export class PartyService {
     // Determine max players based on game mode
     const maxPlayers = this.getMaxPlayersForGameMode(createPartyDto.gameMode);
 
+    // Validate position for non-ARAM modes
+    if (createPartyDto.gameMode !== GameMode.ARAM && !createPartyDto.creatorPosition) {
+      throw new BadRequestException('Position is required for this game mode');
+    }
+
+    // Validate position not allowed for ARAM
+    if (createPartyDto.gameMode === GameMode.ARAM && createPartyDto.creatorPosition) {
+      throw new BadRequestException('Position selection is not allowed for ARAM mode');
+    }
+
     // Create the party
     const party = new this.partyModel({
       ...createPartyDto,
@@ -119,6 +129,7 @@ export class PartyService {
         profilePicture: creator.profilePicture,
         joinedAt: new Date(),
         isReady: true,
+        position: createPartyDto.creatorPosition,
         lolAccount: creator.lolAccount ? {
           gameName: creator.lolAccount.gameName,
           tagLine: creator.lolAccount.tagLine,
@@ -423,6 +434,36 @@ export class PartyService {
       throw new BadRequestException('You already have a pending request for this party');
     }
 
+    // Validate position for non-ARAM modes
+    if (party.gameMode !== GameMode.ARAM) {
+      if (!requestDto.requestedPosition) {
+        throw new BadRequestException('Position is required for this game mode');
+      }
+
+      // Check if position is already taken
+      const isPositionTaken = party.members.some(
+        member => member.position === requestDto.requestedPosition
+      );
+
+      if (isPositionTaken) {
+        throw new BadRequestException(`Position ${requestDto.requestedPosition} is already taken`);
+      }
+
+      // Check if another request already claimed this position
+      const isPositionRequestedByOthers = party.joinRequests.some(
+        request => request.requestedPosition === requestDto.requestedPosition
+      );
+
+      if (isPositionRequestedByOthers) {
+        throw new BadRequestException(`Position ${requestDto.requestedPosition} is already requested by another player`);
+      }
+    }
+
+    // Validate position not allowed for ARAM
+    if (party.gameMode === GameMode.ARAM && requestDto.requestedPosition) {
+      throw new BadRequestException('Position selection is not allowed for ARAM mode');
+    }
+
     // Add join request
     const joinRequest: JoinRequest = {
       userId,
@@ -430,6 +471,7 @@ export class PartyService {
       profilePicture: user.profilePicture,
       requestedAt: new Date(),
       message: requestDto.message,
+      requestedPosition: requestDto.requestedPosition,
       lolAccount: user.lolAccount ? {
         gameName: user.lolAccount.gameName,
         tagLine: user.lolAccount.tagLine,
@@ -450,12 +492,13 @@ export class PartyService {
       await this.gateway.sendNotificationToUser(party.creatorId.toString(), {
         type: 'party_join_request',
         title: 'New Party Join Request',
-        message: `${displayName} wants to join your party "${party.name}"`,
+        message: `${displayName} wants to join your party "${party.name}"${requestDto.requestedPosition ? ` as ${requestDto.requestedPosition.toUpperCase()}` : ''}`,
         data: {
           partyId: partyId,
           requesterId: userId,
           requesterName: displayName,
           message: requestDto.message,
+          requestedPosition: requestDto.requestedPosition,
           requester: {
             profilePicture: user.profilePicture,
             lolAccount: user.lolAccount ? {
@@ -507,12 +550,24 @@ export class PartyService {
         throw new NotFoundException('User not found');
       }
 
+      // Double-check position availability for non-ARAM modes
+      if (party.gameMode !== GameMode.ARAM && joinRequest.requestedPosition) {
+        const isPositionTaken = party.members.some(
+          member => member.position === joinRequest.requestedPosition
+        );
+
+        if (isPositionTaken) {
+          throw new BadRequestException(`Position ${joinRequest.requestedPosition} is no longer available`);
+        }
+      }
+
       const member: PartyMember = {
         userId: requestDto.userId,
         username: `${user.firstName} ${user.lastName}`,
         profilePicture: user.profilePicture,
         joinedAt: new Date(),
         isReady: false,
+        position: joinRequest.requestedPosition,
         lolAccount: user.lolAccount ? {
           gameName: user.lolAccount.gameName,
           tagLine: user.lolAccount.tagLine,
@@ -689,6 +744,36 @@ export class PartyService {
     await this.partyModel.deleteMany({
       expiresAt: { $lt: new Date() }
     });
+  }
+
+  async getAvailablePositions(partyId: string): Promise<Position[]> {
+    const party = await this.partyModel.findById(partyId);
+    if (!party) {
+      throw new NotFoundException('Party not found');
+    }
+
+    // For ARAM, positions are not applicable
+    if (party.gameMode === GameMode.ARAM) {
+      return [];
+    }
+
+    const allPositions = [Position.TOP, Position.JUNGLE, Position.MID, Position.BOT, Position.SUPPORT];
+    
+    // Get positions already taken by members
+    const takenPositions = party.members
+      .map(member => member.position)
+      .filter(pos => pos !== undefined) as Position[];
+
+    // Get positions already requested
+    const requestedPositions = party.joinRequests
+      .map(request => request.requestedPosition)
+      .filter(pos => pos !== undefined) as Position[];
+
+    // Combine taken and requested positions
+    const unavailablePositions = [...takenPositions, ...requestedPositions];
+
+    // Return available positions
+    return allPositions.filter(pos => !unavailablePositions.includes(pos));
   }
 
   private validateJoinRequest(party: Party, userId: string): void {

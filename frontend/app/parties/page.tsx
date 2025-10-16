@@ -28,6 +28,8 @@ import NavigationDrawer from '@/components/ui/NavigationDrawer';
 import { useTheme } from 'next-themes';
 import { usePartySocket } from '@/lib/usePartySocket';
 import DiscordIntegration from '@/components/ui/DiscordIntegration';
+import JoinPartyModal from '@/components/ui/JoinPartyModal';
+import Image from 'next/image';
 
 interface Party {
   _id: string;
@@ -102,6 +104,8 @@ export default function PartiesPage() {
   const [hasDiscordAccount, setHasDiscordAccount] = useState<boolean>(false);
   const [showMembersModal, setShowMembersModal] = useState(false);
   const [selectedPartyMembers, setSelectedPartyMembers] = useState<Party | null>(null);
+  const [showJoinModal, setShowJoinModal] = useState(false);
+  const [selectedPartyToJoin, setSelectedPartyToJoin] = useState<Party | null>(null);
   const currentTheme = theme || 'dark';
   
   // WebSocket connection
@@ -265,31 +269,9 @@ export default function PartiesPage() {
     }
   };
 
-  const handleJoinRequest = async (partyId: string) => {
-    try {
-      const response = await fetch(`http://localhost:3001/party/${partyId}/request-join`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          message: 'I would like to join your party!',
-          userEmail: session?.user?.email
-        }),
-      });
-
-      if (response.ok) {
-        // Show success notification
-        alert('Join request sent!');
-        fetchParties();
-      } else {
-        const error = await response.json();
-        alert(error.message || 'Failed to send join request');
-      }
-    } catch (error) {
-      console.error('Error sending join request:', error);
-      alert('Failed to send join request');
-    }
+  const handleJoinRequest = async (party: Party) => {
+    setSelectedPartyToJoin(party);
+    setShowJoinModal(true);
   };
 
   const handleAcceptRequest = async (partyId: string, userId: string) => {
@@ -517,9 +499,9 @@ export default function PartiesPage() {
                                     
                                     {/* Join Request with Profile */}
                                     {notif.type === 'party_join_request' && requester && (
-                                      <div className="flex items-start gap-3 mb-3">
+                                      <div className="flex items-start gap-3">
                                         {/* Square Profile Picture - Use LoL Icon if available */}
-                                        <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center overflow-hidden flex-shrink-0">
+                                        <div className="relative w-12 h-12 rounded-lg bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center overflow-hidden flex-shrink-0">
                                           {requester.lolAccount?.profileIconId ? (
                                             <img
                                               src={`https://ddragon.leagueoflegends.com/cdn/14.23.1/img/profileicon/${requester.lolAccount.profileIconId}.png`}
@@ -541,10 +523,12 @@ export default function PartiesPage() {
                                         <div className="flex-1 min-w-0">
                                           {requester.lolAccount ? (
                                             <>
-                                              <p className={`text-sm font-semibold ${getTextClass(currentTheme)} truncate`}>
-                                                {requester.lolAccount.gameName}#{requester.lolAccount.tagLine}
-                                              </p>
-                                              <div className="flex items-center gap-2 text-xs flex-wrap mt-1">
+                                              <div className="flex items-center gap-2 mb-1">
+                                                <p className={`text-sm font-semibold ${getTextClass(currentTheme)} truncate`}>
+                                                  {requester.lolAccount.gameName}#{requester.lolAccount.tagLine}
+                                                </p>
+                                              </div>
+                                              <div className="flex items-center gap-2 text-xs flex-wrap">
                                                 {requester.lolAccount.rankedData?.map((rank: any, ridx: number) => (
                                                   <span key={ridx} className={`${getSecondaryTextClass(currentTheme)}`}>
                                                     {rank.queueType.includes('SOLO') ? 'Solo:' : 'Flex:'} {rank.tier} {rank.rank}
@@ -556,11 +540,31 @@ export default function PartiesPage() {
                                               </div>
                                             </>
                                           ) : (
-                                            <p className={`text-sm ${getTextClass(currentTheme)}`}>
-                                              {notifData.requesterName}
-                                            </p>
+                                            <div className="flex items-center gap-2">
+                                              <p className={`text-sm ${getTextClass(currentTheme)}`}>
+                                                {notifData.requesterName}
+                                              </p>
+                                            </div>
                                           )}
                                         </div>
+
+                                        {/* Role Request Section - Right Side */}
+                                        {notifData?.requestedPosition && (
+                                          <div className="flex flex-col items-center gap-1 px-3 py-2 bg-gradient-to-br from-yellow-500/10 to-orange-500/10 rounded-lg border border-yellow-500/20">
+                                            <div className="w-9 h-9 rounded-md bg-gradient-to-br from-yellow-500/20 to-orange-500/20 flex items-center justify-center overflow-hidden flex-shrink-0">
+                                              <Image
+                                                src={`/Position_Challenger-${notifData.requestedPosition.charAt(0).toUpperCase() + notifData.requestedPosition.slice(1)}.png`}
+                                                alt={notifData.requestedPosition}
+                                                width={36}
+                                                height={36}
+                                                className="w-full h-full object-contain"
+                                              />
+                                            </div>
+                                            <span className="text-[10px] font-bold text-yellow-400 uppercase">
+                                              {notifData.requestedPosition}
+                                            </span>
+                                          </div>
+                                        )}
                                       </div>
                                     )}
 
@@ -1142,7 +1146,7 @@ export default function PartiesPage() {
 
                         {/* Action Button */}
                         <Button
-                          onClick={() => handleJoinRequest(party._id)}
+                          onClick={() => handleJoinRequest(party)}
                           disabled={!hasLolAccount || party.members.length >= getMaxMembers(party.gameMode)}
                           className={`w-full ${
                             !hasLolAccount || party.members.length >= getMaxMembers(party.gameMode)
@@ -1223,7 +1227,7 @@ export default function PartiesPage() {
                             className="flex items-center gap-3 p-4 bg-white/5 border border-white/10 rounded-lg hover:bg-white/10 transition-colors"
                           >
                             {/* Profile Picture - Use LoL Icon if available */}
-                            <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center flex-shrink-0 overflow-hidden">
+                            <div className="relative w-12 h-12 rounded-lg bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center flex-shrink-0 overflow-hidden">
                               {member.lolAccount?.profileIconId ? (
                                 <img
                                   src={`https://ddragon.leagueoflegends.com/cdn/14.23.1/img/profileicon/${member.lolAccount.profileIconId}.png`}
@@ -1271,12 +1275,26 @@ export default function PartiesPage() {
                                 <p className={`text-xs ${getSecondaryTextClass(currentTheme)}`}>
                                   Unranked
                                 </p>
-                              ) : (
-                                <p className={`text-xs ${getSecondaryTextClass(currentTheme)}`}>
-                                  No LoL Account
-                                </p>
-                              )}
+                              ) : null}
                             </div>
+
+                            {/* Role Section - Right Side */}
+                            {member.position && selectedPartyMembers.gameMode !== 'aram' && (
+                              <div className="flex flex-col items-center gap-1 px-3 py-2 bg-gradient-to-br from-yellow-500/10 to-orange-500/10 rounded-lg border border-yellow-500/20">
+                                <div className="w-9 h-9 rounded-md bg-gradient-to-br from-yellow-500/20 to-orange-500/20 flex items-center justify-center overflow-hidden flex-shrink-0">
+                                  <Image
+                                    src={`/Position_Challenger-${member.position.charAt(0).toUpperCase() + member.position.slice(1)}.png`}
+                                    alt={member.position}
+                                    width={36}
+                                    height={36}
+                                    className="w-full h-full object-contain"
+                                  />
+                                </div>
+                                <span className="text-[10px] font-bold text-yellow-400 uppercase">
+                                  {member.position}
+                                </span>
+                              </div>
+                            )}
                           </div>
                         );
                       })
@@ -1298,6 +1316,23 @@ export default function PartiesPage() {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Join Party Modal */}
+      {selectedPartyToJoin && (
+        <JoinPartyModal
+          isOpen={showJoinModal}
+          onClose={() => {
+            setShowJoinModal(false);
+            setSelectedPartyToJoin(null);
+          }}
+          partyId={selectedPartyToJoin._id}
+          partyName={selectedPartyToJoin.name}
+          gameMode={selectedPartyToJoin.gameMode}
+          userEmail={session?.user?.email || ''}
+          onSuccess={fetchParties}
+          theme={currentTheme}
+        />
+      )}
     </NavigationDrawer>
   );
 }
