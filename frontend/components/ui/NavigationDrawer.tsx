@@ -37,6 +37,12 @@ export default function NavigationDrawer({ children }: NavigationDrawerProps) {
       description: 'Account & Games'
     },
     {
+      href: '/parties',
+      label: 'Find Parties',
+      icon: Gamepad2,
+      description: 'Join or Create Squads'
+    },
+    {
       href: '/esports',
       label: 'eSports News',
       icon: Trophy,

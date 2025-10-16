@@ -7,6 +7,8 @@ import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { RiotEsportsModule } from './riot-esports/riot-esports.module';
 import { RiotApiModule } from './riot-api/riot-api.module';
+import { PartyModule } from './party/party.module';
+import { DiscordModule } from './discord/discord.module';
 
 @Module({
   imports: [
@@ -24,6 +26,8 @@ import { RiotApiModule } from './riot-api/riot-api.module';
     UsersModule,
     RiotEsportsModule,
     RiotApiModule,
+    PartyModule,
+    DiscordModule,
   ],
   controllers: [AppController],
   providers: [AppService],

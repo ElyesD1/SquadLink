@@ -33,6 +33,19 @@ export class User extends Document {
   @Prop({ default: 'dark' })
   themePreference: string; // 'light' or 'dark'
 
+  // Party participation tracking
+  @Prop()
+  currentPartyId?: string;
+
+  @Prop({ type: [String], default: [] })
+  partyHistory: string[];
+
+  @Prop({ default: 0 })
+  totalPartiesJoined: number;
+
+  @Prop({ default: 0 })
+  totalPartiesCreated: number;
+
   // League of Legends account data
   @Prop({
     type: {
@@ -70,6 +83,16 @@ export class User extends Document {
     }>;
     lastUpdated: Date;
   };
+
+  // Discord account data
+  @Prop()
+  discordId?: string;
+
+  @Prop()
+  discordUsername?: string;
+
+  @Prop()
+  discordAvatar?: string;
 
   createdAt?: Date;
   updatedAt?: Date;
