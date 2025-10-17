@@ -25,6 +25,7 @@ import {
 import { FcGoogle } from 'react-icons/fc';
 import { storage } from '@/lib/storage';
 import { AnimatedLogo } from '@/components/ui/AnimatedLogo';
+import { PasswordResetModal } from '@/components/ui/PasswordResetModal';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -36,6 +37,7 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(storage.getRememberMe());
+  const [showPasswordReset, setShowPasswordReset] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -293,6 +295,10 @@ export default function LoginPage() {
                     <label className="text-sm font-semibold text-foreground">Password</label>
                     <Link 
                       href="#" 
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setShowPasswordReset(true);
+                      }}
                       className="text-sm text-purple-600 hover:text-purple-700 dark:text-purple-400 dark:hover:text-purple-300 font-medium"
                     >
                       Forgot?
@@ -373,6 +379,11 @@ export default function LoginPage() {
           </Card>
         </motion.div>
       </div>
+
+      <PasswordResetModal
+        isOpen={showPasswordReset}
+        onClose={() => setShowPasswordReset(false)}
+      />
     </div>
   );
 }

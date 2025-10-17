@@ -1,16 +1,20 @@
-import { Injectable, UnauthorizedException, ConflictException } from '@nestjs/common';
+import { Injectable, UnauthorizedException, ConflictException, NotFoundException, BadRequestException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from '../users/users.service';
 import { CreateUserDto } from '../users/dto/create-user.dto';
 import { LoginDto } from './dto/login.dto';
+import { RequestPasswordResetDto, ResetPasswordDto } from './dto/password-reset.dto';
 import { User } from '../users/entities/user.entity';
 import { Types } from 'mongoose';
+import { EmailService } from '../email/email.service';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class AuthService {
   constructor(
     private usersService: UsersService,
     private jwtService: JwtService,
+    private emailService: EmailService,
   ) {}
 
   async register(createUserDto: CreateUserDto) {
@@ -167,5 +171,26 @@ export class AuthService {
 
   async validateUser(userId: string): Promise<User | null> {
     return this.usersService.findById(userId);
+  }
+
+  async requestPasswordReset(dto: RequestPasswordResetDto) {
+    const user = await this.usersService.findByEmail(dto.email);
+    if (!user) throw new NotFoundException('User not found');
+    const resetCode = Math.floor(100000 + Math.random() * 900000).toString();
+    user.resetCode = resetCode;
+    await user.save();
+    await this.emailService.sendPasswordResetEmail(user.email, resetCode);
+    return { message: 'Password reset code sent' };
+  }
+
+  async resetPassword(dto: ResetPasswordDto) {
+    const user = await this.usersService.findByEmail(dto.email);
+    if (!user) throw new NotFoundException('User not found');
+    if (user.resetCode !== dto.resetCode) throw new BadRequestException('Invalid code');
+    if (dto.newPassword !== dto.confirmPassword) throw new BadRequestException('Passwords do not match');
+    user.password = await bcrypt.hash(dto.newPassword, 10);
+    user.resetCode = undefined;
+    await user.save();
+    return { message: 'Password reset successful' };
   }
 }

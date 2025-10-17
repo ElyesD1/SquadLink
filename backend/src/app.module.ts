@@ -9,6 +9,7 @@ import { RiotEsportsModule } from './riot-esports/riot-esports.module';
 import { RiotApiModule } from './riot-api/riot-api.module';
 import { PartyModule } from './party/party.module';
 import { DiscordModule } from './discord/discord.module';
+import { EmailModule } from './email/email.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { DiscordModule } from './discord/discord.module';
     RiotApiModule,
     PartyModule,
     DiscordModule,
+    EmailModule,
   ],
   controllers: [AppController],
   providers: [AppService],

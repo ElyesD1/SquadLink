@@ -27,6 +27,9 @@ export class User extends Document {
   @Prop({ default: 'local' })
   provider: string; // 'local' or 'google'
 
+  @Prop()
+  resetCode?: string;
+
   @Prop({ type: [String], default: [] })
   gamePreferences: string[];
 
