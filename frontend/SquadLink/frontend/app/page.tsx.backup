@@ -1,0 +1,586 @@
+'use client';
+
+import { useTheme } from 'next-themes';
+import { useEffect, useState } from 'react';
+import Link from 'next/link';
+import { motion } from 'framer-motion';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import { 
+  Sun, 
+  Moon, 
+  Users, 
+  Zap, 
+  Shield,
+  Gamepad2,
+  ArrowRight,
+  Sparkles,
+  Trophy,
+  Target
+} from 'lucide-react';
+
+export default function WelcomePage() {
+  const { theme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) return null;
+
+  return (
+    <div className="min-h-screen bg-background relative overflow-x-hidden">
+      {/* Animated Background */}
+      <div className="fixed inset-0 -z-10 overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 via-transparent to-blue-500/10 dark:from-purple-900/20 dark:to-blue-900/20" />
+        <motion.div 
+          className="absolute top-20 -left-20 w-96 h-96 bg-purple-500/20 rounded-full blur-3xl"
+          animate={{
+            scale: [1, 1.2, 1],
+            x: [0, 50, 0],
+            y: [0, 30, 0],
+          }}
+          transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }}
+        />
+        <motion.div 
+          className="absolute bottom-20 -right-20 w-[600px] h-[600px] bg-blue-500/20 rounded-full blur-3xl"
+          animate={{
+            scale: [1.2, 1, 1.2],
+            x: [0, -50, 0],
+            y: [0, -30, 0],
+          }}
+          transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
+        />
+        <div className="absolute inset-0 bg-grid-pattern opacity-30" />
+      </div>
+
+      {/* Ultra Modern Navigation */}
+      <motion.nav 
+        className="fixed top-0 left-0 right-0 z-50 backdrop-blur-3xl bg-white/5 dark:bg-black/5 border-b border-white/10 dark:border-white/5"
+        initial={{ y: -100, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.8, ease: "easeOut" }}
+      >
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-20">
+            {/* Logo */}
+            <Link href="/" className="flex items-center gap-4 group">
+              <motion.div 
+                className="relative w-12 h-12 rounded-2xl overflow-hidden shadow-2xl shadow-purple-500/20"
+                whileHover={{ scale: 1.1, rotate: 10 }}
+                whileTap={{ scale: 0.9 }}
+                transition={{ type: "spring", stiffness: 400, damping: 17 }}
+              >
+                <div className="absolute inset-0 bg-gradient-to-br from-purple-600 via-blue-600 to-cyan-500 animate-gradient bg-[length:400%_400%]" />
+                <div className="absolute inset-[3px] bg-white/10 dark:bg-black/10 rounded-2xl flex items-center justify-center backdrop-blur-xl">
+                  <Zap className="w-6 h-6 text-white drop-shadow-2xl" fill="currentColor" />
+                </div>
+              </motion.div>
+              <motion.span 
+                className="text-2xl font-black bg-gradient-to-r from-purple-600 via-blue-600 to-cyan-500 bg-clip-text text-transparent bg-[length:200%_auto] animate-gradient"
+                whileHover={{ scale: 1.05 }}
+              >
+                SquadLink
+              </motion.span>
+            </Link>
+
+            {/* Navigation Items */}
+            <div className="hidden md:flex items-center space-x-8">
+              <Link href="#features" className="relative text-sm font-semibold text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 transition-all duration-300 group">
+                Features
+                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-purple-600 to-blue-600 group-hover:w-full transition-all duration-300"></span>
+              </Link>
+              <Link href="#community" className="relative text-sm font-semibold text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 transition-all duration-300 group">
+                Community
+                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-purple-600 to-blue-600 group-hover:w-full transition-all duration-300"></span>
+              </Link>
+              <Link href="#pricing" className="relative text-sm font-semibold text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 transition-all duration-300 group">
+                Pricing
+                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-purple-600 to-blue-600 group-hover:w-full transition-all duration-300"></span>
+              </Link>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex items-center gap-4">
+              <motion.button
+                onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+                className="relative w-11 h-11 rounded-xl bg-white/10 dark:bg-black/10 backdrop-blur-xl border border-white/20 dark:border-white/10 hover:bg-white/20 dark:hover:bg-black/20 transition-all duration-300 flex items-center justify-center group shadow-lg shadow-black/5"
+                whileHover={{ scale: 1.1, rotate: 10 }}
+                whileTap={{ scale: 0.9 }}
+              >
+                <motion.div
+                  initial={false}
+                  animate={{ rotate: theme === 'dark' ? 0 : 180, scale: theme === 'dark' ? 1 : 0.8 }}
+                  transition={{ duration: 0.5, ease: "easeInOut" }}
+                >
+                  {theme === 'dark' ? 
+                    <Sun className="w-5 h-5 text-amber-400 drop-shadow-lg" /> : 
+                    <Moon className="w-5 h-5 text-indigo-400 drop-shadow-lg" />
+                  }
+                </motion.div>
+              </motion.button>
+              
+              <Link href="/auth/login">
+                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                  <Button 
+                    variant="ghost" 
+                    className="font-bold text-base h-11 px-6 bg-white/10 dark:bg-black/10 backdrop-blur-xl border border-white/20 dark:border-white/10 hover:bg-white/20 dark:hover:bg-black/20 text-gray-800 dark:text-white shadow-lg transition-all duration-300"
+                  >
+                    Sign In
+                  </Button>
+                </motion.div>
+              </Link>
+              
+              <Link href="/auth/register">
+                <motion.div 
+                  whileHover={{ scale: 1.05, y: -2 }} 
+                  whileTap={{ scale: 0.95 }}
+                  transition={{ type: "spring", stiffness: 400, damping: 17 }}
+                >
+                  <Button 
+                    className="font-bold text-base h-11 px-8 bg-gradient-to-r from-purple-600 via-blue-600 to-cyan-500 hover:from-purple-700 hover:via-blue-700 hover:to-cyan-600 text-white shadow-2xl shadow-purple-500/30 border-0 bg-[length:200%_auto] hover:bg-[position:100%_0%] transition-all duration-500 relative overflow-hidden"
+                  >
+                    <span className="relative z-10">Get Started</span>
+                    <ArrowRight className="w-5 h-5 ml-2 relative z-10" />
+                    <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300"></div>
+                  </Button>
+                </motion.div>
+              </Link>
+            </div>
+          </div>
+        </div>
+      </motion.nav>
+
+      {/* Ultra Modern Hero Section */}
+      <section className="relative pt-32 pb-20 lg:pt-40 lg:pb-32 overflow-hidden">
+        {/* Additional animated elements */}
+        <div className="absolute top-1/4 left-1/4 w-2 h-2 bg-purple-400 rounded-full animate-ping"></div>
+        <div className="absolute top-1/3 right-1/3 w-1 h-1 bg-blue-400 rounded-full animate-pulse"></div>
+        <div className="absolute bottom-1/4 left-1/3 w-3 h-3 bg-cyan-400 rounded-full animate-bounce"></div>
+        
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+            {/* Left Content */}
+            <motion.div
+              initial={{ opacity: 0, y: 50 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 1, ease: "easeOut" }}
+              className="space-y-8 text-center lg:text-left"
+            >
+              {/* Floating Badge */}
+              <motion.div
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.2, duration: 0.6 }}
+                className="inline-flex items-center gap-3 px-6 py-3 rounded-full bg-gradient-to-r from-purple-500/10 via-blue-500/10 to-cyan-500/10 border border-purple-500/20 backdrop-blur-xl shadow-lg"
+              >
+                <motion.div
+                  animate={{ rotate: 360 }}
+                  transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
+                >
+                  <Sparkles className="w-5 h-5 text-purple-600 dark:text-purple-400" />
+                </motion.div>
+                <span className="text-sm font-bold bg-gradient-to-r from-purple-600 via-blue-600 to-cyan-500 bg-clip-text text-transparent">
+                  The Future of Gaming Communities
+                </span>
+              </motion.div>
+
+              {/* Main Headline */}
+              <div className="space-y-6">
+                <motion.h1 
+                  className="text-5xl sm:text-6xl lg:text-7xl xl:text-8xl font-black leading-[0.9] tracking-tight"
+                  initial={{ opacity: 0, y: 30 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.4, duration: 0.8 }}
+                >
+                  <span className="block text-gray-900 dark:text-white drop-shadow-sm">
+                    Connect.
+                  </span>
+                  <span className="block text-gray-900 dark:text-white drop-shadow-sm">
+                    Compete.
+                  </span>
+                  <motion.span 
+                    className="block bg-gradient-to-r from-purple-600 via-blue-600 to-cyan-500 bg-clip-text text-transparent bg-[length:200%_auto] animate-gradient drop-shadow-lg"
+                    animate={{ backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"] }}
+                    transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+                  >
+                    Conquer.
+                  </motion.span>
+                </motion.h1>
+
+                <motion.p 
+                  className="text-xl sm:text-2xl lg:text-3xl text-gray-600 dark:text-gray-300 leading-relaxed max-w-2xl mx-auto lg:mx-0"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.6, duration: 0.8 }}
+                >
+                  Join the ultimate gaming platform where{' '}
+                  <motion.span 
+                    className="font-black bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent"
+                    whileHover={{ scale: 1.05 }}
+                  >
+                    50,000+ players
+                  </motion.span>{' '}
+                  connect, form squads, and dominate together.
+                </motion.p>
+              </div>
+
+              {/* Action Buttons */}
+              <motion.div 
+                className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.8, duration: 0.8 }}
+              >
+                <Link href="/auth/register">
+                  <motion.div
+                    whileHover={{ scale: 1.05, y: -5 }}
+                    whileTap={{ scale: 0.95 }}
+                    transition={{ type: "spring", stiffness: 400, damping: 17 }}
+                  >
+                    <Button className="h-16 px-10 text-xl font-black bg-gradient-to-r from-purple-600 via-blue-600 to-cyan-500 hover:from-purple-700 hover:via-blue-700 hover:to-cyan-600 text-white shadow-2xl shadow-purple-500/30 border-0 bg-[length:200%_auto] hover:bg-[position:100%_0%] transition-all duration-500 relative overflow-hidden group">
+                      <span className="relative z-10 flex items-center">
+                        <Gamepad2 className="w-6 h-6 mr-3" />
+                        Start Playing Now
+                      </span>
+                      <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    </Button>
+                  </motion.div>
+                </Link>
+                
+                <motion.div
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <Button variant="outline" className="h-16 px-10 text-xl font-bold border-2 border-gray-300 dark:border-gray-600 hover:border-purple-500 bg-white/50 dark:bg-black/50 backdrop-blur-xl hover:bg-white/70 dark:hover:bg-black/70 transition-all duration-300 shadow-lg">
+                    <Play className="w-6 h-6 mr-3" fill="currentColor" />
+                    Watch Demo
+                  </Button>
+                </motion.div>
+              </motion.div>
+
+              {/* Stats */}
+              <motion.div 
+                className="grid grid-cols-3 gap-8 pt-12"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 1, duration: 0.8 }}
+              >
+                {[
+                  { value: '50K+', label: 'Active Players', icon: Users, color: 'purple' },
+                  { value: '100K+', label: 'Matches', icon: Gamepad2, color: 'blue' },
+                  { value: '15+', label: 'Games', icon: Award, color: 'cyan' }
+                ].map((stat, index) => (
+                  <motion.div
+                    key={stat.label}
+                    initial={{ opacity: 0, y: 30 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 1.2 + index * 0.1, duration: 0.6 }}
+                    className="space-y-3 text-center lg:text-left"
+                    whileHover={{ scale: 1.05, y: -5 }}
+                  >
+                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500/20 to-purple-600/20 border border-purple-500/30 flex items-center justify-center mx-auto lg:mx-0 backdrop-blur-xl shadow-lg">
+                      <stat.icon className="w-6 h-6 text-purple-600 dark:text-purple-400" />
+                    </div>
+                    <div className="text-4xl font-black bg-gradient-to-r from-purple-600 to-blue-500 bg-clip-text text-transparent">
+                      {stat.value}
+                    </div>
+                    <div className="text-sm font-semibold text-gray-600 dark:text-gray-400">{stat.label}</div>
+                  </motion.div>
+                ))}
+              </motion.div>
+            </motion.div>
+
+            {/* Right Side - 3D Visual */}
+            <motion.div
+              className="relative lg:h-[700px] flex items-center justify-center"
+              initial={{ opacity: 0, x: 50 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 1, delay: 0.3, ease: "easeOut" }}
+            >
+              <div className="relative w-full max-w-lg">
+                {/* Main Glow Effect */}
+                <div className="absolute inset-0 bg-gradient-to-r from-purple-600 via-blue-600 to-cyan-500 rounded-3xl blur-3xl opacity-30 animate-pulse scale-110"></div>
+                
+                {/* Main Card */}
+                <motion.div 
+                  className="relative overflow-hidden rounded-3xl border-2 border-white/20 dark:border-white/10 shadow-2xl backdrop-blur-xl bg-white/10 dark:bg-black/10"
+                  whileHover={{ scale: 1.05, rotateY: 5 }}
+                  transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                >
+                  <div className="relative h-[500px] overflow-hidden">
+                    <img
+                      src="https://images.unsplash.com/photo-1542751371-adc38448a05e?w=800&q=80"
+                      alt="Gaming"
+                      className="w-full h-full object-cover"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+                    
+                    {/* Floating UI Elements */}
+                    <motion.div
+                      className="absolute top-6 right-6 bg-white/95 dark:bg-black/95 backdrop-blur-xl rounded-2xl p-4 shadow-2xl border border-green-500/20"
+                      animate={{ y: [0, -10, 0] }}
+                      transition={{ repeat: Infinity, duration: 4, ease: "easeInOut" }}
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center shadow-lg">
+                          <Users className="w-6 h-6 text-white" />
+                        </div>
+                        <div>
+                          <div className="text-lg font-black text-gray-900 dark:text-white">2,341</div>
+                          <div className="text-xs text-gray-600 dark:text-gray-400 font-medium">Online Now</div>
+                        </div>
+                      </div>
+                    </motion.div>
+
+                    <motion.div
+                      className="absolute bottom-6 left-6 bg-white/95 dark:bg-black/95 backdrop-blur-xl rounded-2xl p-4 shadow-2xl border border-purple-500/20"
+                      animate={{ y: [0, 10, 0] }}
+                      transition={{ repeat: Infinity, duration: 4, delay: 2, ease: "easeInOut" }}
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-600 to-pink-600 flex items-center justify-center shadow-lg">
+                          <Award className="w-6 h-6 text-white" />
+                        </div>
+                        <div>
+                          <div className="text-lg font-black text-gray-900 dark:text-white">Top Rated</div>
+                          <div className="text-xs text-gray-600 dark:text-gray-400 font-medium">4.9★ Rating</div>
+                        </div>
+                      </div>
+                    </motion.div>
+
+                    <motion.div
+                      className="absolute top-1/2 -left-4 transform -translate-y-1/2 bg-white/95 dark:bg-black/95 backdrop-blur-xl rounded-2xl p-3 shadow-2xl border border-blue-500/20"
+                      animate={{ x: [0, 10, 0] }}
+                      transition={{ repeat: Infinity, duration: 3, delay: 1, ease: "easeInOut" }}
+                    >
+                      <div className="flex items-center gap-2">
+                        <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center">
+                          <Zap className="w-4 h-4 text-white" />
+                        </div>
+                        <div className="text-sm font-bold text-gray-900 dark:text-white">+150 XP</div>
+                      </div>
+                    </motion.div>
+                  </div>
+                </motion.div>
+
+                {/* Floating Particles */}
+                <motion.div
+                  className="absolute -top-4 -right-4 w-8 h-8 bg-purple-500 rounded-full opacity-60"
+                  animate={{ y: [0, -20, 0], opacity: [0.6, 1, 0.6] }}
+                  transition={{ repeat: Infinity, duration: 3, ease: "easeInOut" }}
+                />
+                <motion.div
+                  className="absolute -bottom-4 -left-4 w-6 h-6 bg-blue-500 rounded-full opacity-60"
+                  animate={{ y: [0, 20, 0], opacity: [0.6, 1, 0.6] }}
+                  transition={{ repeat: Infinity, duration: 4, delay: 1, ease: "easeInOut" }}
+                />
+              </div>
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
+      {/* Features Section */}
+      <section id="features" className="relative py-16 lg:py-24 bg-gradient-to-b from-transparent via-purple-500/5 to-transparent">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <motion.div
+            className="text-center mb-12 lg:mb-20 space-y-4"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.1 }}
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-purple-500/10 to-blue-500/10 border border-purple-500/20 backdrop-blur-sm"
+            >
+              <Sparkles className="w-4 h-4 text-purple-600 dark:text-purple-400" />
+              <span className="text-sm font-semibold text-purple-600 dark:text-purple-400">
+                Powerful Features
+              </span>
+            </motion.div>
+            
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-black leading-tight">
+              Why Gamers Love{' '}
+              <span className="bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
+                SquadLink
+              </span>
+            </h2>
+            <p className="text-lg lg:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
+              Everything you need to dominate the gaming world, all in one powerful platform
+            </p>
+          </motion.div>
+
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+            {[
+              {
+                icon: Users,
+                title: 'Smart Matchmaking',
+                description: 'AI-powered system connects you with players who match your skill and playstyle perfectly',
+                gradient: 'from-purple-500 to-purple-600'
+              },
+              {
+                icon: Zap,
+                title: 'Lightning Fast',
+                description: 'Real-time updates, instant messaging, and zero-lag voice chat for seamless coordination',
+                gradient: 'from-blue-500 to-blue-600'
+              },
+              {
+                icon: Shield,
+                title: 'Secure & Private',
+                description: 'Enterprise-grade security keeps your data safe with end-to-end encryption',
+                gradient: 'from-green-500 to-green-600'
+              },
+              {
+                icon: TrendingUp,
+                title: 'Skill Tracking',
+                description: 'Advanced analytics and insights help you improve and climb the ranks faster',
+                gradient: 'from-orange-500 to-orange-600'
+              },
+              {
+                icon: Award,
+                title: 'Tournaments',
+                description: 'Compete in daily tournaments with real prizes, badges, and global recognition',
+                gradient: 'from-pink-500 to-pink-600'
+              },
+              {
+                icon: Target,
+                title: 'Cross-Platform',
+                description: 'Play seamlessly across PC, Console, and Mobile with full synchronization',
+                gradient: 'from-cyan-500 to-cyan-600'
+              }
+            ].map((feature, index) => (
+              <motion.div
+                key={feature.title}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: index * 0.1, duration: 0.5 }}
+                className="group"
+              >
+                <Card className="h-full relative overflow-hidden border border-border/50 hover:border-purple-500/30 bg-card/50 backdrop-blur-sm hover:bg-card/80 transition-all duration-300 hover:shadow-2xl hover:shadow-purple-500/10 hover:-translate-y-2">
+                  <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 via-transparent to-blue-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  <CardContent className="relative p-6 lg:p-8 space-y-4">
+                    <div className={`w-12 h-12 lg:w-14 lg:h-14 rounded-2xl bg-gradient-to-br ${feature.gradient} flex items-center justify-center group-hover:scale-110 transition-all duration-300 shadow-lg group-hover:shadow-xl`}>
+                      <feature.icon className="w-6 h-6 lg:w-7 lg:h-7 text-white" strokeWidth={2.5} />
+                    </div>
+                    <h3 className="text-xl lg:text-2xl font-bold text-foreground group-hover:text-purple-600 transition-colors duration-300">
+                      {feature.title}
+                    </h3>
+                    <p className="text-muted-foreground leading-relaxed text-sm lg:text-base">
+                      {feature.description}
+                    </p>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      /* CTA Section */
+      <section className="relative py-16 lg:py-24">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+          >
+            <Card className="relative overflow-hidden border border-purple-500/20 shadow-2xl backdrop-blur-sm bg-card/80">
+              <div className="absolute inset-0 bg-gradient-to-br from-purple-600/10 via-blue-600/10 to-purple-600/10" />
+              <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808008_1px,transparent_1px),linear-gradient(to_bottom,#80808008_1px,transparent_1px)] bg-[size:32px_32px]" />
+              
+              <CardContent className="relative p-8 lg:p-16 text-center space-y-6 lg:space-y-8">
+                <motion.div
+                  initial={{ scale: 0.8, opacity: 0 }}
+                  whileInView={{ scale: 1, opacity: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: 0.2 }}
+                  className="w-16 h-16 lg:w-20 lg:h-20 mx-auto bg-gradient-to-br from-purple-600 to-blue-600 rounded-3xl flex items-center justify-center shadow-2xl"
+                >
+                  <Sparkles className="w-8 h-8 lg:w-10 lg:h-10 text-white" />
+                </motion.div>
+                
+                <div className="space-y-4">
+                  <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black leading-tight">
+                    Ready to Level Up?
+                  </h2>
+                  <p className="text-lg lg:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
+                    Join thousands of gamers already dominating with SquadLink.{' '}
+                    <span className="block mt-2 font-semibold text-foreground bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
+                      Your squad is waiting.
+                    </span>
+                  </p>
+                </div>
+                
+                <div className="flex flex-col sm:flex-row gap-4 justify-center max-w-lg mx-auto">
+                  <Link href="/auth/register" className="flex-1">
+                    <Button 
+                      variant="premium" 
+                      size="lg" 
+                      className="w-full h-12 lg:h-14 text-base lg:text-lg font-bold shadow-2xl shadow-purple-500/40 hover:shadow-purple-500/60 hover:scale-105 transition-all duration-300"
+                    >
+                      Create Free Account
+                      <ArrowRight className="w-4 h-4 lg:w-5 lg:h-5 ml-2" />
+                    </Button>
+                  </Link>
+                  <Link href="/auth/login" className="flex-1">
+                    <Button 
+                      variant="outline" 
+                      size="lg" 
+                      className="w-full h-12 lg:h-14 text-base lg:text-lg font-bold border-2 hover:border-purple-500/50 hover:bg-purple-500/5 transition-all duration-300"
+                    >
+                      Sign In
+                    </Button>
+                  </Link>
+                </div>
+                
+                <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-6 text-sm text-muted-foreground">
+                  <span className="flex items-center gap-1">
+                    ✓ No credit card required
+                  </span>
+                  <span className="flex items-center gap-1">
+                    ✓ Free forever
+                  </span>
+                  <span className="flex items-center gap-1">
+                    ✓ Cancel anytime
+                  </span>
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
+        </div>
+      </section>
+
+      /* Footer */
+      <footer className="relative border-t border-border/50 bg-background/50 backdrop-blur-sm">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
+          <div className="text-center space-y-4">
+            <div className="flex items-center justify-center gap-2">
+              <div className="w-8 h-8 bg-gradient-to-br from-purple-600 to-blue-600 rounded-lg flex items-center justify-center">
+                <Zap className="w-4 h-4 text-white" fill="currentColor" />
+              </div>
+              <span className="font-bold text-lg bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
+                SquadLink
+              </span>
+            </div>
+            <p className="text-sm text-muted-foreground">
+              © 2025 SquadLink. Built for gamers, by gamers. All rights reserved.
+            </p>
+            <div className="flex items-center justify-center gap-6 text-sm text-muted-foreground">
+              <Link href="#" className="hover:text-purple-600 transition-colors">Privacy</Link>
+              <Link href="#" className="hover:text-purple-600 transition-colors">Terms</Link>
+              <Link href="#" className="hover:text-purple-600 transition-colors">Support</Link>
+            </div>
+          </div>
+        </div>
+      </footer>
+    </div>
+  );
+}
