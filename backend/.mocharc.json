@@ -1,0 +1,12 @@
+{
+  "extension": ["ts"],
+  "spec": "test/**/*.spec.ts",
+  "require": ["ts-node/register", "tsconfig-paths/register"],
+  "timeout": 10000,
+  "slow": 1000,
+  "reporter": "spec",
+  "colors": true,
+  "bail": false,
+  "recursive": true,
+  "exit": true
+}

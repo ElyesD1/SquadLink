@@ -1,0 +1,1671 @@
+{
+  "summary": {
+    "total": 96,
+    "passing": 91,
+    "failing": 5,
+    "duration": 576,
+    "averagePerTest": 6,
+    "timestamp": "2025-10-17T17:39:48.266Z",
+    "startTime": "2025-10-17T17:38:17.156Z",
+    "endTime": "2025-10-17T17:38:17.732Z"
+  },
+  "tests": [
+    {
+      "title": "should be defined",
+      "fullTitle": "AuthController should be defined",
+      "file": "auth.controller.spec.ts",
+      "duration": 1,
+      "speed": "fast",
+      "state": "passed",
+      "err": null
+    },
+    {
+      "title": "should register a user and return result",
+      "fullTitle": "AuthController register should register a user and return result",
+      "file": "auth.controller.spec.ts",
+      "duration": 1,
+      "speed": "fast",
+      "state": "passed",
+      "err": null
+    },
+    {
+      "title": "should login a user and return result",
+      "fullTitle": "AuthController login should login a user and return result",
+      "file": "auth.controller.spec.ts",
+      "duration": 0,
+      "speed": "fast",
+      "state": "passed",
+      "err": null
+    },
+    {
+      "title": "should handle Google OAuth login",
+      "fullTitle": "AuthController googleOAuthLogin should handle Google OAuth login",
+      "file": "auth.controller.spec.ts",
+      "duration": 1,
+      "speed": "fast",
+      "state": "passed",
+      "err": null
+    },
+    {
+      "title": "should request password reset successfully",
+      "fullTitle": "AuthController requestPasswordReset should request password reset successfully",
+      "file": "auth.controller.spec.ts",
+      "duration": 0,
+      "speed": "fast",
+      "state": "passed",
+      "err": null
+    },
+    {
+      "title": "should reset password successfully",
+      "fullTitle": "AuthController resetPassword should reset password successfully",
+      "file": "auth.controller.spec.ts",
+      "duration": 0,
+      "speed": "fast",
+      "state": "passed",
+      "err": null
+    },
+    {
+      "title": "should be defined",
+      "fullTitle": "AuthService should be defined",
+      "file": "auth.service.spec.ts",
+      "duration": 0,
+      "speed": "fast",
+      "state": "passed",
+      "err": null
+    },
+    {
+      "title": "should register a new user successfully",
+      "fullTitle": "AuthService register should register a new user successfully",
+      "file": "auth.service.spec.ts",
+      "duration": 2,
+      "speed": "fast",
+      "state": "passed",
+      "err": null
+    },
+    {
+      "title": "should throw ConflictException if email already exists",
+      "fullTitle": "AuthService register should throw ConflictException if email already exists",
+      "file": "auth.service.spec.ts",
+      "duration": 1,
+      "speed": "fast",
+      "state": "passed",
+      "err": null
+    },
+    {
+      "title": "should login user successfully",
+      "fullTitle": "AuthService login should login user successfully",
+      "file": "auth.service.spec.ts",
+      "duration": 0,
+      "speed": "fast",
+      "state": "passed",
+      "err": null
+    },
+    {
+      "title": "should throw UnauthorizedException for invalid credentials",
+      "fullTitle": "AuthService login should throw UnauthorizedException for invalid credentials",
+      "file": "auth.service.spec.ts",
+      "duration": 0,
+      "speed": "fast",
+      "state": "passed",
+      "err": null
+    },
+    {
+      "title": "should throw UnauthorizedException for Google OAuth users without password",
+      "fullTitle": "AuthService login should throw UnauthorizedException for Google OAuth users without password",
+      "file": "auth.service.spec.ts",
+      "duration": 0,
+      "speed": "fast",
+      "state": "passed",
+      "err": null
+    },
+    {
+      "title": "should send password reset email successfully",
+      "fullTitle": "AuthService requestPasswordReset should send password reset email successfully",
+      "file": "auth.service.spec.ts",
+      "duration": 0,
+      "speed": "fast",
+      "state": "passed",
+      "err": null
+    },
+    {
+      "title": "should throw NotFoundException if user not found",
+      "fullTitle": "AuthService requestPasswordReset should throw NotFoundException if user not found",
+      "file": "auth.service.spec.ts",
+      "duration": 0,
+      "speed": "fast",
+      "state": "passed",
+      "err": null
+    },
+    {
+      "title": "should reset password successfully",
+      "fullTitle": "AuthService resetPassword should reset password successfully",
+      "file": "auth.service.spec.ts",
+      "duration": 65,
+      "speed": "slow",
+      "state": "passed",
+      "err": null
+    },
+    {
+      "title": "should throw BadRequestException if passwords do not match",
+      "fullTitle": "AuthService resetPassword should throw BadRequestException if passwords do not match",
+      "file": "auth.service.spec.ts",
+      "duration": 1,
+      "speed": "fast",
+      "state": "passed",
+      "err": null
+    },
+    {
+      "title": "should throw BadRequestException for invalid reset code",
+      "fullTitle": "AuthService resetPassword should throw BadRequestException for invalid reset code",
+      "file": "auth.service.spec.ts",
+      "duration": 0,
+      "speed": "fast",
+      "state": "passed",
+      "err": null
+    },
+    {
+      "title": "should return user if found",
+      "fullTitle": "AuthService validateUser should return user if found",
+      "file": "auth.service.spec.ts",
+      "duration": 0,
+      "speed": "fast",
+      "state": "passed",
+      "err": null
+    },
+    {
+      "title": "should return null if user not found",
+      "fullTitle": "AuthService validateUser should return null if user not found",
+      "file": "auth.service.spec.ts",
+      "duration": 1,
+      "speed": "fast",
+      "state": "passed",
+      "err": null
+    },
+    {
+      "title": "should be defined",
+      "fullTitle": "DiscordService should be defined",
+      "file": "discord.service.spec.ts",
+      "duration": 0,
+      "speed": "fast",
+      "state": "passed",
+      "err": null
+    },
+    {
+      "title": "should generate authorization URL without state",
+      "fullTitle": "DiscordService getAuthorizationUrl should generate authorization URL without state",
+      "file": "discord.service.spec.ts",
+      "duration": 0,
+      "speed": "fast",
+      "state": "passed",
+      "err": null
+    },
+    {
+      "title": "should generate authorization URL with state",
+      "fullTitle": "DiscordService getAuthorizationUrl should generate authorization URL with state",
+      "file": "discord.service.spec.ts",
+      "duration": 0,
+      "speed": "fast",
+      "state": "passed",
+      "err": null
+    },
+    {
+      "title": "should exchange code for access token successfully",
+      "fullTitle": "DiscordService getAccessToken should exchange code for access token successfully",
+      "file": "discord.service.spec.ts",
+      "duration": 0,
+      "speed": "fast",
+      "state": "passed",
+      "err": null
+    },
+    {
+      "title": "should handle token exchange errors",
+      "fullTitle": "DiscordService getAccessToken should handle token exchange errors",
+      "file": "discord.service.spec.ts",
+      "duration": 0,
+      "speed": "fast",
+      "state": "passed",
+      "err": null
+    },
+    {
+      "title": "should fetch Discord user successfully",
+      "fullTitle": "DiscordService getDiscordUser should fetch Discord user successfully",
+      "file": "discord.service.spec.ts",
+      "duration": 0,
+      "speed": "fast",
+      "state": "passed",
+      "err": null
+    },
+    {
+      "title": "should handle user fetch errors",
+      "fullTitle": "DiscordService getDiscordUser should handle user fetch errors",
+      "file": "discord.service.spec.ts",
+      "duration": 0,
+      "speed": "fast",
+      "state": "passed",
+      "err": null
+    },
+    {
+      "title": "should add user to guild without voice channel",
+      "fullTitle": "DiscordService addUserToGuild should add user to guild without voice channel",
+      "file": "discord.service.spec.ts",
+      "duration": 0,
+      "speed": "fast",
+      "state": "passed",
+      "err": null
+    },
+    {
+      "title": "should add user to guild with voice channel",
+      "fullTitle": "DiscordService addUserToGuild should add user to guild with voice channel",
+      "file": "discord.service.spec.ts",
+      "duration": 0,
+      "speed": "fast",
+      "state": "passed",
+      "err": null
+    },
+    {
+      "title": "should handle errors gracefully (except 204)",
+      "fullTitle": "DiscordService addUserToGuild should handle errors gracefully (except 204)",
+      "file": "discord.service.spec.ts",
+      "duration": 1,
+      "speed": "fast",
+      "state": "passed",
+      "err": null
+    },
+    {
+      "title": "should create voice channel and invite successfully",
+      "fullTitle": "DiscordService createVoiceChannelForParty should create voice channel and invite successfully",
+      "file": "discord.service.spec.ts",
+      "duration": 0,
+      "speed": "fast",
+      "state": "passed",
+      "err": null
+    },
+    {
+      "title": "should handle channel creation errors",
+      "fullTitle": "DiscordService createVoiceChannelForParty should handle channel creation errors",
+      "file": "discord.service.spec.ts",
+      "duration": 1,
+      "speed": "fast",
+      "state": "passed",
+      "err": null
+    },
+    {
+      "title": "should delete voice channel successfully",
+      "fullTitle": "DiscordService deleteVoiceChannel should delete voice channel successfully",
+      "file": "discord.service.spec.ts",
+      "duration": 0,
+      "speed": "fast",
+      "state": "passed",
+      "err": null
+    },
+    {
+      "title": "should handle deletion errors gracefully",
+      "fullTitle": "DiscordService deleteVoiceChannel should handle deletion errors gracefully",
+      "file": "discord.service.spec.ts",
+      "duration": 0,
+      "speed": "fast",
+      "state": "passed",
+      "err": null
+    },
+    {
+      "title": "should link Discord account to user successfully",
+      "fullTitle": "DiscordService linkDiscordAccount should link Discord account to user successfully",
+      "file": "discord.service.spec.ts",
+      "duration": 0,
+      "speed": "fast",
+      "state": "passed",
+      "err": null
+    },
+    {
+      "title": "should handle null avatar",
+      "fullTitle": "DiscordService linkDiscordAccount should handle null avatar",
+      "file": "discord.service.spec.ts",
+      "duration": 0,
+      "speed": "fast",
+      "state": "passed",
+      "err": null
+    },
+    {
+      "title": "should throw error if user not found",
+      "fullTitle": "DiscordService linkDiscordAccount should throw error if user not found",
+      "file": "discord.service.spec.ts",
+      "duration": 0,
+      "speed": "fast",
+      "state": "passed",
+      "err": null
+    },
+    {
+      "title": "should be defined",
+      "fullTitle": "EmailService should be defined",
+      "file": "email.service.spec.ts",
+      "duration": 0,
+      "speed": "fast",
+      "state": "passed",
+      "err": null
+    },
+    {
+      "title": "should send verification email successfully",
+      "fullTitle": "EmailService sendVerificationEmail should send verification email successfully",
+      "file": "email.service.spec.ts",
+      "duration": 0,
+      "speed": "fast",
+      "state": "passed",
+      "err": null
+    },
+    {
+      "title": "should throw InternalServerErrorException on API error",
+      "fullTitle": "EmailService sendVerificationEmail should throw InternalServerErrorException on API error",
+      "file": "email.service.spec.ts",
+      "duration": 1,
+      "speed": "fast",
+      "state": "passed",
+      "err": null
+    },
+    {
+      "title": "should handle network errors",
+      "fullTitle": "EmailService sendVerificationEmail should handle network errors",
+      "file": "email.service.spec.ts",
+      "duration": 3,
+      "speed": "fast",
+      "state": "passed",
+      "err": null
+    },
+    {
+      "title": "should send password reset email successfully",
+      "fullTitle": "EmailService sendPasswordResetEmail should send password reset email successfully",
+      "file": "email.service.spec.ts",
+      "duration": 0,
+      "speed": "fast",
+      "state": "passed",
+      "err": null
+    },
+    {
+      "title": "should send email with correct parameters",
+      "fullTitle": "EmailService sendEmail should send email with correct parameters",
+      "file": "email.service.spec.ts",
+      "duration": 1,
+      "speed": "fast",
+      "state": "passed",
+      "err": null
+    },
+    {
+      "title": "should log API errors correctly",
+      "fullTitle": "EmailService sendEmail should log API errors correctly",
+      "file": "email.service.spec.ts",
+      "duration": 1,
+      "speed": "fast",
+      "state": "passed",
+      "err": null
+    },
+    {
+      "title": "should be defined",
+      "fullTitle": "PartyService should be defined",
+      "file": "party.service.spec.ts",
+      "duration": 0,
+      "speed": "fast",
+      "state": "passed",
+      "err": null
+    },
+    {
+      "title": "should create a party successfully",
+      "fullTitle": "PartyService create should create a party successfully",
+      "file": "party.service.spec.ts",
+      "duration": 1,
+      "speed": "fast",
+      "state": "passed",
+      "err": null
+    },
+    {
+      "title": "should return parties with filters",
+      "fullTitle": "PartyService findAll should return parties with filters",
+      "file": "party.service.spec.ts",
+      "duration": 2,
+      "speed": "fast",
+      "state": "passed",
+      "err": null
+    },
+    {
+      "title": "should return a party by id",
+      "fullTitle": "PartyService findOne should return a party by id",
+      "file": "party.service.spec.ts",
+      "duration": 1,
+      "speed": "fast",
+      "state": "passed",
+      "err": null
+    },
+    {
+      "title": "should throw NotFoundException for invalid id",
+      "fullTitle": "PartyService findOne should throw NotFoundException for invalid id",
+      "file": "party.service.spec.ts",
+      "duration": 0,
+      "speed": "fast",
+      "state": "passed",
+      "err": null
+    },
+    {
+      "title": "should be defined",
+      "fullTitle": "RiotApiService should be defined",
+      "file": "riot-api.service.spec.ts",
+      "duration": 0,
+      "speed": "fast",
+      "state": "passed",
+      "err": null
+    },
+    {
+      "title": "should get account by Riot ID successfully",
+      "fullTitle": "RiotApiService getAccountByRiotId should get account by Riot ID successfully",
+      "file": "riot-api.service.spec.ts",
+      "duration": 1,
+      "speed": "fast",
+      "state": "passed",
+      "err": null
+    },
+    {
+      "title": "should handle 404 errors for non-existent accounts",
+      "fullTitle": "RiotApiService getAccountByRiotId should handle 404 errors for non-existent accounts",
+      "file": "riot-api.service.spec.ts",
+      "duration": 1,
+      "speed": "fast",
+      "state": "passed",
+      "err": null
+    },
+    {
+      "title": "should get summoner by PUUID successfully",
+      "fullTitle": "RiotApiService getSummonerByPuuid should get summoner by PUUID successfully",
+      "file": "riot-api.service.spec.ts",
+      "duration": 1,
+      "speed": "fast",
+      "state": "passed",
+      "err": null
+    },
+    {
+      "title": "should handle 404 errors for non-existent summoners",
+      "fullTitle": "RiotApiService getSummonerByPuuid should handle 404 errors for non-existent summoners",
+      "file": "riot-api.service.spec.ts",
+      "duration": 0,
+      "speed": "fast",
+      "state": "passed",
+      "err": null
+    },
+    {
+      "title": "should get ranked info successfully",
+      "fullTitle": "RiotApiService getRankedInfo should get ranked info successfully",
+      "file": "riot-api.service.spec.ts",
+      "duration": 0,
+      "speed": "fast",
+      "state": "passed",
+      "err": null
+    },
+    {
+      "title": "should return empty array for 404 (no ranked data)",
+      "fullTitle": "RiotApiService getRankedInfo should return empty array for 404 (no ranked data)",
+      "file": "riot-api.service.spec.ts",
+      "duration": 0,
+      "speed": "fast",
+      "state": "passed",
+      "err": null
+    },
+    {
+      "title": "should get complete summoner profile",
+      "fullTitle": "RiotApiService searchSummoner should get complete summoner profile",
+      "file": "riot-api.service.spec.ts",
+      "duration": 1,
+      "speed": "fast",
+      "state": "passed",
+      "err": null
+    },
+    {
+      "title": "should return available platform and cluster regions",
+      "fullTitle": "RiotApiService getAvailableRegions should return available platform and cluster regions",
+      "file": "riot-api.service.spec.ts",
+      "duration": 0,
+      "speed": "fast",
+      "state": "passed",
+      "err": null
+    },
+    {
+      "title": "should be defined",
+      "fullTitle": "RiotEsportsService should be defined",
+      "file": "riot-esports.service.spec.ts",
+      "duration": 0,
+      "speed": "fast",
+      "state": "failed",
+      "err": {
+        "message": "expected RiotEsportsService{ data: { …(6) } } to be an instance of RiotEsportsService",
+        "stack": "AssertionError: expected RiotEsportsService{ data: { …(6) } } to be an instance of RiotEsportsService\n    at Context.<anonymous> (test/riot-esports/riot-esports.service.spec.ts:71:37)\n    at processImmediate (node:internal/timers:505:21)"
+      }
+    },
+    {
+      "title": "should load data successfully on initialization",
+      "fullTitle": "RiotEsportsService constructor and loadData should load data successfully on initialization",
+      "file": "riot-esports.service.spec.ts",
+      "duration": 0,
+      "speed": "fast",
+      "state": "failed",
+      "err": {
+        "message": "expected RiotEsportsService{ data: { …(6) } } to be an instance of RiotEsportsService",
+        "stack": "AssertionError: expected RiotEsportsService{ data: { …(6) } } to be an instance of RiotEsportsService\n    at Context.<anonymous> (test/riot-esports/riot-esports.service.spec.ts:76:39)\n    at processImmediate (node:internal/timers:505:21)"
+      }
+    },
+    {
+      "title": "should handle file read errors gracefully",
+      "fullTitle": "RiotEsportsService constructor and loadData should handle file read errors gracefully",
+      "file": "riot-esports.service.spec.ts",
+      "duration": 0,
+      "speed": "fast",
+      "state": "failed",
+      "err": {
+        "message": "Descriptor for property readFileSync is non-configurable and non-writable",
+        "stack": "TypeError: Descriptor for property readFileSync is non-configurable and non-writable\n    at assertValidPropertyDescriptor (node_modules/sinon/lib/sinon/stub.js:138:15)\n    at stub (node_modules/sinon/lib/sinon/stub.js:89:5)\n    at Sandbox.stub (node_modules/sinon/lib/sinon/sandbox.js:436:39)\n    at Context.<anonymous> (test/riot-esports/riot-esports.service.spec.ts:83:13)\n    at processImmediate (node:internal/timers:505:21)"
+      }
+    },
+    {
+      "title": "should return all leagues",
+      "fullTitle": "RiotEsportsService getLeagues should return all leagues",
+      "file": "riot-esports.service.spec.ts",
+      "duration": 0,
+      "speed": "fast",
+      "state": "passed",
+      "err": null
+    },
+    {
+      "title": "should return tournaments for a specific league",
+      "fullTitle": "RiotEsportsService getTournaments should return tournaments for a specific league",
+      "file": "riot-esports.service.spec.ts",
+      "duration": 0,
+      "speed": "fast",
+      "state": "passed",
+      "err": null
+    },
+    {
+      "title": "should return all tournaments when no league specified",
+      "fullTitle": "RiotEsportsService getTournaments should return all tournaments when no league specified",
+      "file": "riot-esports.service.spec.ts",
+      "duration": 0,
+      "speed": "fast",
+      "state": "passed",
+      "err": null
+    },
+    {
+      "title": "should return empty array for non-existent league",
+      "fullTitle": "RiotEsportsService getTournaments should return empty array for non-existent league",
+      "file": "riot-esports.service.spec.ts",
+      "duration": 0,
+      "speed": "fast",
+      "state": "passed",
+      "err": null
+    },
+    {
+      "title": "should return schedule for a specific league",
+      "fullTitle": "RiotEsportsService getSchedule should return schedule for a specific league",
+      "file": "riot-esports.service.spec.ts",
+      "duration": 0,
+      "speed": "fast",
+      "state": "passed",
+      "err": null
+    },
+    {
+      "title": "should return all matches when no league specified",
+      "fullTitle": "RiotEsportsService getSchedule should return all matches when no league specified",
+      "file": "riot-esports.service.spec.ts",
+      "duration": 0,
+      "speed": "fast",
+      "state": "passed",
+      "err": null
+    },
+    {
+      "title": "should return empty array for non-existent league",
+      "fullTitle": "RiotEsportsService getSchedule should return empty array for non-existent league",
+      "file": "riot-esports.service.spec.ts",
+      "duration": 0,
+      "speed": "fast",
+      "state": "passed",
+      "err": null
+    },
+    {
+      "title": "should return teams for a specific league",
+      "fullTitle": "RiotEsportsService getTeams should return teams for a specific league",
+      "file": "riot-esports.service.spec.ts",
+      "duration": 1,
+      "speed": "fast",
+      "state": "passed",
+      "err": null
+    },
+    {
+      "title": "should return all teams when no league specified",
+      "fullTitle": "RiotEsportsService getTeams should return all teams when no league specified",
+      "file": "riot-esports.service.spec.ts",
+      "duration": 0,
+      "speed": "fast",
+      "state": "passed",
+      "err": null
+    },
+    {
+      "title": "should return empty array for non-existent league",
+      "fullTitle": "RiotEsportsService getTeams should return empty array for non-existent league",
+      "file": "riot-esports.service.spec.ts",
+      "duration": 0,
+      "speed": "fast",
+      "state": "passed",
+      "err": null
+    },
+    {
+      "title": "should return empty array when teamsByLeague is not defined",
+      "fullTitle": "RiotEsportsService getTeams should return empty array when teamsByLeague is not defined",
+      "file": "riot-esports.service.spec.ts",
+      "duration": 1,
+      "speed": "fast",
+      "state": "failed",
+      "err": {
+        "message": "Descriptor for property readFileSync is non-configurable and non-writable",
+        "stack": "TypeError: Descriptor for property readFileSync is non-configurable and non-writable\n    at assertValidPropertyDescriptor (node_modules/sinon/lib/sinon/stub.js:138:15)\n    at stub (node_modules/sinon/lib/sinon/stub.js:89:5)\n    at Sandbox.stub (node_modules/sinon/lib/sinon/sandbox.js:436:39)\n    at Context.<anonymous> (test/riot-esports/riot-esports.service.spec.ts:169:13)\n    at processImmediate (node:internal/timers:505:21)"
+      }
+    },
+    {
+      "title": "should return standings for a specific tournament",
+      "fullTitle": "RiotEsportsService getStandings should return standings for a specific tournament",
+      "file": "riot-esports.service.spec.ts",
+      "duration": 0,
+      "speed": "fast",
+      "state": "passed",
+      "err": null
+    },
+    {
+      "title": "should return empty array for non-existent tournament",
+      "fullTitle": "RiotEsportsService getStandings should return empty array for non-existent tournament",
+      "file": "riot-esports.service.spec.ts",
+      "duration": 0,
+      "speed": "fast",
+      "state": "passed",
+      "err": null
+    },
+    {
+      "title": "should return standings for specific league, year, and split",
+      "fullTitle": "RiotEsportsService getRegularSeasonStandings should return standings for specific league, year, and split",
+      "file": "riot-esports.service.spec.ts",
+      "duration": 0,
+      "speed": "fast",
+      "state": "passed",
+      "err": null
+    },
+    {
+      "title": "should return standings for specific league and year",
+      "fullTitle": "RiotEsportsService getRegularSeasonStandings should return standings for specific league and year",
+      "file": "riot-esports.service.spec.ts",
+      "duration": 0,
+      "speed": "fast",
+      "state": "passed",
+      "err": null
+    },
+    {
+      "title": "should return standings for specific league",
+      "fullTitle": "RiotEsportsService getRegularSeasonStandings should return standings for specific league",
+      "file": "riot-esports.service.spec.ts",
+      "duration": 0,
+      "speed": "fast",
+      "state": "passed",
+      "err": null
+    },
+    {
+      "title": "should return all standings when no parameters specified",
+      "fullTitle": "RiotEsportsService getRegularSeasonStandings should return all standings when no parameters specified",
+      "file": "riot-esports.service.spec.ts",
+      "duration": 0,
+      "speed": "fast",
+      "state": "passed",
+      "err": null
+    },
+    {
+      "title": "should return empty array for non-existent league",
+      "fullTitle": "RiotEsportsService getRegularSeasonStandings should return empty array for non-existent league",
+      "file": "riot-esports.service.spec.ts",
+      "duration": 0,
+      "speed": "fast",
+      "state": "passed",
+      "err": null
+    },
+    {
+      "title": "should return empty array for non-existent year",
+      "fullTitle": "RiotEsportsService getRegularSeasonStandings should return empty array for non-existent year",
+      "file": "riot-esports.service.spec.ts",
+      "duration": 0,
+      "speed": "fast",
+      "state": "passed",
+      "err": null
+    },
+    {
+      "title": "should return empty array for non-existent split",
+      "fullTitle": "RiotEsportsService getRegularSeasonStandings should return empty array for non-existent split",
+      "file": "riot-esports.service.spec.ts",
+      "duration": 0,
+      "speed": "fast",
+      "state": "passed",
+      "err": null
+    },
+    {
+      "title": "should return empty array when regularSeasonStandings is not defined",
+      "fullTitle": "RiotEsportsService getRegularSeasonStandings should return empty array when regularSeasonStandings is not defined",
+      "file": "riot-esports.service.spec.ts",
+      "duration": 0,
+      "speed": "fast",
+      "state": "failed",
+      "err": {
+        "message": "Descriptor for property readFileSync is non-configurable and non-writable",
+        "stack": "TypeError: Descriptor for property readFileSync is non-configurable and non-writable\n    at assertValidPropertyDescriptor (node_modules/sinon/lib/sinon/stub.js:138:15)\n    at stub (node_modules/sinon/lib/sinon/stub.js:89:5)\n    at Sandbox.stub (node_modules/sinon/lib/sinon/sandbox.js:436:39)\n    at Context.<anonymous> (test/riot-esports/riot-esports.service.spec.ts:241:13)\n    at processImmediate (node:internal/timers:505:21)"
+      }
+    },
+    {
+      "title": "should be defined",
+      "fullTitle": "UsersController should be defined",
+      "file": "users.controller.spec.ts",
+      "duration": 0,
+      "speed": "fast",
+      "state": "passed",
+      "err": null
+    },
+    {
+      "title": "should return all users",
+      "fullTitle": "UsersController findAll should return all users",
+      "file": "users.controller.spec.ts",
+      "duration": 0,
+      "speed": "fast",
+      "state": "passed",
+      "err": null
+    },
+    {
+      "title": "should update game preferences",
+      "fullTitle": "UsersController updateGamePreferences should update game preferences",
+      "file": "users.controller.spec.ts",
+      "duration": 0,
+      "speed": "fast",
+      "state": "passed",
+      "err": null
+    },
+    {
+      "title": "should add game preference",
+      "fullTitle": "UsersController addGamePreference should add game preference",
+      "file": "users.controller.spec.ts",
+      "duration": 0,
+      "speed": "fast",
+      "state": "passed",
+      "err": null
+    },
+    {
+      "title": "should remove game preference",
+      "fullTitle": "UsersController removeGamePreference should remove game preference",
+      "file": "users.controller.spec.ts",
+      "duration": 0,
+      "speed": "fast",
+      "state": "passed",
+      "err": null
+    },
+    {
+      "title": "should update profile picture",
+      "fullTitle": "UsersController updateProfilePicture should update profile picture",
+      "file": "users.controller.spec.ts",
+      "duration": 1,
+      "speed": "fast",
+      "state": "passed",
+      "err": null
+    },
+    {
+      "title": "should update theme preference",
+      "fullTitle": "UsersController updateThemePreference should update theme preference",
+      "file": "users.controller.spec.ts",
+      "duration": 0,
+      "speed": "fast",
+      "state": "passed",
+      "err": null
+    },
+    {
+      "title": "should be defined",
+      "fullTitle": "UsersService should be defined",
+      "file": "users.service.spec.ts",
+      "duration": 0,
+      "speed": "fast",
+      "state": "passed",
+      "err": null
+    },
+    {
+      "title": "should create a new user",
+      "fullTitle": "UsersService create should create a new user",
+      "file": "users.service.spec.ts",
+      "duration": 68,
+      "speed": "slow",
+      "state": "passed",
+      "err": null
+    },
+    {
+      "title": "should return user by id",
+      "fullTitle": "UsersService findById should return user by id",
+      "file": "users.service.spec.ts",
+      "duration": 0,
+      "speed": "fast",
+      "state": "passed",
+      "err": null
+    },
+    {
+      "title": "should return user by email",
+      "fullTitle": "UsersService findByEmail should return user by email",
+      "file": "users.service.spec.ts",
+      "duration": 0,
+      "speed": "fast",
+      "state": "passed",
+      "err": null
+    },
+    {
+      "title": "should return user by Google ID",
+      "fullTitle": "UsersService findByGoogleId should return user by Google ID",
+      "file": "users.service.spec.ts",
+      "duration": 0,
+      "speed": "fast",
+      "state": "passed",
+      "err": null
+    },
+    {
+      "title": "should update user successfully",
+      "fullTitle": "UsersService update should update user successfully",
+      "file": "users.service.spec.ts",
+      "duration": 0,
+      "speed": "fast",
+      "state": "passed",
+      "err": null
+    },
+    {
+      "title": "should validate correct password",
+      "fullTitle": "UsersService validatePassword should validate correct password",
+      "file": "users.service.spec.ts",
+      "duration": 133,
+      "speed": "very-slow",
+      "state": "passed",
+      "err": null
+    },
+    {
+      "title": "should reject incorrect password",
+      "fullTitle": "UsersService validatePassword should reject incorrect password",
+      "file": "users.service.spec.ts",
+      "duration": 124,
+      "speed": "very-slow",
+      "state": "passed",
+      "err": null
+    }
+  ],
+  "failures": [
+    {
+      "title": "should be defined",
+      "fullTitle": "RiotEsportsService should be defined",
+      "file": "riot-esports.service.spec.ts",
+      "err": {
+        "message": "expected RiotEsportsService{ data: { …(6) } } to be an instance of RiotEsportsService",
+        "stack": "AssertionError: expected RiotEsportsService{ data: { …(6) } } to be an instance of RiotEsportsService\n    at Context.<anonymous> (test/riot-esports/riot-esports.service.spec.ts:71:37)\n    at processImmediate (node:internal/timers:505:21)"
+      }
+    },
+    {
+      "title": "should load data successfully on initialization",
+      "fullTitle": "RiotEsportsService constructor and loadData should load data successfully on initialization",
+      "file": "riot-esports.service.spec.ts",
+      "err": {
+        "message": "expected RiotEsportsService{ data: { …(6) } } to be an instance of RiotEsportsService",
+        "stack": "AssertionError: expected RiotEsportsService{ data: { …(6) } } to be an instance of RiotEsportsService\n    at Context.<anonymous> (test/riot-esports/riot-esports.service.spec.ts:76:39)\n    at processImmediate (node:internal/timers:505:21)"
+      }
+    },
+    {
+      "title": "should handle file read errors gracefully",
+      "fullTitle": "RiotEsportsService constructor and loadData should handle file read errors gracefully",
+      "file": "riot-esports.service.spec.ts",
+      "err": {
+        "message": "Descriptor for property readFileSync is non-configurable and non-writable",
+        "stack": "TypeError: Descriptor for property readFileSync is non-configurable and non-writable\n    at assertValidPropertyDescriptor (node_modules/sinon/lib/sinon/stub.js:138:15)\n    at stub (node_modules/sinon/lib/sinon/stub.js:89:5)\n    at Sandbox.stub (node_modules/sinon/lib/sinon/sandbox.js:436:39)\n    at Context.<anonymous> (test/riot-esports/riot-esports.service.spec.ts:83:13)\n    at processImmediate (node:internal/timers:505:21)"
+      }
+    },
+    {
+      "title": "should return empty array when teamsByLeague is not defined",
+      "fullTitle": "RiotEsportsService getTeams should return empty array when teamsByLeague is not defined",
+      "file": "riot-esports.service.spec.ts",
+      "err": {
+        "message": "Descriptor for property readFileSync is non-configurable and non-writable",
+        "stack": "TypeError: Descriptor for property readFileSync is non-configurable and non-writable\n    at assertValidPropertyDescriptor (node_modules/sinon/lib/sinon/stub.js:138:15)\n    at stub (node_modules/sinon/lib/sinon/stub.js:89:5)\n    at Sandbox.stub (node_modules/sinon/lib/sinon/sandbox.js:436:39)\n    at Context.<anonymous> (test/riot-esports/riot-esports.service.spec.ts:169:13)\n    at processImmediate (node:internal/timers:505:21)"
+      }
+    },
+    {
+      "title": "should return empty array when regularSeasonStandings is not defined",
+      "fullTitle": "RiotEsportsService getRegularSeasonStandings should return empty array when regularSeasonStandings is not defined",
+      "file": "riot-esports.service.spec.ts",
+      "err": {
+        "message": "Descriptor for property readFileSync is non-configurable and non-writable",
+        "stack": "TypeError: Descriptor for property readFileSync is non-configurable and non-writable\n    at assertValidPropertyDescriptor (node_modules/sinon/lib/sinon/stub.js:138:15)\n    at stub (node_modules/sinon/lib/sinon/stub.js:89:5)\n    at Sandbox.stub (node_modules/sinon/lib/sinon/sandbox.js:436:39)\n    at Context.<anonymous> (test/riot-esports/riot-esports.service.spec.ts:241:13)\n    at processImmediate (node:internal/timers:505:21)"
+      }
+    }
+  ],
+  "performance": {
+    "fastest": [
+      {
+        "title": "should be defined",
+        "file": "auth.controller.spec.ts",
+        "duration": 1,
+        "speed": "fast"
+      },
+      {
+        "title": "should register a user and return result",
+        "file": "auth.controller.spec.ts",
+        "duration": 1,
+        "speed": "fast"
+      },
+      {
+        "title": "should handle Google OAuth login",
+        "file": "auth.controller.spec.ts",
+        "duration": 1,
+        "speed": "fast"
+      },
+      {
+        "title": "should throw ConflictException if email already exists",
+        "file": "auth.service.spec.ts",
+        "duration": 1,
+        "speed": "fast"
+      },
+      {
+        "title": "should throw BadRequestException if passwords do not match",
+        "file": "auth.service.spec.ts",
+        "duration": 1,
+        "speed": "fast"
+      },
+      {
+        "title": "should return null if user not found",
+        "file": "auth.service.spec.ts",
+        "duration": 1,
+        "speed": "fast"
+      },
+      {
+        "title": "should handle errors gracefully (except 204)",
+        "file": "discord.service.spec.ts",
+        "duration": 1,
+        "speed": "fast"
+      },
+      {
+        "title": "should handle channel creation errors",
+        "file": "discord.service.spec.ts",
+        "duration": 1,
+        "speed": "fast"
+      },
+      {
+        "title": "should throw InternalServerErrorException on API error",
+        "file": "email.service.spec.ts",
+        "duration": 1,
+        "speed": "fast"
+      },
+      {
+        "title": "should send email with correct parameters",
+        "file": "email.service.spec.ts",
+        "duration": 1,
+        "speed": "fast"
+      }
+    ],
+    "slowest": [
+      {
+        "title": "should validate correct password",
+        "file": "users.service.spec.ts",
+        "duration": 133,
+        "speed": "very-slow"
+      },
+      {
+        "title": "should reject incorrect password",
+        "file": "users.service.spec.ts",
+        "duration": 124,
+        "speed": "very-slow"
+      },
+      {
+        "title": "should create a new user",
+        "file": "users.service.spec.ts",
+        "duration": 68,
+        "speed": "slow"
+      },
+      {
+        "title": "should reset password successfully",
+        "file": "auth.service.spec.ts",
+        "duration": 65,
+        "speed": "slow"
+      },
+      {
+        "title": "should handle network errors",
+        "file": "email.service.spec.ts",
+        "duration": 3,
+        "speed": "fast"
+      },
+      {
+        "title": "should register a new user successfully",
+        "file": "auth.service.spec.ts",
+        "duration": 2,
+        "speed": "fast"
+      },
+      {
+        "title": "should return parties with filters",
+        "file": "party.service.spec.ts",
+        "duration": 2,
+        "speed": "fast"
+      },
+      {
+        "title": "should be defined",
+        "file": "auth.controller.spec.ts",
+        "duration": 1,
+        "speed": "fast"
+      },
+      {
+        "title": "should register a user and return result",
+        "file": "auth.controller.spec.ts",
+        "duration": 1,
+        "speed": "fast"
+      },
+      {
+        "title": "should handle Google OAuth login",
+        "file": "auth.controller.spec.ts",
+        "duration": 1,
+        "speed": "fast"
+      }
+    ],
+    "byFile": {
+      "auth.controller.spec.ts": {
+        "count": 6,
+        "totalDuration": 3,
+        "averageDuration": 0.5,
+        "tests": [
+          {
+            "title": "should be defined",
+            "duration": 1,
+            "speed": "fast"
+          },
+          {
+            "title": "should register a user and return result",
+            "duration": 1,
+            "speed": "fast"
+          },
+          {
+            "title": "should login a user and return result",
+            "duration": 0,
+            "speed": "fast"
+          },
+          {
+            "title": "should handle Google OAuth login",
+            "duration": 1,
+            "speed": "fast"
+          },
+          {
+            "title": "should request password reset successfully",
+            "duration": 0,
+            "speed": "fast"
+          },
+          {
+            "title": "should reset password successfully",
+            "duration": 0,
+            "speed": "fast"
+          }
+        ],
+        "speedBreakdown": {
+          "fast": 6,
+          "medium": 0,
+          "slow": 0,
+          "very-slow": 0
+        }
+      },
+      "auth.service.spec.ts": {
+        "count": 13,
+        "totalDuration": 70,
+        "averageDuration": 5.38,
+        "tests": [
+          {
+            "title": "should be defined",
+            "duration": 0,
+            "speed": "fast"
+          },
+          {
+            "title": "should register a new user successfully",
+            "duration": 2,
+            "speed": "fast"
+          },
+          {
+            "title": "should throw ConflictException if email already exists",
+            "duration": 1,
+            "speed": "fast"
+          },
+          {
+            "title": "should login user successfully",
+            "duration": 0,
+            "speed": "fast"
+          },
+          {
+            "title": "should throw UnauthorizedException for invalid credentials",
+            "duration": 0,
+            "speed": "fast"
+          },
+          {
+            "title": "should throw UnauthorizedException for Google OAuth users without password",
+            "duration": 0,
+            "speed": "fast"
+          },
+          {
+            "title": "should send password reset email successfully",
+            "duration": 0,
+            "speed": "fast"
+          },
+          {
+            "title": "should throw NotFoundException if user not found",
+            "duration": 0,
+            "speed": "fast"
+          },
+          {
+            "title": "should reset password successfully",
+            "duration": 65,
+            "speed": "slow"
+          },
+          {
+            "title": "should throw BadRequestException if passwords do not match",
+            "duration": 1,
+            "speed": "fast"
+          },
+          {
+            "title": "should throw BadRequestException for invalid reset code",
+            "duration": 0,
+            "speed": "fast"
+          },
+          {
+            "title": "should return user if found",
+            "duration": 0,
+            "speed": "fast"
+          },
+          {
+            "title": "should return null if user not found",
+            "duration": 1,
+            "speed": "fast"
+          }
+        ],
+        "speedBreakdown": {
+          "fast": 12,
+          "medium": 0,
+          "slow": 1,
+          "very-slow": 0
+        }
+      },
+      "discord.service.spec.ts": {
+        "count": 17,
+        "totalDuration": 2,
+        "averageDuration": 0.12,
+        "tests": [
+          {
+            "title": "should be defined",
+            "duration": 0,
+            "speed": "fast"
+          },
+          {
+            "title": "should generate authorization URL without state",
+            "duration": 0,
+            "speed": "fast"
+          },
+          {
+            "title": "should generate authorization URL with state",
+            "duration": 0,
+            "speed": "fast"
+          },
+          {
+            "title": "should exchange code for access token successfully",
+            "duration": 0,
+            "speed": "fast"
+          },
+          {
+            "title": "should handle token exchange errors",
+            "duration": 0,
+            "speed": "fast"
+          },
+          {
+            "title": "should fetch Discord user successfully",
+            "duration": 0,
+            "speed": "fast"
+          },
+          {
+            "title": "should handle user fetch errors",
+            "duration": 0,
+            "speed": "fast"
+          },
+          {
+            "title": "should add user to guild without voice channel",
+            "duration": 0,
+            "speed": "fast"
+          },
+          {
+            "title": "should add user to guild with voice channel",
+            "duration": 0,
+            "speed": "fast"
+          },
+          {
+            "title": "should handle errors gracefully (except 204)",
+            "duration": 1,
+            "speed": "fast"
+          },
+          {
+            "title": "should create voice channel and invite successfully",
+            "duration": 0,
+            "speed": "fast"
+          },
+          {
+            "title": "should handle channel creation errors",
+            "duration": 1,
+            "speed": "fast"
+          },
+          {
+            "title": "should delete voice channel successfully",
+            "duration": 0,
+            "speed": "fast"
+          },
+          {
+            "title": "should handle deletion errors gracefully",
+            "duration": 0,
+            "speed": "fast"
+          },
+          {
+            "title": "should link Discord account to user successfully",
+            "duration": 0,
+            "speed": "fast"
+          },
+          {
+            "title": "should handle null avatar",
+            "duration": 0,
+            "speed": "fast"
+          },
+          {
+            "title": "should throw error if user not found",
+            "duration": 0,
+            "speed": "fast"
+          }
+        ],
+        "speedBreakdown": {
+          "fast": 17,
+          "medium": 0,
+          "slow": 0,
+          "very-slow": 0
+        }
+      },
+      "email.service.spec.ts": {
+        "count": 7,
+        "totalDuration": 6,
+        "averageDuration": 0.86,
+        "tests": [
+          {
+            "title": "should be defined",
+            "duration": 0,
+            "speed": "fast"
+          },
+          {
+            "title": "should send verification email successfully",
+            "duration": 0,
+            "speed": "fast"
+          },
+          {
+            "title": "should throw InternalServerErrorException on API error",
+            "duration": 1,
+            "speed": "fast"
+          },
+          {
+            "title": "should handle network errors",
+            "duration": 3,
+            "speed": "fast"
+          },
+          {
+            "title": "should send password reset email successfully",
+            "duration": 0,
+            "speed": "fast"
+          },
+          {
+            "title": "should send email with correct parameters",
+            "duration": 1,
+            "speed": "fast"
+          },
+          {
+            "title": "should log API errors correctly",
+            "duration": 1,
+            "speed": "fast"
+          }
+        ],
+        "speedBreakdown": {
+          "fast": 7,
+          "medium": 0,
+          "slow": 0,
+          "very-slow": 0
+        }
+      },
+      "party.service.spec.ts": {
+        "count": 5,
+        "totalDuration": 4,
+        "averageDuration": 0.8,
+        "tests": [
+          {
+            "title": "should be defined",
+            "duration": 0,
+            "speed": "fast"
+          },
+          {
+            "title": "should create a party successfully",
+            "duration": 1,
+            "speed": "fast"
+          },
+          {
+            "title": "should return parties with filters",
+            "duration": 2,
+            "speed": "fast"
+          },
+          {
+            "title": "should return a party by id",
+            "duration": 1,
+            "speed": "fast"
+          },
+          {
+            "title": "should throw NotFoundException for invalid id",
+            "duration": 0,
+            "speed": "fast"
+          }
+        ],
+        "speedBreakdown": {
+          "fast": 5,
+          "medium": 0,
+          "slow": 0,
+          "very-slow": 0
+        }
+      },
+      "riot-api.service.spec.ts": {
+        "count": 9,
+        "totalDuration": 4,
+        "averageDuration": 0.44,
+        "tests": [
+          {
+            "title": "should be defined",
+            "duration": 0,
+            "speed": "fast"
+          },
+          {
+            "title": "should get account by Riot ID successfully",
+            "duration": 1,
+            "speed": "fast"
+          },
+          {
+            "title": "should handle 404 errors for non-existent accounts",
+            "duration": 1,
+            "speed": "fast"
+          },
+          {
+            "title": "should get summoner by PUUID successfully",
+            "duration": 1,
+            "speed": "fast"
+          },
+          {
+            "title": "should handle 404 errors for non-existent summoners",
+            "duration": 0,
+            "speed": "fast"
+          },
+          {
+            "title": "should get ranked info successfully",
+            "duration": 0,
+            "speed": "fast"
+          },
+          {
+            "title": "should return empty array for 404 (no ranked data)",
+            "duration": 0,
+            "speed": "fast"
+          },
+          {
+            "title": "should get complete summoner profile",
+            "duration": 1,
+            "speed": "fast"
+          },
+          {
+            "title": "should return available platform and cluster regions",
+            "duration": 0,
+            "speed": "fast"
+          }
+        ],
+        "speedBreakdown": {
+          "fast": 9,
+          "medium": 0,
+          "slow": 0,
+          "very-slow": 0
+        }
+      },
+      "riot-esports.service.spec.ts": {
+        "count": 24,
+        "totalDuration": 2,
+        "averageDuration": 0.08,
+        "tests": [
+          {
+            "title": "should be defined",
+            "duration": 0,
+            "speed": "fast"
+          },
+          {
+            "title": "should load data successfully on initialization",
+            "duration": 0,
+            "speed": "fast"
+          },
+          {
+            "title": "should handle file read errors gracefully",
+            "duration": 0,
+            "speed": "fast"
+          },
+          {
+            "title": "should return all leagues",
+            "duration": 0,
+            "speed": "fast"
+          },
+          {
+            "title": "should return tournaments for a specific league",
+            "duration": 0,
+            "speed": "fast"
+          },
+          {
+            "title": "should return all tournaments when no league specified",
+            "duration": 0,
+            "speed": "fast"
+          },
+          {
+            "title": "should return empty array for non-existent league",
+            "duration": 0,
+            "speed": "fast"
+          },
+          {
+            "title": "should return schedule for a specific league",
+            "duration": 0,
+            "speed": "fast"
+          },
+          {
+            "title": "should return all matches when no league specified",
+            "duration": 0,
+            "speed": "fast"
+          },
+          {
+            "title": "should return empty array for non-existent league",
+            "duration": 0,
+            "speed": "fast"
+          },
+          {
+            "title": "should return teams for a specific league",
+            "duration": 1,
+            "speed": "fast"
+          },
+          {
+            "title": "should return all teams when no league specified",
+            "duration": 0,
+            "speed": "fast"
+          },
+          {
+            "title": "should return empty array for non-existent league",
+            "duration": 0,
+            "speed": "fast"
+          },
+          {
+            "title": "should return empty array when teamsByLeague is not defined",
+            "duration": 1,
+            "speed": "fast"
+          },
+          {
+            "title": "should return standings for a specific tournament",
+            "duration": 0,
+            "speed": "fast"
+          },
+          {
+            "title": "should return empty array for non-existent tournament",
+            "duration": 0,
+            "speed": "fast"
+          },
+          {
+            "title": "should return standings for specific league, year, and split",
+            "duration": 0,
+            "speed": "fast"
+          },
+          {
+            "title": "should return standings for specific league and year",
+            "duration": 0,
+            "speed": "fast"
+          },
+          {
+            "title": "should return standings for specific league",
+            "duration": 0,
+            "speed": "fast"
+          },
+          {
+            "title": "should return all standings when no parameters specified",
+            "duration": 0,
+            "speed": "fast"
+          },
+          {
+            "title": "should return empty array for non-existent league",
+            "duration": 0,
+            "speed": "fast"
+          },
+          {
+            "title": "should return empty array for non-existent year",
+            "duration": 0,
+            "speed": "fast"
+          },
+          {
+            "title": "should return empty array for non-existent split",
+            "duration": 0,
+            "speed": "fast"
+          },
+          {
+            "title": "should return empty array when regularSeasonStandings is not defined",
+            "duration": 0,
+            "speed": "fast"
+          }
+        ],
+        "speedBreakdown": {
+          "fast": 24,
+          "medium": 0,
+          "slow": 0,
+          "very-slow": 0
+        }
+      },
+      "users.controller.spec.ts": {
+        "count": 7,
+        "totalDuration": 1,
+        "averageDuration": 0.14,
+        "tests": [
+          {
+            "title": "should be defined",
+            "duration": 0,
+            "speed": "fast"
+          },
+          {
+            "title": "should return all users",
+            "duration": 0,
+            "speed": "fast"
+          },
+          {
+            "title": "should update game preferences",
+            "duration": 0,
+            "speed": "fast"
+          },
+          {
+            "title": "should add game preference",
+            "duration": 0,
+            "speed": "fast"
+          },
+          {
+            "title": "should remove game preference",
+            "duration": 0,
+            "speed": "fast"
+          },
+          {
+            "title": "should update profile picture",
+            "duration": 1,
+            "speed": "fast"
+          },
+          {
+            "title": "should update theme preference",
+            "duration": 0,
+            "speed": "fast"
+          }
+        ],
+        "speedBreakdown": {
+          "fast": 7,
+          "medium": 0,
+          "slow": 0,
+          "very-slow": 0
+        }
+      },
+      "users.service.spec.ts": {
+        "count": 8,
+        "totalDuration": 325,
+        "averageDuration": 40.63,
+        "tests": [
+          {
+            "title": "should be defined",
+            "duration": 0,
+            "speed": "fast"
+          },
+          {
+            "title": "should create a new user",
+            "duration": 68,
+            "speed": "slow"
+          },
+          {
+            "title": "should return user by id",
+            "duration": 0,
+            "speed": "fast"
+          },
+          {
+            "title": "should return user by email",
+            "duration": 0,
+            "speed": "fast"
+          },
+          {
+            "title": "should return user by Google ID",
+            "duration": 0,
+            "speed": "fast"
+          },
+          {
+            "title": "should update user successfully",
+            "duration": 0,
+            "speed": "fast"
+          },
+          {
+            "title": "should validate correct password",
+            "duration": 133,
+            "speed": "very-slow"
+          },
+          {
+            "title": "should reject incorrect password",
+            "duration": 124,
+            "speed": "very-slow"
+          }
+        ],
+        "speedBreakdown": {
+          "fast": 5,
+          "medium": 0,
+          "slow": 1,
+          "very-slow": 2
+        }
+      }
+    },
+    "speedDistribution": {
+      "fast": 92,
+      "medium": 0,
+      "slow": 2,
+      "verySlow": 2
+    }
+  }
+}

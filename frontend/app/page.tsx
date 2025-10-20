@@ -7,7 +7,6 @@ import { Navigation } from '@/components/welcome/Navigation';
 import { HeroSection } from '@/components/welcome/HeroSection';
 import { AnimatedBackground } from '@/components/welcome/AnimatedBackground';
 import { FeaturesSection } from '@/components/welcome/FeaturesSection';
-import { TestimonialsSection } from '@/components/welcome/TestimonialsSection';
 import { Footer } from '@/components/welcome/Footer';
 import { storage } from '@/lib/storage';
 
@@ -37,7 +36,6 @@ export default function WelcomePage() {
       <Navigation />
       <HeroSection />
       <FeaturesSection />
-      <TestimonialsSection />
       <Footer />
     </div>
   );
