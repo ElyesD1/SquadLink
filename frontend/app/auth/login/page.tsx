@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -23,6 +24,8 @@ import {
 } from 'lucide-react';
 import { FcGoogle } from 'react-icons/fc';
 import { storage } from '@/lib/storage';
+import { AnimatedLogo } from '@/components/ui/AnimatedLogo';
+import { PasswordResetModal } from '@/components/ui/PasswordResetModal';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -34,6 +37,7 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(storage.getRememberMe());
+  const [showPasswordReset, setShowPasswordReset] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -130,19 +134,7 @@ export default function LoginPage() {
           {/* Logo and Branding */}
           <div className="space-y-6">
             <Link href="/" className="flex items-center gap-3 group">
-              <motion.div 
-                className="relative w-16 h-16 rounded-2xl overflow-hidden"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                <div className="absolute inset-0 bg-gradient-to-br from-purple-600 to-blue-600 animate-gradient" />
-                <div className="absolute inset-[2px] bg-background rounded-[14px] flex items-center justify-center">
-                  <Zap className="w-8 h-8 text-purple-600 dark:text-purple-400" fill="currentColor" />
-                </div>
-              </motion.div>
-              <span className="text-3xl font-black bg-gradient-to-r from-purple-600 via-blue-600 to-purple-600 bg-clip-text text-transparent bg-[length:200%_auto] animate-gradient">
-                SquadLink
-              </span>
+              <AnimatedLogo size="lg" />
             </Link>
 
             <div className="space-y-4">
@@ -153,72 +145,76 @@ export default function LoginPage() {
                 </span>
               </h1>
               <p className="text-xl text-muted-foreground leading-relaxed">
-                Sign in to your account and continue your gaming journey with thousands of players worldwide.
+                Connect with gamers who share your passion. Form squads, make friends, and elevate your gameplay.
               </p>
             </div>
           </div>
 
-          {/* Features List */}
-          <div className="space-y-4">
-            {[
-              { 
-                icon: Users, 
-                title: '50K+ Active Players',
-                description: 'Join the largest gaming community'
-              },
-              { 
-                icon: Shield, 
-                title: 'Secure & Private',
-                description: 'Your data is protected with enterprise-grade security'
-              },
-              { 
-                icon: Gamepad2, 
-                title: 'Multi-Game Support',
-                description: 'Connect across 15+ popular games'
-              }
-            ].map((feature, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.3 + index * 0.1 }}
-                className="flex items-start gap-4 p-4 rounded-2xl border border-border/50 hover:border-purple-500/30 hover:bg-purple-500/5 transition-all duration-300"
-              >
-                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500/20 to-blue-500/20 border border-purple-500/20 flex items-center justify-center flex-shrink-0">
-                  <feature.icon className="w-6 h-6 text-purple-600 dark:text-purple-400" />
-                </div>
-                <div className="space-y-1">
-                  <h3 className="font-bold text-foreground">{feature.title}</h3>
-                  <p className="text-sm text-muted-foreground">{feature.description}</p>
-                </div>
-              </motion.div>
-            ))}
+          {/* Supported Games */}
+          <div className="space-y-6">
+            <h3 className="text-lg font-black text-foreground">Supported Games</h3>
+            <div className="grid grid-cols-3 gap-4">
+              {[
+                {
+                  name: 'League of Legends',
+                  description: 'Find your perfect team composition',
+                  gradient: 'from-blue-600 to-gold-400',
+                  icon: '/league.png'
+                },
+                {
+                  name: 'Valorant',
+                  description: 'Tactical squad coordination',
+                  gradient: 'from-red-500 to-orange-400',
+                  icon: '/valorant.png'
+                },
+                {
+                  name: 'Fortnite',
+                  description: 'Build and battle together',
+                  gradient: 'from-purple-500 to-pink-400',
+                  icon: '/fortnite.png'
+                }
+              ].map((game, index) => (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.3 + index * 0.1 }}
+                  className="relative group"
+                >
+                  <div className={`h-24 rounded-2xl bg-gradient-to-br ${game.gradient} p-1`}>
+                    <div className="h-full w-full bg-card/90 rounded-xl flex flex-col items-center justify-center gap-1 group-hover:bg-card/70 transition-colors">
+                      <Image
+                        src={game.icon}
+                        alt={game.name}
+                        width={32}
+                        height={32}
+                        className="w-8 h-8 object-contain"
+                      />
+                      <span className="text-xs font-bold text-center leading-tight">{game.name}</span>
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+            <p className="text-sm text-muted-foreground text-center">
+              Connect with players who share your gaming passion
+            </p>
           </div>
 
-          {/* Community Stats */}
+          {/* Join the Community */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.7 }}
-            className="relative overflow-hidden rounded-3xl border-2 border-purple-500/20 bg-gradient-to-br from-purple-500/10 to-blue-500/10 p-6"
+            className="relative overflow-hidden rounded-3xl border-2 border-purple-500/20 bg-gradient-to-br from-purple-500/10 to-blue-500/10 p-6 text-center"
           >
             <div className="absolute inset-0 bg-gradient-to-br from-purple-600/5 to-blue-600/5" />
-            <div className="relative space-y-4">
-              <h3 className="text-lg font-black text-foreground">Live Community Stats</h3>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-1">
-                  <div className="text-2xl font-black bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
-                    2,341
-                  </div>
-                  <div className="text-sm text-muted-foreground">Players Online</div>
-                </div>
-                <div className="space-y-1">
-                  <div className="text-2xl font-black bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
-                    156
-                  </div>
-                  <div className="text-sm text-muted-foreground">Active Squads</div>
-                </div>
-              </div>
+            <div className="relative space-y-3">
+              <div className="text-3xl">🎮</div>
+              <h3 className="text-lg font-black text-foreground">Ready to Squad Up?</h3>
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                Join fellow gamers, form lasting friendships, and dominate your favorite games together.
+              </p>
             </div>
           </motion.div>
         </motion.div>
@@ -234,13 +230,8 @@ export default function LoginPage() {
             <CardHeader className="space-y-1 pb-6">
               {/* Mobile Logo */}
               <div className="flex items-center justify-center lg:hidden mb-4">
-                <Link href="/" className="flex items-center gap-2">
-                  <div className="w-10 h-10 bg-gradient-to-br from-purple-600 to-blue-500 rounded-xl flex items-center justify-center">
-                    <Zap className="w-5 h-5 text-white" />
-                  </div>
-                  <span className="text-xl font-bold bg-gradient-to-r from-purple-600 to-blue-500 bg-clip-text text-transparent">
-                    SquadLink
-                  </span>
+                <Link href="/">
+                  <AnimatedLogo size="md" />
                 </Link>
               </div>
               
@@ -304,6 +295,10 @@ export default function LoginPage() {
                     <label className="text-sm font-semibold text-foreground">Password</label>
                     <Link 
                       href="#" 
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setShowPasswordReset(true);
+                      }}
                       className="text-sm text-purple-600 hover:text-purple-700 dark:text-purple-400 dark:hover:text-purple-300 font-medium"
                     >
                       Forgot?
@@ -384,6 +379,11 @@ export default function LoginPage() {
           </Card>
         </motion.div>
       </div>
+
+      <PasswordResetModal
+        isOpen={showPasswordReset}
+        onClose={() => setShowPasswordReset(false)}
+      />
     </div>
   );
 }

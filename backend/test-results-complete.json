@@ -1,0 +1,2251 @@
+Ranked API Request - PUUID: puuid123, Region: na1, URL: https://na1.api.riotgames.com/lol/league/v4/entries/by-puuid/puuid123
+Ranked API Request - PUUID: puuid123, Region: na1, URL: https://na1.api.riotgames.com/lol/league/v4/entries/by-puuid/puuid123
+Ranked API Error - Status: 404, Message: undefined
+Ranked API Request - PUUID: puuid123, Region: na1, URL: https://na1.api.riotgames.com/lol/league/v4/entries/by-puuid/puuid123
+{
+  "stats": {
+    "suites": 56,
+    "tests": 96,
+    "passes": 91,
+    "pending": 0,
+    "failures": 5,
+    "start": "2025-10-17T17:38:17.156Z",
+    "end": "2025-10-17T17:38:17.732Z",
+    "duration": 576
+  },
+  "tests": [
+    {
+      "title": "should be defined",
+      "fullTitle": "AuthController should be defined",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/auth/auth.controller.spec.ts",
+      "duration": 1,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should register a user and return result",
+      "fullTitle": "AuthController register should register a user and return result",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/auth/auth.controller.spec.ts",
+      "duration": 1,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should login a user and return result",
+      "fullTitle": "AuthController login should login a user and return result",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/auth/auth.controller.spec.ts",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should handle Google OAuth login",
+      "fullTitle": "AuthController googleOAuthLogin should handle Google OAuth login",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/auth/auth.controller.spec.ts",
+      "duration": 1,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should request password reset successfully",
+      "fullTitle": "AuthController requestPasswordReset should request password reset successfully",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/auth/auth.controller.spec.ts",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should reset password successfully",
+      "fullTitle": "AuthController resetPassword should reset password successfully",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/auth/auth.controller.spec.ts",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should be defined",
+      "fullTitle": "AuthService should be defined",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/auth/auth.service.spec.ts",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should register a new user successfully",
+      "fullTitle": "AuthService register should register a new user successfully",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/auth/auth.service.spec.ts",
+      "duration": 2,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should throw ConflictException if email already exists",
+      "fullTitle": "AuthService register should throw ConflictException if email already exists",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/auth/auth.service.spec.ts",
+      "duration": 1,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should login user successfully",
+      "fullTitle": "AuthService login should login user successfully",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/auth/auth.service.spec.ts",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should throw UnauthorizedException for invalid credentials",
+      "fullTitle": "AuthService login should throw UnauthorizedException for invalid credentials",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/auth/auth.service.spec.ts",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should throw UnauthorizedException for Google OAuth users without password",
+      "fullTitle": "AuthService login should throw UnauthorizedException for Google OAuth users without password",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/auth/auth.service.spec.ts",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should send password reset email successfully",
+      "fullTitle": "AuthService requestPasswordReset should send password reset email successfully",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/auth/auth.service.spec.ts",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should throw NotFoundException if user not found",
+      "fullTitle": "AuthService requestPasswordReset should throw NotFoundException if user not found",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/auth/auth.service.spec.ts",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should reset password successfully",
+      "fullTitle": "AuthService resetPassword should reset password successfully",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/auth/auth.service.spec.ts",
+      "duration": 65,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should throw BadRequestException if passwords do not match",
+      "fullTitle": "AuthService resetPassword should throw BadRequestException if passwords do not match",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/auth/auth.service.spec.ts",
+      "duration": 1,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should throw BadRequestException for invalid reset code",
+      "fullTitle": "AuthService resetPassword should throw BadRequestException for invalid reset code",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/auth/auth.service.spec.ts",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should return user if found",
+      "fullTitle": "AuthService validateUser should return user if found",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/auth/auth.service.spec.ts",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should return null if user not found",
+      "fullTitle": "AuthService validateUser should return null if user not found",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/auth/auth.service.spec.ts",
+      "duration": 1,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should be defined",
+      "fullTitle": "DiscordService should be defined",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/discord/discord.service.spec.ts",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should generate authorization URL without state",
+      "fullTitle": "DiscordService getAuthorizationUrl should generate authorization URL without state",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/discord/discord.service.spec.ts",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should generate authorization URL with state",
+      "fullTitle": "DiscordService getAuthorizationUrl should generate authorization URL with state",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/discord/discord.service.spec.ts",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should exchange code for access token successfully",
+      "fullTitle": "DiscordService getAccessToken should exchange code for access token successfully",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/discord/discord.service.spec.ts",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should handle token exchange errors",
+      "fullTitle": "DiscordService getAccessToken should handle token exchange errors",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/discord/discord.service.spec.ts",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should fetch Discord user successfully",
+      "fullTitle": "DiscordService getDiscordUser should fetch Discord user successfully",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/discord/discord.service.spec.ts",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should handle user fetch errors",
+      "fullTitle": "DiscordService getDiscordUser should handle user fetch errors",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/discord/discord.service.spec.ts",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should add user to guild without voice channel",
+      "fullTitle": "DiscordService addUserToGuild should add user to guild without voice channel",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/discord/discord.service.spec.ts",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should add user to guild with voice channel",
+      "fullTitle": "DiscordService addUserToGuild should add user to guild with voice channel",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/discord/discord.service.spec.ts",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should handle errors gracefully (except 204)",
+      "fullTitle": "DiscordService addUserToGuild should handle errors gracefully (except 204)",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/discord/discord.service.spec.ts",
+      "duration": 1,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should create voice channel and invite successfully",
+      "fullTitle": "DiscordService createVoiceChannelForParty should create voice channel and invite successfully",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/discord/discord.service.spec.ts",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should handle channel creation errors",
+      "fullTitle": "DiscordService createVoiceChannelForParty should handle channel creation errors",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/discord/discord.service.spec.ts",
+      "duration": 1,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should delete voice channel successfully",
+      "fullTitle": "DiscordService deleteVoiceChannel should delete voice channel successfully",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/discord/discord.service.spec.ts",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should handle deletion errors gracefully",
+      "fullTitle": "DiscordService deleteVoiceChannel should handle deletion errors gracefully",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/discord/discord.service.spec.ts",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should link Discord account to user successfully",
+      "fullTitle": "DiscordService linkDiscordAccount should link Discord account to user successfully",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/discord/discord.service.spec.ts",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should handle null avatar",
+      "fullTitle": "DiscordService linkDiscordAccount should handle null avatar",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/discord/discord.service.spec.ts",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should throw error if user not found",
+      "fullTitle": "DiscordService linkDiscordAccount should throw error if user not found",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/discord/discord.service.spec.ts",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should be defined",
+      "fullTitle": "EmailService should be defined",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/email/email.service.spec.ts",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should send verification email successfully",
+      "fullTitle": "EmailService sendVerificationEmail should send verification email successfully",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/email/email.service.spec.ts",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should throw InternalServerErrorException on API error",
+      "fullTitle": "EmailService sendVerificationEmail should throw InternalServerErrorException on API error",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/email/email.service.spec.ts",
+      "duration": 1,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should handle network errors",
+      "fullTitle": "EmailService sendVerificationEmail should handle network errors",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/email/email.service.spec.ts",
+      "duration": 3,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should send password reset email successfully",
+      "fullTitle": "EmailService sendPasswordResetEmail should send password reset email successfully",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/email/email.service.spec.ts",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should send email with correct parameters",
+      "fullTitle": "EmailService sendEmail should send email with correct parameters",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/email/email.service.spec.ts",
+      "duration": 1,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should log API errors correctly",
+      "fullTitle": "EmailService sendEmail should log API errors correctly",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/email/email.service.spec.ts",
+      "duration": 1,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should be defined",
+      "fullTitle": "PartyService should be defined",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/party/party.service.spec.ts",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should create a party successfully",
+      "fullTitle": "PartyService create should create a party successfully",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/party/party.service.spec.ts",
+      "duration": 1,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should return parties with filters",
+      "fullTitle": "PartyService findAll should return parties with filters",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/party/party.service.spec.ts",
+      "duration": 2,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should return a party by id",
+      "fullTitle": "PartyService findOne should return a party by id",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/party/party.service.spec.ts",
+      "duration": 1,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should throw NotFoundException for invalid id",
+      "fullTitle": "PartyService findOne should throw NotFoundException for invalid id",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/party/party.service.spec.ts",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should be defined",
+      "fullTitle": "RiotApiService should be defined",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/riot-api/riot-api.service.spec.ts",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should get account by Riot ID successfully",
+      "fullTitle": "RiotApiService getAccountByRiotId should get account by Riot ID successfully",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/riot-api/riot-api.service.spec.ts",
+      "duration": 1,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should handle 404 errors for non-existent accounts",
+      "fullTitle": "RiotApiService getAccountByRiotId should handle 404 errors for non-existent accounts",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/riot-api/riot-api.service.spec.ts",
+      "duration": 1,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should get summoner by PUUID successfully",
+      "fullTitle": "RiotApiService getSummonerByPuuid should get summoner by PUUID successfully",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/riot-api/riot-api.service.spec.ts",
+      "duration": 1,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should handle 404 errors for non-existent summoners",
+      "fullTitle": "RiotApiService getSummonerByPuuid should handle 404 errors for non-existent summoners",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/riot-api/riot-api.service.spec.ts",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should get ranked info successfully",
+      "fullTitle": "RiotApiService getRankedInfo should get ranked info successfully",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/riot-api/riot-api.service.spec.ts",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should return empty array for 404 (no ranked data)",
+      "fullTitle": "RiotApiService getRankedInfo should return empty array for 404 (no ranked data)",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/riot-api/riot-api.service.spec.ts",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should get complete summoner profile",
+      "fullTitle": "RiotApiService searchSummoner should get complete summoner profile",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/riot-api/riot-api.service.spec.ts",
+      "duration": 1,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should return available platform and cluster regions",
+      "fullTitle": "RiotApiService getAvailableRegions should return available platform and cluster regions",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/riot-api/riot-api.service.spec.ts",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should be defined",
+      "fullTitle": "RiotEsportsService should be defined",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/riot-esports/riot-esports.service.spec.ts",
+      "duration": 0,
+      "currentRetry": 0,
+      "err": {
+        "stack": "AssertionError: expected RiotEsportsService{ data: { …(6) } } to be an instance of RiotEsportsService\n    at Context.<anonymous> (test/riot-esports/riot-esports.service.spec.ts:71:37)\n    at processImmediate (node:internal/timers:505:21)",
+        "message": "expected RiotEsportsService{ data: { …(6) } } to be an instance of RiotEsportsService",
+        "actual": {
+          "data": {
+            "leagues": [
+              {
+                "id": "lcs",
+                "name": "LCS",
+                "region": "North America"
+              },
+              {
+                "id": "lec",
+                "name": "LEC",
+                "region": "Europe"
+              }
+            ],
+            "tournaments": {
+              "lcs": [
+                {
+                  "id": "lcs_spring",
+                  "name": "LCS Spring Split",
+                  "year": 2025
+                },
+                {
+                  "id": "lcs_summer",
+                  "name": "LCS Summer Split",
+                  "year": 2025
+                }
+              ],
+              "lec": [
+                {
+                  "id": "lec_spring",
+                  "name": "LEC Spring Split",
+                  "year": 2025
+                }
+              ]
+            },
+            "matches": {
+              "lcs": [
+                {
+                  "id": "match1",
+                  "teams": [
+                    "Team A",
+                    "Team B"
+                  ],
+                  "date": "2025-01-15"
+                },
+                {
+                  "id": "match2",
+                  "teams": [
+                    "Team C",
+                    "Team D"
+                  ],
+                  "date": "2025-01-16"
+                }
+              ]
+            },
+            "teamsByLeague": {
+              "lcs": [
+                {
+                  "id": "team_a",
+                  "name": "Team A",
+                  "players": [
+                    "Player 1",
+                    "Player 2"
+                  ]
+                },
+                {
+                  "id": "team_b",
+                  "name": "Team B",
+                  "players": [
+                    "Player 3",
+                    "Player 4"
+                  ]
+                }
+              ]
+            },
+            "standings": {
+              "lcs_spring": [
+                {
+                  "team": "Team A",
+                  "wins": 8,
+                  "losses": 2,
+                  "position": 1
+                },
+                {
+                  "team": "Team B",
+                  "wins": 7,
+                  "losses": 3,
+                  "position": 2
+                }
+              ]
+            },
+            "regularSeasonStandings": {
+              "lcs": {
+                "2025": {
+                  "spring": [
+                    {
+                      "team": "Team A",
+                      "wins": 8,
+                      "losses": 2
+                    },
+                    {
+                      "team": "Team B",
+                      "wins": 7,
+                      "losses": 3
+                    }
+                  ],
+                  "summer": [
+                    {
+                      "team": "Team C",
+                      "wins": 9,
+                      "losses": 1
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "showDiff": false,
+        "operator": "strictEqual"
+      }
+    },
+    {
+      "title": "should load data successfully on initialization",
+      "fullTitle": "RiotEsportsService constructor and loadData should load data successfully on initialization",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/riot-esports/riot-esports.service.spec.ts",
+      "duration": 0,
+      "currentRetry": 0,
+      "err": {
+        "stack": "AssertionError: expected RiotEsportsService{ data: { …(6) } } to be an instance of RiotEsportsService\n    at Context.<anonymous> (test/riot-esports/riot-esports.service.spec.ts:76:39)\n    at processImmediate (node:internal/timers:505:21)",
+        "message": "expected RiotEsportsService{ data: { …(6) } } to be an instance of RiotEsportsService",
+        "actual": {
+          "data": {
+            "leagues": [
+              {
+                "id": "lcs",
+                "name": "LCS",
+                "region": "North America"
+              },
+              {
+                "id": "lec",
+                "name": "LEC",
+                "region": "Europe"
+              }
+            ],
+            "tournaments": {
+              "lcs": [
+                {
+                  "id": "lcs_spring",
+                  "name": "LCS Spring Split",
+                  "year": 2025
+                },
+                {
+                  "id": "lcs_summer",
+                  "name": "LCS Summer Split",
+                  "year": 2025
+                }
+              ],
+              "lec": [
+                {
+                  "id": "lec_spring",
+                  "name": "LEC Spring Split",
+                  "year": 2025
+                }
+              ]
+            },
+            "matches": {
+              "lcs": [
+                {
+                  "id": "match1",
+                  "teams": [
+                    "Team A",
+                    "Team B"
+                  ],
+                  "date": "2025-01-15"
+                },
+                {
+                  "id": "match2",
+                  "teams": [
+                    "Team C",
+                    "Team D"
+                  ],
+                  "date": "2025-01-16"
+                }
+              ]
+            },
+            "teamsByLeague": {
+              "lcs": [
+                {
+                  "id": "team_a",
+                  "name": "Team A",
+                  "players": [
+                    "Player 1",
+                    "Player 2"
+                  ]
+                },
+                {
+                  "id": "team_b",
+                  "name": "Team B",
+                  "players": [
+                    "Player 3",
+                    "Player 4"
+                  ]
+                }
+              ]
+            },
+            "standings": {
+              "lcs_spring": [
+                {
+                  "team": "Team A",
+                  "wins": 8,
+                  "losses": 2,
+                  "position": 1
+                },
+                {
+                  "team": "Team B",
+                  "wins": 7,
+                  "losses": 3,
+                  "position": 2
+                }
+              ]
+            },
+            "regularSeasonStandings": {
+              "lcs": {
+                "2025": {
+                  "spring": [
+                    {
+                      "team": "Team A",
+                      "wins": 8,
+                      "losses": 2
+                    },
+                    {
+                      "team": "Team B",
+                      "wins": 7,
+                      "losses": 3
+                    }
+                  ],
+                  "summer": [
+                    {
+                      "team": "Team C",
+                      "wins": 9,
+                      "losses": 1
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "showDiff": false,
+        "operator": "strictEqual"
+      }
+    },
+    {
+      "title": "should handle file read errors gracefully",
+      "fullTitle": "RiotEsportsService constructor and loadData should handle file read errors gracefully",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/riot-esports/riot-esports.service.spec.ts",
+      "duration": 0,
+      "currentRetry": 0,
+      "err": {
+        "stack": "TypeError: Descriptor for property readFileSync is non-configurable and non-writable\n    at assertValidPropertyDescriptor (node_modules/sinon/lib/sinon/stub.js:138:15)\n    at stub (node_modules/sinon/lib/sinon/stub.js:89:5)\n    at Sandbox.stub (node_modules/sinon/lib/sinon/sandbox.js:436:39)\n    at Context.<anonymous> (test/riot-esports/riot-esports.service.spec.ts:83:13)\n    at processImmediate (node:internal/timers:505:21)",
+        "message": "Descriptor for property readFileSync is non-configurable and non-writable"
+      }
+    },
+    {
+      "title": "should return all leagues",
+      "fullTitle": "RiotEsportsService getLeagues should return all leagues",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/riot-esports/riot-esports.service.spec.ts",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should return tournaments for a specific league",
+      "fullTitle": "RiotEsportsService getTournaments should return tournaments for a specific league",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/riot-esports/riot-esports.service.spec.ts",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should return all tournaments when no league specified",
+      "fullTitle": "RiotEsportsService getTournaments should return all tournaments when no league specified",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/riot-esports/riot-esports.service.spec.ts",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should return empty array for non-existent league",
+      "fullTitle": "RiotEsportsService getTournaments should return empty array for non-existent league",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/riot-esports/riot-esports.service.spec.ts",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should return schedule for a specific league",
+      "fullTitle": "RiotEsportsService getSchedule should return schedule for a specific league",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/riot-esports/riot-esports.service.spec.ts",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should return all matches when no league specified",
+      "fullTitle": "RiotEsportsService getSchedule should return all matches when no league specified",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/riot-esports/riot-esports.service.spec.ts",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should return empty array for non-existent league",
+      "fullTitle": "RiotEsportsService getSchedule should return empty array for non-existent league",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/riot-esports/riot-esports.service.spec.ts",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should return teams for a specific league",
+      "fullTitle": "RiotEsportsService getTeams should return teams for a specific league",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/riot-esports/riot-esports.service.spec.ts",
+      "duration": 1,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should return all teams when no league specified",
+      "fullTitle": "RiotEsportsService getTeams should return all teams when no league specified",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/riot-esports/riot-esports.service.spec.ts",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should return empty array for non-existent league",
+      "fullTitle": "RiotEsportsService getTeams should return empty array for non-existent league",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/riot-esports/riot-esports.service.spec.ts",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should return empty array when teamsByLeague is not defined",
+      "fullTitle": "RiotEsportsService getTeams should return empty array when teamsByLeague is not defined",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/riot-esports/riot-esports.service.spec.ts",
+      "duration": 1,
+      "currentRetry": 0,
+      "err": {
+        "stack": "TypeError: Descriptor for property readFileSync is non-configurable and non-writable\n    at assertValidPropertyDescriptor (node_modules/sinon/lib/sinon/stub.js:138:15)\n    at stub (node_modules/sinon/lib/sinon/stub.js:89:5)\n    at Sandbox.stub (node_modules/sinon/lib/sinon/sandbox.js:436:39)\n    at Context.<anonymous> (test/riot-esports/riot-esports.service.spec.ts:169:13)\n    at processImmediate (node:internal/timers:505:21)",
+        "message": "Descriptor for property readFileSync is non-configurable and non-writable"
+      }
+    },
+    {
+      "title": "should return standings for a specific tournament",
+      "fullTitle": "RiotEsportsService getStandings should return standings for a specific tournament",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/riot-esports/riot-esports.service.spec.ts",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should return empty array for non-existent tournament",
+      "fullTitle": "RiotEsportsService getStandings should return empty array for non-existent tournament",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/riot-esports/riot-esports.service.spec.ts",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should return standings for specific league, year, and split",
+      "fullTitle": "RiotEsportsService getRegularSeasonStandings should return standings for specific league, year, and split",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/riot-esports/riot-esports.service.spec.ts",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should return standings for specific league and year",
+      "fullTitle": "RiotEsportsService getRegularSeasonStandings should return standings for specific league and year",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/riot-esports/riot-esports.service.spec.ts",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should return standings for specific league",
+      "fullTitle": "RiotEsportsService getRegularSeasonStandings should return standings for specific league",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/riot-esports/riot-esports.service.spec.ts",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should return all standings when no parameters specified",
+      "fullTitle": "RiotEsportsService getRegularSeasonStandings should return all standings when no parameters specified",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/riot-esports/riot-esports.service.spec.ts",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should return empty array for non-existent league",
+      "fullTitle": "RiotEsportsService getRegularSeasonStandings should return empty array for non-existent league",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/riot-esports/riot-esports.service.spec.ts",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should return empty array for non-existent year",
+      "fullTitle": "RiotEsportsService getRegularSeasonStandings should return empty array for non-existent year",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/riot-esports/riot-esports.service.spec.ts",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should return empty array for non-existent split",
+      "fullTitle": "RiotEsportsService getRegularSeasonStandings should return empty array for non-existent split",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/riot-esports/riot-esports.service.spec.ts",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should return empty array when regularSeasonStandings is not defined",
+      "fullTitle": "RiotEsportsService getRegularSeasonStandings should return empty array when regularSeasonStandings is not defined",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/riot-esports/riot-esports.service.spec.ts",
+      "duration": 0,
+      "currentRetry": 0,
+      "err": {
+        "stack": "TypeError: Descriptor for property readFileSync is non-configurable and non-writable\n    at assertValidPropertyDescriptor (node_modules/sinon/lib/sinon/stub.js:138:15)\n    at stub (node_modules/sinon/lib/sinon/stub.js:89:5)\n    at Sandbox.stub (node_modules/sinon/lib/sinon/sandbox.js:436:39)\n    at Context.<anonymous> (test/riot-esports/riot-esports.service.spec.ts:241:13)\n    at processImmediate (node:internal/timers:505:21)",
+        "message": "Descriptor for property readFileSync is non-configurable and non-writable"
+      }
+    },
+    {
+      "title": "should be defined",
+      "fullTitle": "UsersController should be defined",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/users/users.controller.spec.ts",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should return all users",
+      "fullTitle": "UsersController findAll should return all users",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/users/users.controller.spec.ts",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should update game preferences",
+      "fullTitle": "UsersController updateGamePreferences should update game preferences",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/users/users.controller.spec.ts",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should add game preference",
+      "fullTitle": "UsersController addGamePreference should add game preference",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/users/users.controller.spec.ts",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should remove game preference",
+      "fullTitle": "UsersController removeGamePreference should remove game preference",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/users/users.controller.spec.ts",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should update profile picture",
+      "fullTitle": "UsersController updateProfilePicture should update profile picture",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/users/users.controller.spec.ts",
+      "duration": 1,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should update theme preference",
+      "fullTitle": "UsersController updateThemePreference should update theme preference",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/users/users.controller.spec.ts",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should be defined",
+      "fullTitle": "UsersService should be defined",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/users/users.service.spec.ts",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should create a new user",
+      "fullTitle": "UsersService create should create a new user",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/users/users.service.spec.ts",
+      "duration": 68,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should return user by id",
+      "fullTitle": "UsersService findById should return user by id",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/users/users.service.spec.ts",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should return user by email",
+      "fullTitle": "UsersService findByEmail should return user by email",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/users/users.service.spec.ts",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should return user by Google ID",
+      "fullTitle": "UsersService findByGoogleId should return user by Google ID",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/users/users.service.spec.ts",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should update user successfully",
+      "fullTitle": "UsersService update should update user successfully",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/users/users.service.spec.ts",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should validate correct password",
+      "fullTitle": "UsersService validatePassword should validate correct password",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/users/users.service.spec.ts",
+      "duration": 133,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should reject incorrect password",
+      "fullTitle": "UsersService validatePassword should reject incorrect password",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/users/users.service.spec.ts",
+      "duration": 124,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    }
+  ],
+  "pending": [],
+  "failures": [
+    {
+      "title": "should be defined",
+      "fullTitle": "RiotEsportsService should be defined",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/riot-esports/riot-esports.service.spec.ts",
+      "duration": 0,
+      "currentRetry": 0,
+      "err": {
+        "stack": "AssertionError: expected RiotEsportsService{ data: { …(6) } } to be an instance of RiotEsportsService\n    at Context.<anonymous> (test/riot-esports/riot-esports.service.spec.ts:71:37)\n    at processImmediate (node:internal/timers:505:21)",
+        "message": "expected RiotEsportsService{ data: { …(6) } } to be an instance of RiotEsportsService",
+        "actual": {
+          "data": {
+            "leagues": [
+              {
+                "id": "lcs",
+                "name": "LCS",
+                "region": "North America"
+              },
+              {
+                "id": "lec",
+                "name": "LEC",
+                "region": "Europe"
+              }
+            ],
+            "tournaments": {
+              "lcs": [
+                {
+                  "id": "lcs_spring",
+                  "name": "LCS Spring Split",
+                  "year": 2025
+                },
+                {
+                  "id": "lcs_summer",
+                  "name": "LCS Summer Split",
+                  "year": 2025
+                }
+              ],
+              "lec": [
+                {
+                  "id": "lec_spring",
+                  "name": "LEC Spring Split",
+                  "year": 2025
+                }
+              ]
+            },
+            "matches": {
+              "lcs": [
+                {
+                  "id": "match1",
+                  "teams": [
+                    "Team A",
+                    "Team B"
+                  ],
+                  "date": "2025-01-15"
+                },
+                {
+                  "id": "match2",
+                  "teams": [
+                    "Team C",
+                    "Team D"
+                  ],
+                  "date": "2025-01-16"
+                }
+              ]
+            },
+            "teamsByLeague": {
+              "lcs": [
+                {
+                  "id": "team_a",
+                  "name": "Team A",
+                  "players": [
+                    "Player 1",
+                    "Player 2"
+                  ]
+                },
+                {
+                  "id": "team_b",
+                  "name": "Team B",
+                  "players": [
+                    "Player 3",
+                    "Player 4"
+                  ]
+                }
+              ]
+            },
+            "standings": {
+              "lcs_spring": [
+                {
+                  "team": "Team A",
+                  "wins": 8,
+                  "losses": 2,
+                  "position": 1
+                },
+                {
+                  "team": "Team B",
+                  "wins": 7,
+                  "losses": 3,
+                  "position": 2
+                }
+              ]
+            },
+            "regularSeasonStandings": {
+              "lcs": {
+                "2025": {
+                  "spring": [
+                    {
+                      "team": "Team A",
+                      "wins": 8,
+                      "losses": 2
+                    },
+                    {
+                      "team": "Team B",
+                      "wins": 7,
+                      "losses": 3
+                    }
+                  ],
+                  "summer": [
+                    {
+                      "team": "Team C",
+                      "wins": 9,
+                      "losses": 1
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "showDiff": false,
+        "operator": "strictEqual"
+      }
+    },
+    {
+      "title": "should load data successfully on initialization",
+      "fullTitle": "RiotEsportsService constructor and loadData should load data successfully on initialization",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/riot-esports/riot-esports.service.spec.ts",
+      "duration": 0,
+      "currentRetry": 0,
+      "err": {
+        "stack": "AssertionError: expected RiotEsportsService{ data: { …(6) } } to be an instance of RiotEsportsService\n    at Context.<anonymous> (test/riot-esports/riot-esports.service.spec.ts:76:39)\n    at processImmediate (node:internal/timers:505:21)",
+        "message": "expected RiotEsportsService{ data: { …(6) } } to be an instance of RiotEsportsService",
+        "actual": {
+          "data": {
+            "leagues": [
+              {
+                "id": "lcs",
+                "name": "LCS",
+                "region": "North America"
+              },
+              {
+                "id": "lec",
+                "name": "LEC",
+                "region": "Europe"
+              }
+            ],
+            "tournaments": {
+              "lcs": [
+                {
+                  "id": "lcs_spring",
+                  "name": "LCS Spring Split",
+                  "year": 2025
+                },
+                {
+                  "id": "lcs_summer",
+                  "name": "LCS Summer Split",
+                  "year": 2025
+                }
+              ],
+              "lec": [
+                {
+                  "id": "lec_spring",
+                  "name": "LEC Spring Split",
+                  "year": 2025
+                }
+              ]
+            },
+            "matches": {
+              "lcs": [
+                {
+                  "id": "match1",
+                  "teams": [
+                    "Team A",
+                    "Team B"
+                  ],
+                  "date": "2025-01-15"
+                },
+                {
+                  "id": "match2",
+                  "teams": [
+                    "Team C",
+                    "Team D"
+                  ],
+                  "date": "2025-01-16"
+                }
+              ]
+            },
+            "teamsByLeague": {
+              "lcs": [
+                {
+                  "id": "team_a",
+                  "name": "Team A",
+                  "players": [
+                    "Player 1",
+                    "Player 2"
+                  ]
+                },
+                {
+                  "id": "team_b",
+                  "name": "Team B",
+                  "players": [
+                    "Player 3",
+                    "Player 4"
+                  ]
+                }
+              ]
+            },
+            "standings": {
+              "lcs_spring": [
+                {
+                  "team": "Team A",
+                  "wins": 8,
+                  "losses": 2,
+                  "position": 1
+                },
+                {
+                  "team": "Team B",
+                  "wins": 7,
+                  "losses": 3,
+                  "position": 2
+                }
+              ]
+            },
+            "regularSeasonStandings": {
+              "lcs": {
+                "2025": {
+                  "spring": [
+                    {
+                      "team": "Team A",
+                      "wins": 8,
+                      "losses": 2
+                    },
+                    {
+                      "team": "Team B",
+                      "wins": 7,
+                      "losses": 3
+                    }
+                  ],
+                  "summer": [
+                    {
+                      "team": "Team C",
+                      "wins": 9,
+                      "losses": 1
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "showDiff": false,
+        "operator": "strictEqual"
+      }
+    },
+    {
+      "title": "should handle file read errors gracefully",
+      "fullTitle": "RiotEsportsService constructor and loadData should handle file read errors gracefully",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/riot-esports/riot-esports.service.spec.ts",
+      "duration": 0,
+      "currentRetry": 0,
+      "err": {
+        "stack": "TypeError: Descriptor for property readFileSync is non-configurable and non-writable\n    at assertValidPropertyDescriptor (node_modules/sinon/lib/sinon/stub.js:138:15)\n    at stub (node_modules/sinon/lib/sinon/stub.js:89:5)\n    at Sandbox.stub (node_modules/sinon/lib/sinon/sandbox.js:436:39)\n    at Context.<anonymous> (test/riot-esports/riot-esports.service.spec.ts:83:13)\n    at processImmediate (node:internal/timers:505:21)",
+        "message": "Descriptor for property readFileSync is non-configurable and non-writable"
+      }
+    },
+    {
+      "title": "should return empty array when teamsByLeague is not defined",
+      "fullTitle": "RiotEsportsService getTeams should return empty array when teamsByLeague is not defined",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/riot-esports/riot-esports.service.spec.ts",
+      "duration": 1,
+      "currentRetry": 0,
+      "err": {
+        "stack": "TypeError: Descriptor for property readFileSync is non-configurable and non-writable\n    at assertValidPropertyDescriptor (node_modules/sinon/lib/sinon/stub.js:138:15)\n    at stub (node_modules/sinon/lib/sinon/stub.js:89:5)\n    at Sandbox.stub (node_modules/sinon/lib/sinon/sandbox.js:436:39)\n    at Context.<anonymous> (test/riot-esports/riot-esports.service.spec.ts:169:13)\n    at processImmediate (node:internal/timers:505:21)",
+        "message": "Descriptor for property readFileSync is non-configurable and non-writable"
+      }
+    },
+    {
+      "title": "should return empty array when regularSeasonStandings is not defined",
+      "fullTitle": "RiotEsportsService getRegularSeasonStandings should return empty array when regularSeasonStandings is not defined",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/riot-esports/riot-esports.service.spec.ts",
+      "duration": 0,
+      "currentRetry": 0,
+      "err": {
+        "stack": "TypeError: Descriptor for property readFileSync is non-configurable and non-writable\n    at assertValidPropertyDescriptor (node_modules/sinon/lib/sinon/stub.js:138:15)\n    at stub (node_modules/sinon/lib/sinon/stub.js:89:5)\n    at Sandbox.stub (node_modules/sinon/lib/sinon/sandbox.js:436:39)\n    at Context.<anonymous> (test/riot-esports/riot-esports.service.spec.ts:241:13)\n    at processImmediate (node:internal/timers:505:21)",
+        "message": "Descriptor for property readFileSync is non-configurable and non-writable"
+      }
+    }
+  ],
+  "passes": [
+    {
+      "title": "should be defined",
+      "fullTitle": "AuthController should be defined",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/auth/auth.controller.spec.ts",
+      "duration": 1,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should register a user and return result",
+      "fullTitle": "AuthController register should register a user and return result",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/auth/auth.controller.spec.ts",
+      "duration": 1,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should login a user and return result",
+      "fullTitle": "AuthController login should login a user and return result",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/auth/auth.controller.spec.ts",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should handle Google OAuth login",
+      "fullTitle": "AuthController googleOAuthLogin should handle Google OAuth login",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/auth/auth.controller.spec.ts",
+      "duration": 1,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should request password reset successfully",
+      "fullTitle": "AuthController requestPasswordReset should request password reset successfully",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/auth/auth.controller.spec.ts",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should reset password successfully",
+      "fullTitle": "AuthController resetPassword should reset password successfully",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/auth/auth.controller.spec.ts",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should be defined",
+      "fullTitle": "AuthService should be defined",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/auth/auth.service.spec.ts",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should register a new user successfully",
+      "fullTitle": "AuthService register should register a new user successfully",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/auth/auth.service.spec.ts",
+      "duration": 2,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should throw ConflictException if email already exists",
+      "fullTitle": "AuthService register should throw ConflictException if email already exists",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/auth/auth.service.spec.ts",
+      "duration": 1,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should login user successfully",
+      "fullTitle": "AuthService login should login user successfully",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/auth/auth.service.spec.ts",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should throw UnauthorizedException for invalid credentials",
+      "fullTitle": "AuthService login should throw UnauthorizedException for invalid credentials",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/auth/auth.service.spec.ts",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should throw UnauthorizedException for Google OAuth users without password",
+      "fullTitle": "AuthService login should throw UnauthorizedException for Google OAuth users without password",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/auth/auth.service.spec.ts",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should send password reset email successfully",
+      "fullTitle": "AuthService requestPasswordReset should send password reset email successfully",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/auth/auth.service.spec.ts",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should throw NotFoundException if user not found",
+      "fullTitle": "AuthService requestPasswordReset should throw NotFoundException if user not found",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/auth/auth.service.spec.ts",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should reset password successfully",
+      "fullTitle": "AuthService resetPassword should reset password successfully",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/auth/auth.service.spec.ts",
+      "duration": 65,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should throw BadRequestException if passwords do not match",
+      "fullTitle": "AuthService resetPassword should throw BadRequestException if passwords do not match",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/auth/auth.service.spec.ts",
+      "duration": 1,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should throw BadRequestException for invalid reset code",
+      "fullTitle": "AuthService resetPassword should throw BadRequestException for invalid reset code",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/auth/auth.service.spec.ts",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should return user if found",
+      "fullTitle": "AuthService validateUser should return user if found",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/auth/auth.service.spec.ts",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should return null if user not found",
+      "fullTitle": "AuthService validateUser should return null if user not found",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/auth/auth.service.spec.ts",
+      "duration": 1,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should be defined",
+      "fullTitle": "DiscordService should be defined",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/discord/discord.service.spec.ts",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should generate authorization URL without state",
+      "fullTitle": "DiscordService getAuthorizationUrl should generate authorization URL without state",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/discord/discord.service.spec.ts",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should generate authorization URL with state",
+      "fullTitle": "DiscordService getAuthorizationUrl should generate authorization URL with state",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/discord/discord.service.spec.ts",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should exchange code for access token successfully",
+      "fullTitle": "DiscordService getAccessToken should exchange code for access token successfully",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/discord/discord.service.spec.ts",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should handle token exchange errors",
+      "fullTitle": "DiscordService getAccessToken should handle token exchange errors",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/discord/discord.service.spec.ts",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should fetch Discord user successfully",
+      "fullTitle": "DiscordService getDiscordUser should fetch Discord user successfully",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/discord/discord.service.spec.ts",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should handle user fetch errors",
+      "fullTitle": "DiscordService getDiscordUser should handle user fetch errors",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/discord/discord.service.spec.ts",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should add user to guild without voice channel",
+      "fullTitle": "DiscordService addUserToGuild should add user to guild without voice channel",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/discord/discord.service.spec.ts",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should add user to guild with voice channel",
+      "fullTitle": "DiscordService addUserToGuild should add user to guild with voice channel",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/discord/discord.service.spec.ts",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should handle errors gracefully (except 204)",
+      "fullTitle": "DiscordService addUserToGuild should handle errors gracefully (except 204)",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/discord/discord.service.spec.ts",
+      "duration": 1,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should create voice channel and invite successfully",
+      "fullTitle": "DiscordService createVoiceChannelForParty should create voice channel and invite successfully",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/discord/discord.service.spec.ts",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should handle channel creation errors",
+      "fullTitle": "DiscordService createVoiceChannelForParty should handle channel creation errors",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/discord/discord.service.spec.ts",
+      "duration": 1,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should delete voice channel successfully",
+      "fullTitle": "DiscordService deleteVoiceChannel should delete voice channel successfully",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/discord/discord.service.spec.ts",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should handle deletion errors gracefully",
+      "fullTitle": "DiscordService deleteVoiceChannel should handle deletion errors gracefully",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/discord/discord.service.spec.ts",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should link Discord account to user successfully",
+      "fullTitle": "DiscordService linkDiscordAccount should link Discord account to user successfully",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/discord/discord.service.spec.ts",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should handle null avatar",
+      "fullTitle": "DiscordService linkDiscordAccount should handle null avatar",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/discord/discord.service.spec.ts",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should throw error if user not found",
+      "fullTitle": "DiscordService linkDiscordAccount should throw error if user not found",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/discord/discord.service.spec.ts",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should be defined",
+      "fullTitle": "EmailService should be defined",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/email/email.service.spec.ts",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should send verification email successfully",
+      "fullTitle": "EmailService sendVerificationEmail should send verification email successfully",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/email/email.service.spec.ts",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should throw InternalServerErrorException on API error",
+      "fullTitle": "EmailService sendVerificationEmail should throw InternalServerErrorException on API error",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/email/email.service.spec.ts",
+      "duration": 1,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should handle network errors",
+      "fullTitle": "EmailService sendVerificationEmail should handle network errors",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/email/email.service.spec.ts",
+      "duration": 3,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should send password reset email successfully",
+      "fullTitle": "EmailService sendPasswordResetEmail should send password reset email successfully",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/email/email.service.spec.ts",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should send email with correct parameters",
+      "fullTitle": "EmailService sendEmail should send email with correct parameters",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/email/email.service.spec.ts",
+      "duration": 1,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should log API errors correctly",
+      "fullTitle": "EmailService sendEmail should log API errors correctly",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/email/email.service.spec.ts",
+      "duration": 1,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should be defined",
+      "fullTitle": "PartyService should be defined",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/party/party.service.spec.ts",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should create a party successfully",
+      "fullTitle": "PartyService create should create a party successfully",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/party/party.service.spec.ts",
+      "duration": 1,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should return parties with filters",
+      "fullTitle": "PartyService findAll should return parties with filters",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/party/party.service.spec.ts",
+      "duration": 2,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should return a party by id",
+      "fullTitle": "PartyService findOne should return a party by id",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/party/party.service.spec.ts",
+      "duration": 1,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should throw NotFoundException for invalid id",
+      "fullTitle": "PartyService findOne should throw NotFoundException for invalid id",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/party/party.service.spec.ts",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should be defined",
+      "fullTitle": "RiotApiService should be defined",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/riot-api/riot-api.service.spec.ts",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should get account by Riot ID successfully",
+      "fullTitle": "RiotApiService getAccountByRiotId should get account by Riot ID successfully",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/riot-api/riot-api.service.spec.ts",
+      "duration": 1,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should handle 404 errors for non-existent accounts",
+      "fullTitle": "RiotApiService getAccountByRiotId should handle 404 errors for non-existent accounts",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/riot-api/riot-api.service.spec.ts",
+      "duration": 1,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should get summoner by PUUID successfully",
+      "fullTitle": "RiotApiService getSummonerByPuuid should get summoner by PUUID successfully",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/riot-api/riot-api.service.spec.ts",
+      "duration": 1,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should handle 404 errors for non-existent summoners",
+      "fullTitle": "RiotApiService getSummonerByPuuid should handle 404 errors for non-existent summoners",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/riot-api/riot-api.service.spec.ts",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should get ranked info successfully",
+      "fullTitle": "RiotApiService getRankedInfo should get ranked info successfully",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/riot-api/riot-api.service.spec.ts",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should return empty array for 404 (no ranked data)",
+      "fullTitle": "RiotApiService getRankedInfo should return empty array for 404 (no ranked data)",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/riot-api/riot-api.service.spec.ts",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should get complete summoner profile",
+      "fullTitle": "RiotApiService searchSummoner should get complete summoner profile",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/riot-api/riot-api.service.spec.ts",
+      "duration": 1,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should return available platform and cluster regions",
+      "fullTitle": "RiotApiService getAvailableRegions should return available platform and cluster regions",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/riot-api/riot-api.service.spec.ts",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should return all leagues",
+      "fullTitle": "RiotEsportsService getLeagues should return all leagues",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/riot-esports/riot-esports.service.spec.ts",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should return tournaments for a specific league",
+      "fullTitle": "RiotEsportsService getTournaments should return tournaments for a specific league",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/riot-esports/riot-esports.service.spec.ts",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should return all tournaments when no league specified",
+      "fullTitle": "RiotEsportsService getTournaments should return all tournaments when no league specified",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/riot-esports/riot-esports.service.spec.ts",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should return empty array for non-existent league",
+      "fullTitle": "RiotEsportsService getTournaments should return empty array for non-existent league",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/riot-esports/riot-esports.service.spec.ts",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should return schedule for a specific league",
+      "fullTitle": "RiotEsportsService getSchedule should return schedule for a specific league",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/riot-esports/riot-esports.service.spec.ts",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should return all matches when no league specified",
+      "fullTitle": "RiotEsportsService getSchedule should return all matches when no league specified",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/riot-esports/riot-esports.service.spec.ts",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should return empty array for non-existent league",
+      "fullTitle": "RiotEsportsService getSchedule should return empty array for non-existent league",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/riot-esports/riot-esports.service.spec.ts",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should return teams for a specific league",
+      "fullTitle": "RiotEsportsService getTeams should return teams for a specific league",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/riot-esports/riot-esports.service.spec.ts",
+      "duration": 1,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should return all teams when no league specified",
+      "fullTitle": "RiotEsportsService getTeams should return all teams when no league specified",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/riot-esports/riot-esports.service.spec.ts",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should return empty array for non-existent league",
+      "fullTitle": "RiotEsportsService getTeams should return empty array for non-existent league",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/riot-esports/riot-esports.service.spec.ts",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should return standings for a specific tournament",
+      "fullTitle": "RiotEsportsService getStandings should return standings for a specific tournament",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/riot-esports/riot-esports.service.spec.ts",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should return empty array for non-existent tournament",
+      "fullTitle": "RiotEsportsService getStandings should return empty array for non-existent tournament",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/riot-esports/riot-esports.service.spec.ts",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should return standings for specific league, year, and split",
+      "fullTitle": "RiotEsportsService getRegularSeasonStandings should return standings for specific league, year, and split",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/riot-esports/riot-esports.service.spec.ts",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should return standings for specific league and year",
+      "fullTitle": "RiotEsportsService getRegularSeasonStandings should return standings for specific league and year",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/riot-esports/riot-esports.service.spec.ts",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should return standings for specific league",
+      "fullTitle": "RiotEsportsService getRegularSeasonStandings should return standings for specific league",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/riot-esports/riot-esports.service.spec.ts",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should return all standings when no parameters specified",
+      "fullTitle": "RiotEsportsService getRegularSeasonStandings should return all standings when no parameters specified",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/riot-esports/riot-esports.service.spec.ts",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should return empty array for non-existent league",
+      "fullTitle": "RiotEsportsService getRegularSeasonStandings should return empty array for non-existent league",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/riot-esports/riot-esports.service.spec.ts",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should return empty array for non-existent year",
+      "fullTitle": "RiotEsportsService getRegularSeasonStandings should return empty array for non-existent year",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/riot-esports/riot-esports.service.spec.ts",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should return empty array for non-existent split",
+      "fullTitle": "RiotEsportsService getRegularSeasonStandings should return empty array for non-existent split",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/riot-esports/riot-esports.service.spec.ts",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should be defined",
+      "fullTitle": "UsersController should be defined",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/users/users.controller.spec.ts",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should return all users",
+      "fullTitle": "UsersController findAll should return all users",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/users/users.controller.spec.ts",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should update game preferences",
+      "fullTitle": "UsersController updateGamePreferences should update game preferences",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/users/users.controller.spec.ts",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should add game preference",
+      "fullTitle": "UsersController addGamePreference should add game preference",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/users/users.controller.spec.ts",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should remove game preference",
+      "fullTitle": "UsersController removeGamePreference should remove game preference",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/users/users.controller.spec.ts",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should update profile picture",
+      "fullTitle": "UsersController updateProfilePicture should update profile picture",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/users/users.controller.spec.ts",
+      "duration": 1,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should update theme preference",
+      "fullTitle": "UsersController updateThemePreference should update theme preference",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/users/users.controller.spec.ts",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should be defined",
+      "fullTitle": "UsersService should be defined",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/users/users.service.spec.ts",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should create a new user",
+      "fullTitle": "UsersService create should create a new user",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/users/users.service.spec.ts",
+      "duration": 68,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should return user by id",
+      "fullTitle": "UsersService findById should return user by id",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/users/users.service.spec.ts",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should return user by email",
+      "fullTitle": "UsersService findByEmail should return user by email",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/users/users.service.spec.ts",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should return user by Google ID",
+      "fullTitle": "UsersService findByGoogleId should return user by Google ID",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/users/users.service.spec.ts",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should update user successfully",
+      "fullTitle": "UsersService update should update user successfully",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/users/users.service.spec.ts",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should validate correct password",
+      "fullTitle": "UsersService validatePassword should validate correct password",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/users/users.service.spec.ts",
+      "duration": 133,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should reject incorrect password",
+      "fullTitle": "UsersService validatePassword should reject incorrect password",
+      "file": "/Users/elyesdarouich/Desktop/SquadLink/backend/test/users/users.service.spec.ts",
+      "duration": 124,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    }
+  ]
+}

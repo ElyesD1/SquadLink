@@ -2,7 +2,7 @@
 
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, Users, Zap, Shield, Sparkles, Star } from 'lucide-react';
+import { ArrowRight, Users, Gamepad2, Shield, Sparkles } from 'lucide-react';
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
 
@@ -12,12 +12,6 @@ export function HeroSection() {
   useEffect(() => {
     setMounted(true);
   }, []);
-
-  const floatingCards = [
-    { icon: Users, text: "10K+ Teams", color: "from-blue-500 to-cyan-500", delay: 0 },
-    { icon: Zap, text: "99.9% Uptime", color: "from-purple-500 to-pink-500", delay: 0.2 },
-    { icon: Shield, text: "Bank-level Security", color: "from-green-500 to-emerald-500", delay: 0.4 },
-  ];
 
   return (
     <section className="relative pt-32 pb-20 px-6 overflow-hidden">
@@ -38,7 +32,7 @@ export function HeroSection() {
                 <Sparkles className="w-4 h-4 text-violet-400" />
               </motion.div>
               <span className="text-sm font-medium bg-gradient-to-r from-violet-400 to-purple-400 bg-clip-text text-transparent">
-                ✨ Trusted by 50,000+ teams worldwide
+                ✨ Connect with gamers worldwide
               </span>
             </div>
           </div>
@@ -53,13 +47,13 @@ export function HeroSection() {
         >
           <h1 className="text-6xl md:text-8xl font-black leading-tight mb-6">
             <span className="block bg-gradient-to-r from-violet-600 via-purple-600 to-blue-600 bg-clip-text text-transparent">
-              Connect.
+              Find Your
             </span>
             <span className="block bg-gradient-to-r from-blue-600 via-cyan-500 to-teal-500 bg-clip-text text-transparent">
-              Collaborate.
+              Gaming
             </span>
             <span className="block bg-gradient-to-r from-emerald-500 via-green-500 to-lime-500 bg-clip-text text-transparent">
-              Conquer.
+              Squad
             </span>
           </h1>
         </motion.div>
@@ -70,8 +64,8 @@ export function HeroSection() {
           transition={{ duration: 0.8, delay: 0.5 }}
           className="text-xl md:text-2xl text-muted-foreground mb-12 max-w-3xl mx-auto leading-relaxed"
         >
-          The next-generation team collaboration platform that transforms how you work together. 
-          <span className="text-violet-400 font-semibold"> Experience the future of teamwork.</span>
+          Connect with like-minded gamers, form squads, and dominate your favorite games together. 
+          <span className="text-violet-400 font-semibold"> Build lasting gaming friendships.</span>
         </motion.p>
         
         {/* CTA Buttons */}
@@ -93,7 +87,7 @@ export function HeroSection() {
               >
                 <span className="relative z-10 flex items-center">
                   <Users className="w-6 h-6 mr-3" />
-                  Start Building Your Squad
+                  Join the Community
                   <ArrowRight className="w-6 h-6 ml-3" />
                 </span>
                 <motion.div
@@ -115,56 +109,107 @@ export function HeroSection() {
                 size="lg" 
                 className="bg-white/5 backdrop-blur-sm border-2 border-white/20 hover:bg-white/10 px-8 py-6 text-lg font-semibold rounded-2xl transition-all duration-300"
               >
-                Watch Demo
-                <motion.div
-                  className="ml-3 w-6 h-6 bg-gradient-to-r from-violet-400 to-purple-400 rounded-full flex items-center justify-center"
-                  animate={{ scale: [1, 1.2, 1] }}
-                  transition={{ duration: 2, repeat: Infinity }}
-                >
-                  <span className="text-white text-xs">▶</span>
-                </motion.div>
+                <Gamepad2 className="w-6 h-6 mr-3" />
+                Sign In
               </Button>
             </motion.div>
           </Link>
         </motion.div>
 
-        {/* Floating Stats Cards */}
+        {/* Core Values Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
-          {floatingCards.map((card, index) => (
-            <motion.div
-              key={index}
-              initial={{ opacity: 0, y: 50, rotateX: 45 }}
-              animate={{ opacity: 1, y: 0, rotateX: 0 }}
-              transition={{ duration: 0.8, delay: 0.9 + card.delay }}
-              whileHover={{ 
-                y: -10, 
-                rotateY: 5,
-                scale: 1.05,
-                transition: { duration: 0.3 }
-              }}
-              className="relative group"
-            >
-              <div className={`bg-gradient-to-br ${card.color} p-[1px] rounded-2xl`}>
-                <div className="bg-background/80 backdrop-blur-xl rounded-2xl p-6 h-full">
-                  <div className="flex items-center justify-center mb-4">
-                    <motion.div
-                      className={`w-12 h-12 bg-gradient-to-br ${card.color} rounded-xl flex items-center justify-center shadow-lg`}
-                      whileHover={{ rotate: 360 }}
-                      transition={{ duration: 0.6 }}
-                    >
-                      <card.icon className="w-6 h-6 text-white" />
-                    </motion.div>
-                  </div>
-                  <p className="text-lg font-bold text-center">{card.text}</p>
-                  <div className="flex justify-center mt-2">
-                    {[...Array(5)].map((_, i) => (
-                      <Star key={i} className="w-4 h-4 text-yellow-400 fill-current" />
-                    ))}
-                  </div>
+          <motion.div
+            initial={{ opacity: 0, y: 50, rotateX: 45 }}
+            animate={{ opacity: 1, y: 0, rotateX: 0 }}
+            transition={{ duration: 0.8, delay: 0.9 }}
+            whileHover={{ 
+              y: -10, 
+              rotateY: 5,
+              scale: 1.05,
+              transition: { duration: 0.3 }
+            }}
+            className="relative group"
+          >
+            <div className="bg-gradient-to-br from-blue-500 to-cyan-500 p-[1px] rounded-2xl">
+              <div className="bg-background/80 backdrop-blur-xl rounded-2xl p-6 h-full">
+                <div className="flex items-center justify-center mb-4">
+                  <motion.div
+                    className="w-12 h-12 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-xl flex items-center justify-center shadow-lg"
+                    whileHover={{ rotate: 360 }}
+                    transition={{ duration: 0.6 }}
+                  >
+                    <Users className="w-6 h-6 text-white" />
+                  </motion.div>
                 </div>
+                <p className="text-lg font-bold text-center">Find Your Team</p>
+                <p className="text-sm text-muted-foreground text-center mt-2">
+                  Connect with players who share your gaming style
+                </p>
               </div>
-            </motion.div>
-          ))}
+            </div>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 50, rotateX: 45 }}
+            animate={{ opacity: 1, y: 0, rotateX: 0 }}
+            transition={{ duration: 0.8, delay: 1.1 }}
+            whileHover={{ 
+              y: -10, 
+              rotateY: 5,
+              scale: 1.05,
+              transition: { duration: 0.3 }
+            }}
+            className="relative group"
+          >
+            <div className="bg-gradient-to-br from-purple-500 to-pink-500 p-[1px] rounded-2xl">
+              <div className="bg-background/80 backdrop-blur-xl rounded-2xl p-6 h-full">
+                <div className="flex items-center justify-center mb-4">
+                  <motion.div
+                    className="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl flex items-center justify-center shadow-lg"
+                    whileHover={{ rotate: 360 }}
+                    transition={{ duration: 0.6 }}
+                  >
+                    <Gamepad2 className="w-6 h-6 text-white" />
+                  </motion.div>
+                </div>
+                <p className="text-lg font-bold text-center">Play Together</p>
+                <p className="text-sm text-muted-foreground text-center mt-2">
+                  Form squads and dominate your favorite games
+                </p>
+              </div>
+            </div>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 50, rotateX: 45 }}
+            animate={{ opacity: 1, y: 0, rotateX: 0 }}
+            transition={{ duration: 0.8, delay: 1.3 }}
+            whileHover={{ 
+              y: -10, 
+              rotateY: 5,
+              scale: 1.05,
+              transition: { duration: 0.3 }
+            }}
+            className="relative group"
+          >
+            <div className="bg-gradient-to-br from-green-500 to-emerald-500 p-[1px] rounded-2xl">
+              <div className="bg-background/80 backdrop-blur-xl rounded-2xl p-6 h-full">
+                <div className="flex items-center justify-center mb-4">
+                  <motion.div
+                    className="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl flex items-center justify-center shadow-lg"
+                    whileHover={{ rotate: 360 }}
+                    transition={{ duration: 0.6 }}
+                  >
+                    <Shield className="w-6 h-6 text-white" />
+                  </motion.div>
+                </div>
+                <p className="text-lg font-bold text-center">Safe Environment</p>
+                <p className="text-sm text-muted-foreground text-center mt-2">
+                  Secure platform with community guidelines
+                </p>
+              </div>
+            </div>
+          </motion.div>
         </div>
       </motion.div>
 
