@@ -1,0 +1,27 @@
+{
+  "name": "squadlink-discord-agent",
+  "version": "1.0.0",
+  "description": "AI-powered Discord bot for SquadLink server management",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "ts-node src/index.ts",
+    "watch": "nodemon --exec ts-node src/index.ts"
+  },
+  "keywords": ["discord", "bot", "gemini", "ai", "squadlink"],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "discord.js": "^14.14.1",
+    "@google/generative-ai": "^0.21.0",
+    "dotenv": "^16.4.1",
+    "axios": "^1.6.5"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.5",
+    "typescript": "^5.3.3",
+    "ts-node": "^10.9.2",
+    "nodemon": "^3.0.3"
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "name": "SquadLink - League of Legends Party Finder",
+  "short_name": "SquadLink",
+  "description": "Trouvez et rejoignez des groupes League of Legends. Mode hors ligne disponible.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0A0118",
+  "theme_color": "#7C3AED",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["games", "social"],
+  "lang": "fr-FR",
+  "dir": "ltr",
+  "scope": "/",
+  "prefer_related_applications": false
+}

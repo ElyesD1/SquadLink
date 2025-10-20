@@ -1,0 +1,983 @@
+{
+  "leagues": [
+    {
+      "id": "lol-emea-championship",
+      "name": "LoL EMEA Championship",
+      "slug": "lol-emea-championship",
+      "region": "Europe"
+    },
+    {
+      "id": "lol-champions-korea",
+      "name": "LoL Champions Korea",
+      "slug": "lol-champions-korea",
+      "region": "Korea"
+    },
+    {
+      "id": "tencent-lol-pro-league",
+      "name": "Tencent LoL Pro League",
+      "slug": "tencent-lol-pro-league",
+      "region": "China"
+    },
+    {
+      "id": "league-of-legends-championship-of-the-americas",
+      "name": "League of Legends Championship of The Americas",
+      "slug": "league-of-legends-championship-of-the-americas",
+      "region": "Americas"
+    }
+  ],
+  "tournaments": {
+    "lol-emea-championship": [
+      {
+        "id": "lec-2025-spring-playoffs",
+        "title": "LEC 2025 Spring Playoffs",
+        "startDate": "2025-05-24",
+        "endDate": "2025-06-08",
+        "leagueId": "lol-emea-championship",
+        "format": "Double elimination, all Bo5",
+        "champion": "Movistar KOI"
+      },
+      {
+        "id": "lec-2025-summer-playoffs",
+        "title": "LEC 2025 Summer Playoffs",
+        "startDate": "2025-09-05",
+        "endDate": "2025-09-28",
+        "leagueId": "lol-emea-championship",
+        "format": "Double elimination, all Bo5, Top 3 Worlds spots",
+        "champion": "G2 Esports"
+      }
+    ],
+    "lol-champions-korea": [
+      {
+        "id": "lck-2025-rounds-1-2",
+        "title": "LCK 2025 Rounds 1-2",
+        "startDate": "2025-04-02",
+        "endDate": "2025-06-01",
+        "leagueId": "lol-champions-korea",
+        "format": "Regular Season",
+        "champion": "TBD"
+      },
+      {
+        "id": "lck-2025-rounds-3-5",
+        "title": "LCK 2025 Rounds 3-5",
+        "startDate": "2025-08-02",
+        "endDate": "2025-08-29",
+        "leagueId": "lol-champions-korea",
+        "format": "Regular Season",
+        "champion": "TBD"
+      }
+    ],
+    "tencent-lol-pro-league": [
+      {
+        "id": "lpl-2025-split-1-playoffs",
+        "title": "LPL 2025 Split 1 Playoffs",
+        "startDate": "2025-02-22",
+        "endDate": "2025-03-01",
+        "leagueId": "tencent-lol-pro-league",
+        "format": "Double elimination, all Bo5",
+        "champion": "Top Esports"
+      },
+      {
+        "id": "lpl-2025-split-2-playoffs",
+        "title": "LPL 2025 Split 2 Playoffs",
+        "startDate": "2025-05-24",
+        "endDate": "2025-06-14",
+        "leagueId": "tencent-lol-pro-league",
+        "format": "Double elimination, all Bo5",
+        "champion": "Anyone's Legend"
+      },
+      {
+        "id": "lpl-2025-grand-finals",
+        "title": "LPL 2025 Grand Finals",
+        "startDate": "2025-09-15",
+        "endDate": "2025-09-15",
+        "leagueId": "tencent-lol-pro-league",
+        "format": "Bo5 Grand Final",
+        "champion": "Bilibili Gaming"
+      }
+    ],
+    "league-of-legends-championship-of-the-americas": [
+      {
+        "id": "lta-2025-split-1-playoffs",
+        "title": "LTA 2025 Split 1 Playoffs",
+        "startDate": "2025-02-15",
+        "endDate": "2025-02-23",
+        "leagueId": "league-of-legends-championship-of-the-americas",
+        "format": "Single elimination, early rounds Bo3, final Bo5",
+        "champion": "Team Liquid"
+      },
+      {
+        "id": "lta-2025-north-split-2-playoffs",
+        "title": "LTA North Split 2 Playoffs",
+        "startDate": "2025-05-24",
+        "endDate": "2025-06-15",
+        "leagueId": "league-of-legends-championship-of-the-americas",
+        "format": "Double elimination, all Bo5",
+        "champion": "FlyQuest"
+      },
+      {
+        "id": "lta-2025-south-split-2-playoffs",
+        "title": "LTA South Split 2 Playoffs",
+        "startDate": "2025-05-24",
+        "endDate": "2025-06-15",
+        "leagueId": "league-of-legends-championship-of-the-americas",
+        "format": "Double elimination, all Bo5",
+        "champion": "FURIA"
+      }
+    ]
+  },
+  "matches": {
+    "lol-emea-championship": [
+      {
+        "id": "lec-spring-g2-vs-fnatic",
+        "tournamentId": "lec-2025-spring-playoffs",
+        "split": "Spring 2025 Playoffs",
+        "date": "2025-05-24",
+        "teams": [
+          {"name": "G2 Esports", "code": "G2", "id": "g2-esports"},
+          {"name": "Fnatic", "code": "FNC", "id": "fnatic"}
+        ],
+        "result": {
+          "winner": "G2 Esports",
+          "score": "3-1"
+        },
+        "state": "completed",
+        "type": "Upper Bracket Round 1"
+      },
+      {
+        "id": "lec-spring-koi-vs-kc",
+        "tournamentId": "lec-2025-spring-playoffs",
+        "split": "Spring 2025 Playoffs",
+        "date": "2025-05-25",
+        "teams": [
+          {"name": "Movistar KOI", "code": "KOI", "id": "movistar-koi"},
+          {"name": "Karmine Corp", "code": "KC", "id": "karmine-corp"}
+        ],
+        "result": {
+          "winner": "Movistar KOI",
+          "score": "3-2"
+        },
+        "state": "completed",
+        "type": "Early Rounds"
+      },
+      {
+        "id": "lec-spring-g2-vs-koi",
+        "tournamentId": "lec-2025-spring-playoffs",
+        "split": "Spring 2025 Playoffs",
+        "date": "2025-05-26",
+        "teams": [
+          {"name": "G2 Esports", "code": "G2", "id": "g2-esports"},
+          {"name": "Movistar KOI", "code": "KOI", "id": "movistar-koi"}
+        ],
+        "result": {
+          "winner": "G2 Esports",
+          "score": "3-1"
+        },
+        "state": "completed",
+        "type": "Upper Bracket"
+      },
+      {
+        "id": "lec-spring-fnatic-vs-giantx",
+        "tournamentId": "lec-2025-spring-playoffs",
+        "split": "Spring 2025 Playoffs",
+        "date": "2025-05-31",
+        "teams": [
+          {"name": "Fnatic", "code": "FNC", "id": "fnatic"},
+          {"name": "GIANTX", "code": "GX", "id": "giantx"}
+        ],
+        "result": {
+          "winner": "Fnatic",
+          "score": "3-1"
+        },
+        "state": "completed",
+        "type": "Losers Bracket Round 1"
+      },
+      {
+        "id": "lec-spring-kc-vs-fnatic",
+        "tournamentId": "lec-2025-spring-playoffs",
+        "split": "Spring 2025 Playoffs",
+        "date": "2025-06-02",
+        "teams": [
+          {"name": "Karmine Corp", "code": "KC", "id": "karmine-corp"},
+          {"name": "Fnatic", "code": "FNC", "id": "fnatic"}
+        ],
+        "result": {
+          "winner": "Karmine Corp",
+          "score": "3-0"
+        },
+        "state": "completed",
+        "type": "Upper/Lower Bracket Round 2"
+      },
+      {
+        "id": "lec-spring-final",
+        "tournamentId": "lec-2025-spring-playoffs",
+        "split": "Spring 2025 Playoffs",
+        "date": "2025-06-08",
+        "teams": [
+          {"name": "Movistar KOI", "code": "KOI", "id": "movistar-koi"},
+          {"name": "G2 Esports", "code": "G2", "id": "g2-esports"}
+        ],
+        "result": {
+          "winner": "Movistar KOI",
+          "score": "3-1"
+        },
+        "state": "completed",
+        "type": "Final"
+      },
+      {
+        "id": "lec-summer-fnatic-vs-giantx",
+        "tournamentId": "lec-2025-summer-playoffs",
+        "split": "Summer 2025 Playoffs",
+        "date": "2025-09-15",
+        "teams": [
+          {"name": "Fnatic", "code": "FNC", "id": "fnatic"},
+          {"name": "GIANTX", "code": "GX", "id": "giantx"}
+        ],
+        "result": {
+          "winner": "Fnatic",
+          "score": "3-0"
+        },
+        "state": "completed",
+        "type": "Lower Bracket"
+      },
+      {
+        "id": "lec-summer-koi-vs-fnatic",
+        "tournamentId": "lec-2025-summer-playoffs",
+        "split": "Summer 2025 Playoffs",
+        "date": "2025-09-20",
+        "teams": [
+          {"name": "Movistar KOI", "code": "KOI", "id": "movistar-koi"},
+          {"name": "Fnatic", "code": "FNC", "id": "fnatic"}
+        ],
+        "result": {
+          "winner": "Movistar KOI",
+          "score": "3-1"
+        },
+        "state": "completed",
+        "type": "Lower Bracket"
+      },
+      {
+        "id": "lec-summer-final",
+        "tournamentId": "lec-2025-summer-playoffs",
+        "split": "Summer 2025 Playoffs",
+        "date": "2025-09-28",
+        "teams": [
+          {"name": "G2 Esports", "code": "G2", "id": "g2-esports"},
+          {"name": "Movistar KOI", "code": "KOI", "id": "movistar-koi"}
+        ],
+        "result": {
+          "winner": "G2 Esports",
+          "score": "3-0"
+        },
+        "state": "completed",
+        "type": "Final"
+      }
+    ],
+    "lol-champions-korea": [
+      {
+        "id": "lck-drx-vs-dn-freecs",
+        "tournamentId": "lck-2025-rounds-1-2",
+        "date": "2025-04-02",
+        "teams": [
+          {"name": "DRX", "code": "DRX", "id": "drx"},
+          {"name": "DN Freecs", "code": "DN", "id": "dn-freecs"}
+        ],
+        "result": {
+          "winner": "DRX",
+          "score": "2-0"
+        },
+        "state": "completed",
+        "type": "Regular Season"
+      },
+      {
+        "id": "lck-hle-vs-gen-g",
+        "tournamentId": "lck-2025-rounds-1-2",
+        "date": "2025-04-02",
+        "teams": [
+          {"name": "Hanwha Life Esports", "code": "HLE", "id": "hanwha-life-esports"},
+          {"name": "Gen.G", "code": "GEN", "id": "gen-g"}
+        ],
+        "result": {
+          "winner": "Gen.G",
+          "score": "2-0"
+        },
+        "state": "completed",
+        "type": "Regular Season"
+      },
+      {
+        "id": "lck-hle-vs-bnk-fearx",
+        "tournamentId": "lck-2025-rounds-1-2",
+        "date": "2025-06-01",
+        "teams": [
+          {"name": "Hanwha Life Esports", "code": "HLE", "id": "hanwha-life-esports"},
+          {"name": "BNK FearX", "code": "BNK", "id": "bnk-fearx"}
+        ],
+        "result": {
+          "winner": "Hanwha Life Esports",
+          "score": "2-0"
+        },
+        "state": "completed",
+        "type": "Regular Season"
+      },
+      {
+        "id": "lck-dplus-vs-nongshim",
+        "tournamentId": "lck-2025-rounds-1-2",
+        "date": "2025-06-01",
+        "teams": [
+          {"name": "Dplus KIA", "code": "DPL", "id": "dplus-kia"},
+          {"name": "Nongshim RedForce", "code": "NS", "id": "nongshim-redforce"}
+        ],
+        "result": {
+          "winner": "Dplus KIA",
+          "score": "2-1"
+        },
+        "state": "completed",
+        "type": "Regular Season"
+      },
+      {
+        "id": "lck-kt-vs-drx",
+        "tournamentId": "lck-2025-rounds-1-2",
+        "date": "2025-05-31",
+        "teams": [
+          {"name": "KT Rolster", "code": "KT", "id": "kt-rolster"},
+          {"name": "DRX", "code": "DRX", "id": "drx"}
+        ],
+        "result": {
+          "winner": "KT Rolster",
+          "score": "2-0"
+        },
+        "state": "completed",
+        "type": "Regular Season"
+      },
+      {
+        "id": "lck-hle-vs-drx-2",
+        "tournamentId": "lck-2025-rounds-1-2",
+        "date": "2025-05-11",
+        "teams": [
+          {"name": "Hanwha Life Esports", "code": "HLE", "id": "hanwha-life-esports"},
+          {"name": "DRX", "code": "DRX", "id": "drx"}
+        ],
+        "result": {
+          "winner": "Hanwha Life Esports",
+          "score": "2-0"
+        },
+        "state": "completed",
+        "type": "Regular Season"
+      },
+      {
+        "id": "lck-hle-vs-nongshim-2",
+        "tournamentId": "lck-2025-rounds-3-5",
+        "date": "2025-08-29",
+        "teams": [
+          {"name": "Hanwha Life Esports", "code": "HLE", "id": "hanwha-life-esports"},
+          {"name": "Nongshim RedForce", "code": "NS", "id": "nongshim-redforce"}
+        ],
+        "result": {
+          "winner": "Hanwha Life Esports",
+          "score": "2-0"
+        },
+        "state": "completed",
+        "type": "Regular Season"
+      },
+      {
+        "id": "lck-t1-vs-hle",
+        "tournamentId": "lck-2025-rounds-3-5",
+        "date": "2025-08-02",
+        "teams": [
+          {"name": "T1", "code": "T1", "id": "t1"},
+          {"name": "Hanwha Life Esports", "code": "HLE", "id": "hanwha-life-esports"}
+        ],
+        "result": {
+          "winner": "T1",
+          "score": "2-0"
+        },
+        "state": "completed",
+        "type": "Legend Group"
+      }
+    ],
+    "tencent-lol-pro-league": [
+      {
+        "id": "lpl-split1-final",
+        "tournamentId": "lpl-2025-split-1-playoffs",
+        "date": "2025-03-01",
+        "teams": [
+          {"name": "Anyone's Legend", "code": "AL", "id": "anyones-legend"},
+          {"name": "Top Esports", "code": "TES", "id": "top-esports"}
+        ],
+        "result": {
+          "winner": "Top Esports",
+          "score": "3-1"
+        },
+        "state": "completed",
+        "type": "Final"
+      },
+      {
+        "id": "lpl-split1-jdg-vs-tes",
+        "tournamentId": "lpl-2025-split-1-playoffs",
+        "date": "2025-02-27",
+        "teams": [
+          {"name": "JD Gaming", "code": "JDG", "id": "jd-gaming"},
+          {"name": "Top Esports", "code": "TES", "id": "top-esports"}
+        ],
+        "result": {
+          "winner": "Top Esports",
+          "score": "3-1"
+        },
+        "state": "completed",
+        "type": "Playoffs"
+      },
+      {
+        "id": "lpl-split1-blg-vs-tes",
+        "tournamentId": "lpl-2025-split-1-playoffs",
+        "date": "2025-02-26",
+        "teams": [
+          {"name": "Bilibili Gaming", "code": "BLG", "id": "bilibili-gaming"},
+          {"name": "Top Esports", "code": "TES", "id": "top-esports"}
+        ],
+        "result": {
+          "winner": "Top Esports",
+          "score": "3-1"
+        },
+        "state": "completed",
+        "type": "Playoffs"
+      },
+      {
+        "id": "lpl-split1-jdg-vs-al",
+        "tournamentId": "lpl-2025-split-1-playoffs",
+        "date": "2025-02-25",
+        "teams": [
+          {"name": "JD Gaming", "code": "JDG", "id": "jd-gaming"},
+          {"name": "Anyone's Legend", "code": "AL", "id": "anyones-legend"}
+        ],
+        "result": {
+          "winner": "Anyone's Legend",
+          "score": "3-2"
+        },
+        "state": "completed",
+        "type": "Playoffs"
+      },
+      {
+        "id": "lpl-split2-final",
+        "tournamentId": "lpl-2025-split-2-playoffs",
+        "date": "2025-06-14",
+        "teams": [
+          {"name": "Anyone's Legend", "code": "AL", "id": "anyones-legend"},
+          {"name": "Bilibili Gaming", "code": "BLG", "id": "bilibili-gaming"}
+        ],
+        "result": {
+          "winner": "Anyone's Legend",
+          "score": "3-1"
+        },
+        "state": "completed",
+        "type": "Final"
+      },
+      {
+        "id": "lpl-split2-blg-vs-ig",
+        "tournamentId": "lpl-2025-split-2-playoffs",
+        "date": "2025-06-13",
+        "teams": [
+          {"name": "Bilibili Gaming", "code": "BLG", "id": "bilibili-gaming"},
+          {"name": "Invictus Gaming", "code": "IG", "id": "invictus-gaming"}
+        ],
+        "result": {
+          "winner": "Bilibili Gaming",
+          "score": "3-1"
+        },
+        "state": "completed",
+        "type": "Playoffs"
+      },
+      {
+        "id": "lpl-split2-ig-vs-we",
+        "tournamentId": "lpl-2025-split-2-playoffs",
+        "date": "2025-06-11",
+        "teams": [
+          {"name": "Invictus Gaming", "code": "IG", "id": "invictus-gaming"},
+          {"name": "Team WE", "code": "WE", "id": "team-we"}
+        ],
+        "result": {
+          "winner": "Team WE",
+          "score": "3-0"
+        },
+        "state": "completed",
+        "type": "Playoffs"
+      },
+      {
+        "id": "lpl-split2-blg-vs-al",
+        "tournamentId": "lpl-2025-split-2-playoffs",
+        "date": "2025-06-09",
+        "teams": [
+          {"name": "Bilibili Gaming", "code": "BLG", "id": "bilibili-gaming"},
+          {"name": "Anyone's Legend", "code": "AL", "id": "anyones-legend"}
+        ],
+        "result": {
+          "winner": "Anyone's Legend",
+          "score": "3-2"
+        },
+        "state": "completed",
+        "type": "Playoffs"
+      },
+      {
+        "id": "lpl-split2-tes-vs-we",
+        "tournamentId": "lpl-2025-split-2-playoffs",
+        "date": "2025-06-08",
+        "teams": [
+          {"name": "Top Esports", "code": "TES", "id": "top-esports"},
+          {"name": "Team WE", "code": "WE", "id": "team-we"}
+        ],
+        "result": {
+          "winner": "Team WE",
+          "score": "3-2"
+        },
+        "state": "completed",
+        "type": "Playoffs"
+      },
+      {
+        "id": "lpl-grand-final",
+        "tournamentId": "lpl-2025-grand-finals",
+        "date": "2025-09-15",
+        "teams": [
+          {"name": "Bilibili Gaming", "code": "BLG", "id": "bilibili-gaming"},
+          {"name": "Top Esports", "code": "TES", "id": "top-esports"}
+        ],
+        "result": {
+          "winner": "Bilibili Gaming",
+          "score": "3-2"
+        },
+        "state": "completed",
+        "type": "Grand Final"
+      }
+    ],
+    "league-of-legends-championship-of-the-americas": [
+      {
+        "id": "lta-split1-final",
+        "tournamentId": "lta-2025-split-1-playoffs",
+        "date": "2025-02-23",
+        "teams": [
+          {"name": "Team Liquid", "code": "TL", "id": "team-liquid"},
+          {"name": "100 Thieves", "code": "100T", "id": "100-thieves"}
+        ],
+        "result": {
+          "winner": "Team Liquid",
+          "score": "3-2"
+        },
+        "state": "completed",
+        "type": "Final"
+      },
+      {
+        "id": "lta-north-split2-final",
+        "tournamentId": "lta-2025-north-split-2-playoffs",
+        "date": "2025-06-15",
+        "teams": [
+          {"name": "FlyQuest", "code": "FLY", "id": "flyquest"},
+          {"name": "Cloud9", "code": "C9", "id": "cloud9"}
+        ],
+        "result": {
+          "winner": "FlyQuest",
+          "score": "3-2"
+        },
+        "state": "completed",
+        "type": "Final"
+      },
+      {
+        "id": "lta-north-flyquest-vs-sr",
+        "tournamentId": "lta-2025-north-split-2-playoffs",
+        "date": "2025-05-24",
+        "teams": [
+          {"name": "FlyQuest", "code": "FLY", "id": "flyquest"},
+          {"name": "Shopify Rebellion", "code": "SR", "id": "shopify-rebellion"}
+        ],
+        "result": {
+          "winner": "FlyQuest",
+          "score": "3-0"
+        },
+        "state": "completed",
+        "type": "Winners Bracket Round 1"
+      },
+      {
+        "id": "lta-north-c9-vs-tl",
+        "tournamentId": "lta-2025-north-split-2-playoffs",
+        "date": "2025-05-24",
+        "teams": [
+          {"name": "Cloud9", "code": "C9", "id": "cloud9"},
+          {"name": "Team Liquid", "code": "TL", "id": "team-liquid"}
+        ],
+        "result": {
+          "winner": "Cloud9",
+          "score": "3-0"
+        },
+        "state": "completed",
+        "type": "Winners Bracket Round 1"
+      },
+      {
+        "id": "lta-north-tl-vs-dig",
+        "tournamentId": "lta-2025-north-split-2-playoffs",
+        "date": "2025-05-28",
+        "teams": [
+          {"name": "Team Liquid", "code": "TL", "id": "team-liquid"},
+          {"name": "Dignitas", "code": "DIG", "id": "dignitas"}
+        ],
+        "result": {
+          "winner": "Team Liquid",
+          "score": "3-1"
+        },
+        "state": "completed",
+        "type": "Losers Bracket"
+      },
+      {
+        "id": "lta-north-sr-vs-100t",
+        "tournamentId": "lta-2025-north-split-2-playoffs",
+        "date": "2025-05-28",
+        "teams": [
+          {"name": "Shopify Rebellion", "code": "SR", "id": "shopify-rebellion"},
+          {"name": "100 Thieves", "code": "100T", "id": "100-thieves"}
+        ],
+        "result": {
+          "winner": "Shopify Rebellion",
+          "score": "3-0"
+        },
+        "state": "completed",
+        "type": "Losers Bracket"
+      }
+    ]
+  },
+  "teams": [
+    {
+      "id": "movistar-koi",
+      "name": "Movistar KOI",
+      "code": "KOI",
+      "slug": "movistar-koi",
+      "region": "Europe",
+      "league": "lol-emea-championship"
+    },
+    {
+      "id": "g2-esports",
+      "name": "G2 Esports",
+      "code": "G2",
+      "slug": "g2-esports",
+      "region": "Europe",
+      "league": "lol-emea-championship"
+    },
+    {
+      "id": "fnatic",
+      "name": "Fnatic",
+      "code": "FNC",
+      "slug": "fnatic",
+      "region": "Europe",
+      "league": "lol-emea-championship"
+    },
+    {
+      "id": "karmine-corp",
+      "name": "Karmine Corp",
+      "code": "KC",
+      "slug": "karmine-corp",
+      "region": "Europe",
+      "league": "lol-emea-championship"
+    },
+    {
+      "id": "giantx",
+      "name": "GIANTX",
+      "code": "GX",
+      "slug": "giantx",
+      "region": "Europe",
+      "league": "lol-emea-championship"
+    },
+    {
+      "id": "t1",
+      "name": "T1",
+      "code": "T1",
+      "slug": "t1",
+      "region": "Korea",
+      "league": "lol-champions-korea"
+    },
+    {
+      "id": "gen-g",
+      "name": "Gen.G",
+      "code": "GEN",
+      "slug": "gen-g",
+      "region": "Korea",
+      "league": "lol-champions-korea"
+    },
+    {
+      "id": "drx",
+      "name": "DRX",
+      "code": "DRX",
+      "slug": "drx",
+      "region": "Korea",
+      "league": "lol-champions-korea"
+    },
+    {
+      "id": "hanwha-life-esports",
+      "name": "Hanwha Life Esports",
+      "code": "HLE",
+      "slug": "hanwha-life-esports",
+      "region": "Korea",
+      "league": "lol-champions-korea"
+    },
+    {
+      "id": "kt-rolster",
+      "name": "KT Rolster",
+      "code": "KT",
+      "slug": "kt-rolster",
+      "region": "Korea",
+      "league": "lol-champions-korea"
+    },
+    {
+      "id": "dplus-kia",
+      "name": "Dplus KIA",
+      "code": "DPL",
+      "slug": "dplus-kia",
+      "region": "Korea",
+      "league": "lol-champions-korea"
+    },
+    {
+      "id": "nongshim-redforce",
+      "name": "Nongshim RedForce",
+      "code": "NS",
+      "slug": "nongshim-redforce",
+      "region": "Korea",
+      "league": "lol-champions-korea"
+    },
+    {
+      "id": "bnk-fearx",
+      "name": "BNK FearX",
+      "code": "BNK",
+      "slug": "bnk-fearx",
+      "region": "Korea",
+      "league": "lol-champions-korea"
+    },
+    {
+      "id": "dn-freecs",
+      "name": "DN Freecs",
+      "code": "DN",
+      "slug": "dn-freecs",
+      "region": "Korea",
+      "league": "lol-champions-korea"
+    },
+    {
+      "id": "bilibili-gaming",
+      "name": "Bilibili Gaming",
+      "code": "BLG",
+      "slug": "bilibili-gaming",
+      "region": "China",
+      "league": "tencent-lol-pro-league"
+    },
+    {
+      "id": "top-esports",
+      "name": "Top Esports",
+      "code": "TES",
+      "slug": "top-esports",
+      "region": "China",
+      "league": "tencent-lol-pro-league"
+    },
+    {
+      "id": "jd-gaming",
+      "name": "JD Gaming",
+      "code": "JDG",
+      "slug": "jd-gaming",
+      "region": "China",
+      "league": "tencent-lol-pro-league"
+    },
+    {
+      "id": "anyones-legend",
+      "name": "Anyone's Legend",
+      "code": "AL",
+      "slug": "anyones-legend",
+      "region": "China",
+      "league": "tencent-lol-pro-league"
+    },
+    {
+      "id": "invictus-gaming",
+      "name": "Invictus Gaming",
+      "code": "IG",
+      "slug": "invictus-gaming",
+      "region": "China",
+      "league": "tencent-lol-pro-league"
+    },
+    {
+      "id": "team-we",
+      "name": "Team WE",
+      "code": "WE",
+      "slug": "team-we",
+      "region": "China",
+      "league": "tencent-lol-pro-league"
+    },
+    {
+      "id": "weibo-gaming",
+      "name": "Weibo Gaming",
+      "code": "WBG",
+      "slug": "weibo-gaming",
+      "region": "China",
+      "league": "tencent-lol-pro-league"
+    },
+    {
+      "id": "funplus-phoenix",
+      "name": "FunPlus Phoenix",
+      "code": "FPX",
+      "slug": "funplus-phoenix",
+      "region": "China",
+      "league": "tencent-lol-pro-league"
+    },
+    {
+      "id": "team-liquid",
+      "name": "Team Liquid",
+      "code": "TL",
+      "slug": "team-liquid",
+      "region": "Americas",
+      "league": "league-of-legends-championship-of-the-americas"
+    },
+    {
+      "id": "cloud9",
+      "name": "Cloud9",
+      "code": "C9",
+      "slug": "cloud9",
+      "region": "Americas",
+      "league": "league-of-legends-championship-of-the-americas"
+    },
+    {
+      "id": "100-thieves",
+      "name": "100 Thieves",
+      "code": "100T",
+      "slug": "100-thieves",
+      "region": "Americas",
+      "league": "league-of-legends-championship-of-the-americas"
+    },
+    {
+      "id": "flyquest",
+      "name": "FlyQuest",
+      "code": "FLY",
+      "slug": "flyquest",
+      "region": "Americas",
+      "league": "league-of-legends-championship-of-the-americas"
+    },
+    {
+      "id": "shopify-rebellion",
+      "name": "Shopify Rebellion",
+      "code": "SR",
+      "slug": "shopify-rebellion",
+      "region": "Americas",
+      "league": "league-of-legends-championship-of-the-americas"
+    },
+    {
+      "id": "dignitas",
+      "name": "Dignitas",
+      "code": "DIG",
+      "slug": "dignitas",
+      "region": "Americas",
+      "league": "league-of-legends-championship-of-the-americas"
+    }
+  ],
+  "standings": {
+    "lec-2025-spring-playoffs": [
+      {
+        "id": "movistar-koi",
+        "name": "Movistar KOI",
+        "code": "KOI",
+        "record": { "wins": 3, "losses": 0 },
+        "ordinals": { "position": 1 }
+      },
+      {
+        "id": "g2-esports",
+        "name": "G2 Esports",
+        "code": "G2",
+        "record": { "wins": 2, "losses": 1 },
+        "ordinals": { "position": 2 }
+      },
+      {
+        "id": "karmine-corp",
+        "name": "Karmine Corp",
+        "code": "KC",
+        "record": { "wins": 1, "losses": 2 },
+        "ordinals": { "position": 3 }
+      },
+      {
+        "id": "fnatic",
+        "name": "Fnatic",
+        "code": "FNC",
+        "record": { "wins": 1, "losses": 2 },
+        "ordinals": { "position": 4 }
+      }
+    ],
+    "lec-2025-summer-playoffs": [
+      {
+        "id": "g2-esports",
+        "name": "G2 Esports",
+        "code": "G2",
+        "record": { "wins": 3, "losses": 0 },
+        "ordinals": { "position": 1 }
+      },
+      {
+        "id": "movistar-koi",
+        "name": "Movistar KOI",
+        "code": "KOI",
+        "record": { "wins": 2, "losses": 1 },
+        "ordinals": { "position": 2 }
+      },
+      {
+        "id": "fnatic",
+        "name": "Fnatic",
+        "code": "FNC",
+        "record": { "wins": 1, "losses": 2 },
+        "ordinals": { "position": 3 }
+      }
+    ],
+    "lpl-2025-split-1-playoffs": [
+      {
+        "id": "top-esports",
+        "name": "Top Esports",
+        "code": "TES",
+        "record": { "wins": 4, "losses": 0 },
+        "ordinals": { "position": 1 }
+      },
+      {
+        "id": "anyones-legend",
+        "name": "Anyone's Legend",
+        "code": "AL",
+        "record": { "wins": 2, "losses": 1 },
+        "ordinals": { "position": 2 }
+      },
+      {
+        "id": "jd-gaming",
+        "name": "JD Gaming",
+        "code": "JDG",
+        "record": { "wins": 1, "losses": 2 },
+        "ordinals": { "position": 3 }
+      },
+      {
+        "id": "bilibili-gaming",
+        "name": "Bilibili Gaming",
+        "code": "BLG",
+        "record": { "wins": 1, "losses": 1 },
+        "ordinals": { "position": 4 }
+      }
+    ],
+    "lpl-2025-split-2-playoffs": [
+      {
+        "id": "anyones-legend",
+        "name": "Anyone's Legend",
+        "code": "AL",
+        "record": { "wins": 3, "losses": 0 },
+        "ordinals": { "position": 1 }
+      },
+      {
+        "id": "bilibili-gaming",
+        "name": "Bilibili Gaming",
+        "code": "BLG",
+        "record": { "wins": 2, "losses": 1 },
+        "ordinals": { "position": 2 }
+      },
+      {
+        "id": "team-we",
+        "name": "Team WE",
+        "code": "WE",
+        "record": { "wins": 2, "losses": 1 },
+        "ordinals": { "position": 3 }
+      },
+      {
+        "id": "invictus-gaming",
+        "name": "Invictus Gaming",
+        "code": "IG",
+        "record": { "wins": 1, "losses": 2 },
+        "ordinals": { "position": 4 }
+      }
+    ]
+  }
+}
