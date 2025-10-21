@@ -16,6 +16,8 @@ import LolAccountLinking from '@/components/ui/LolAccountLinking';
 import LolProfileDisplay from '@/components/ui/LolProfileDisplay';
 import { useTheme } from 'next-themes';
 import { lolService, type LolAccount } from '@/lib/lol-service';
+import { useOffline } from '@/lib/useOffline';
+import { OfflineBanner, OfflineDataMessage } from '@/components/ui/OfflineComponents';
 
 interface UserProfile {
   firstName: string;
@@ -242,6 +244,7 @@ export default function ProfilePage() {
 
   return (
     <NavigationDrawer>
+      <OfflineBanner />
       <div className="min-h-screen bg-background relative overflow-hidden">
       {/* Animated Background Elements */}
       <div className="fixed inset-0 -z-10 overflow-hidden">
@@ -283,6 +286,8 @@ export default function ProfilePage() {
         <header className="max-w-7xl mx-auto flex items-center justify-center mb-12">
           <AnimatedLogo size="md" />
         </header>
+
+        <OfflineDataMessage dataType="profile" className="max-w-6xl mx-auto mb-6" />
 
         {/* Main Content */}
         <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8">

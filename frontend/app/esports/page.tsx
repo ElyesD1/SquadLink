@@ -37,6 +37,8 @@ import {
   getTeamLogoUrl,
   getTeamCodeFromName
 } from '@/lib/lol-esports-service';
+import { useOffline } from '@/lib/useOffline';
+import { OfflineBanner, OfflineDataMessage } from '@/components/ui/OfflineComponents';
 
 interface UserProfile {
   gamePreferences: string[];
@@ -300,6 +302,7 @@ export default function EsportsNewsPage() {
 
   return (
     <NavigationDrawer>
+      <OfflineBanner />
       <div className="min-h-screen bg-background relative overflow-hidden">
       {/* Animated Background */}
       <div className="fixed inset-0 -z-10 overflow-hidden">
@@ -348,6 +351,9 @@ export default function EsportsNewsPage() {
           </div>
         </header>
 
+        <OfflineDataMessage dataType="esports" className="max-w-7xl mx-auto mb-6" />
+
+        {/* Main Content */}
         {/* Navigation Tabs */}
         <div className="max-w-7xl mx-auto mb-8">
           <div className="flex space-x-1 bg-card/50 backdrop-blur-sm rounded-xl p-1 border border-border/50">

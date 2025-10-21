@@ -27,6 +27,8 @@ import { AnimatedLogo } from '@/components/ui/AnimatedLogo';
 import NavigationDrawer from '@/components/ui/NavigationDrawer';
 import { useTheme } from 'next-themes';
 import { usePartySocket } from '@/lib/usePartySocket';
+import { useOffline } from '@/lib/useOffline';
+import { OfflineBanner, OfflineMessage, CachedDataIndicator } from '@/components/ui/OfflineComponents';
 import DiscordIntegration from '@/components/ui/DiscordIntegration';
 import JoinPartyModal from '@/components/ui/JoinPartyModal';
 import Image from 'next/image';
@@ -116,6 +118,9 @@ export default function PartiesPage() {
     clearNotifications,
     onPartiesUpdate 
   } = usePartySocket(session?.user?.email || undefined);
+
+  // Offline functionality
+  const { isOnline, cachedData, isDataAvailable } = useOffline();
 
   const getTextClass = (theme: string) => {
     return theme === 'light' ? 'text-gray-900' : 'text-white';
@@ -221,6 +226,21 @@ export default function PartiesPage() {
   const fetchParties = async (userId?: string) => {
     try {
       setIsLoading(true);
+
+      // If offline, use cached parties data
+      if (!isOnline) {
+        if (isDataAvailable('partiesList')) {
+          setParties(cachedData.partiesList);
+          console.log('Using cached parties data (offline mode)');
+        } else {
+          setParties([]);
+          console.log('No cached parties data available');
+        }
+        setIsLoading(false);
+        return;
+      }
+
+      // Online mode - fetch fresh data
       const queryParams = new URLSearchParams();
       if (selectedGameMode) {
         queryParams.append('gameMode', selectedGameMode);
@@ -241,7 +261,16 @@ export default function PartiesPage() {
         let partiesData = data.data || data;
         console.log('Parties data:', partiesData);
         
-        setParties(Array.isArray(partiesData) ? partiesData : []);
+        const partiesArray = Array.isArray(partiesData) ? partiesData : [];
+        setParties(partiesArray);
+        
+        // Cache the parties data for offline use
+        if (partiesArray.length > 0) {
+          // Import cache here to avoid circular dependency
+          import('@/lib/cache').then(({ cache }) => {
+            cache.setPartiesList(partiesArray);
+          });
+        }
         
         // Convert join requests from owned parties into notifications
         if (Array.isArray(partiesData) && currentUserId) {
@@ -274,6 +303,11 @@ export default function PartiesPage() {
       }
     } catch (error) {
       console.error('Error fetching parties:', error);
+      // If online fetch fails, try to use cached data as fallback
+      if (isDataAvailable('partiesList')) {
+        setParties(cachedData.partiesList);
+        console.log('Using cached parties data as fallback');
+      }
     } finally {
       setIsLoading(false);
     }
@@ -415,6 +449,8 @@ export default function PartiesPage() {
   return (
     <NavigationDrawer>
       <div className={`min-h-screen relative overflow-hidden ${getBackgroundClass(currentTheme)}`}>
+        <OfflineBanner />
+
         {/* Animated Background */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <motion.div 
@@ -689,15 +725,16 @@ export default function PartiesPage() {
 
                 <Button
                   onClick={() => router.push('/parties/create')}
-                  disabled={!hasLolAccount}
+                  disabled={!hasLolAccount || !isOnline}
                   className={`px-5 py-2.5 rounded-xl font-semibold shadow-lg transition-all duration-300 ${
-                    hasLolAccount
+                    hasLolAccount && isOnline
                       ? 'bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white shadow-purple-500/30'
                       : 'bg-gray-600 text-gray-400 cursor-not-allowed opacity-50'
                   }`}
                 >
                   <Plus className="w-4 h-4 mr-2" />
                   Create Party
+                  {!isOnline && <span className="ml-2 text-xs">(Offline)</span>}
                 </Button>
               </div>
             </div>
@@ -790,7 +827,7 @@ export default function PartiesPage() {
                         <option value="aram">ARAM</option>
                         <option value="draft_pick">Draft Pick</option>
                       </select>
-                      <ChevronDown className={`absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 ${getSecondaryTextClass(currentTheme)} pointer-events-none`} />
+                      <ChevronDown className={`absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 ${getSecondaryTextClass(currentTheme)}`} />
                     </div>
 
                     {/* Refresh Button */}
@@ -818,6 +855,11 @@ export default function PartiesPage() {
                     <h2 className={`text-2xl font-bold ${getTextClass(currentTheme)} mb-6 flex items-center gap-2`}>
                       <Users className="w-6 h-6" />
                       My Parties
+                      <CachedDataIndicator
+                        dataType="Parties"
+                        isAvailable={!isOnline && isDataAvailable('partiesList')}
+                        className="ml-2"
+                      />
                     </h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                       {myParties.map((party, index) => (
@@ -996,14 +1038,18 @@ export default function PartiesPage() {
                     >
                       <Gamepad2 className={`w-16 h-16 ${getSecondaryTextClass(currentTheme)} mx-auto mb-4`} />
                       <h3 className={`text-2xl font-bold ${getTextClass(currentTheme)} mb-2`}>
-                        No parties found
+                        {isOnline ? 'No parties found' : 'Parties Unavailable Offline'}
                       </h3>
                       <p className={`${getSecondaryTextClass(currentTheme)} mb-6`}>
-                        {myParties.length > 0 
-                          ? 'No other parties match your filters.'
-                          : 'Be the first to create a party!'}
+                        {isOnline ? (
+                          myParties.length > 0 
+                            ? 'No other parties match your filters.'
+                            : 'Be the first to create a party!'
+                        ) : (
+                          'Party data is cached when online. Connect to the internet to see live parties and create new ones.'
+                        )}
                       </p>
-                      {myParties.length === 0 && (
+                      {myParties.length === 0 && isOnline && (
                         <Button
                           onClick={() => router.push('/parties/create')}
                           className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white"
@@ -1011,6 +1057,14 @@ export default function PartiesPage() {
                           <Plus className="w-5 h-5 mr-2" />
                           Create Party
                         </Button>
+                      )}
+                      {!isOnline && (
+                        <OfflineMessage
+                          title="Limited Party Features Offline"
+                          message="You can view cached parties but cannot join, create, or interact with parties while offline."
+                          showRefresh={true}
+                          className="mt-4"
+                        />
                       )}
                     </motion.div>
                   ) : (
