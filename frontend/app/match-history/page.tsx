@@ -701,7 +701,7 @@ export default function MatchHistoryPage() {
           <div /></NavigationDrawer>
 
       {/* Header with Logo */}
-      <header className="container mx-auto px-4 pt-8 pb-4 max-w-[1400px] flex items-center justify-center" style={{ marginTop: '-750px' }}>
+      <header className="container mx-auto px-4 pt-8 pb-4 max-w-[1400px] flex items-center justify-center" style={{ marginTop: '-840px' }}>
         <AnimatedLogo size="md" />
       </header>
 
