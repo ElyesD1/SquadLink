@@ -12,6 +12,7 @@ import { Observable, forkJoin, from, of } from 'rxjs';
 import { map, switchMap, catchError } from 'rxjs/operators';
 import { RiotApiService } from './riot-api.service';
 import { MatchCacheService } from './match-cache.service';
+import { SummonerCacheService } from './summoner-cache.service';
 import { SearchSummonerDto } from './dto/search-summoner.dto';
 import { 
   RiotAccount, 
@@ -27,6 +28,7 @@ export class RiotApiController {
   constructor(
     private readonly riotApiService: RiotApiService,
     private readonly matchCacheService: MatchCacheService,
+    private readonly summonerCacheService: SummonerCacheService,
   ) {}
 
   /**
@@ -77,6 +79,113 @@ export class RiotApiController {
     }
 
     return this.riotApiService.getSummonerByPuuid(puuid, region);
+  }
+
+  /**
+   * Get summoner by PUUID with caching
+   * GET /api/v1/riot/summoner/puuid/{puuid}/cached?region={region}
+   */
+  @Get('summoner/puuid/:puuid/cached')
+  async getSummonerByPuuidCached(
+    @Param('puuid') puuid: string,
+    @Query('region') region?: string
+  ): Promise<Summoner> {
+    if (!puuid) {
+      throw new BadRequestException('PUUID is required');
+    }
+
+    const regionToUse = region || 'na1';
+
+    // Try cache first
+    const cached = await this.summonerCacheService.getCachedSummoner(puuid, regionToUse);
+    if (cached) {
+      return cached;
+    }
+
+    // Cache miss - fetch from API and cache
+    return new Promise((resolve, reject) => {
+      this.riotApiService.getSummonerByPuuid(puuid, regionToUse).subscribe({
+        next: async (summoner) => {
+          await this.summonerCacheService.cacheSummoner(puuid, regionToUse, summoner);
+          resolve(summoner);
+        },
+        error: (error) => reject(error)
+      });
+    });
+  }
+
+  /**
+   * Get multiple summoners by PUUID in batch (with caching)
+   * POST /api/v1/riot/summoner/batch
+   * Body: { summoners: [{ puuid: string, region: string }] }
+   */
+  @Post('summoner/batch')
+  async getSummonersBatch(
+    @Body() body: { summoners: Array<{ puuid: string; region: string }> }
+  ): Promise<{ summoners: Summoner[]; cached: number; fetched: number }> {
+    if (!body.summoners || !Array.isArray(body.summoners)) {
+      throw new BadRequestException('Summoners array is required');
+    }
+
+    const requests = body.summoners;
+    const results: Summoner[] = [];
+    let cachedCount = 0;
+    let fetchedCount = 0;
+
+    // Try to get from cache first
+    const cachedMap = await this.summonerCacheService.getCachedSummonersBatch(requests);
+
+    const toFetch: Array<{ puuid: string; region: string }> = [];
+    
+    // Identify which summoners need to be fetched
+    for (const req of requests) {
+      const key = `${req.puuid}-${req.region}`;
+      const cached = cachedMap.get(key);
+      
+      if (cached) {
+        results.push(cached);
+        cachedCount++;
+      } else {
+        toFetch.push(req);
+      }
+    }
+
+    // Fetch missing summoners from API
+    if (toFetch.length > 0) {
+      const fetchPromises = toFetch.map(({ puuid, region }) => 
+        new Promise<{ puuid: string; region: string; data: Summoner | null }>((resolve, reject) => {
+          this.riotApiService.getSummonerByPuuid(puuid, region).subscribe({
+            next: (summoner) => resolve({ puuid, region, data: summoner }),
+            error: (error) => {
+              console.error(`Failed to fetch summoner ${puuid}:`, error.message);
+              resolve({ puuid, region, data: null });
+            }
+          });
+        })
+      );
+
+      const fetchedData = await Promise.all(fetchPromises);
+      
+      // Cache the fetched summoners
+      const toCache = fetchedData.filter(item => item.data !== null) as Array<{ puuid: string; region: string; data: Summoner }>;
+      if (toCache.length > 0) {
+        await this.summonerCacheService.cacheSummonersBatch(toCache);
+      }
+
+      // Add to results
+      fetchedData.forEach(item => {
+        if (item.data) {
+          results.push(item.data);
+          fetchedCount++;
+        }
+      });
+    }
+
+    return {
+      summoners: results,
+      cached: cachedCount,
+      fetched: fetchedCount
+    };
   }
 
   /**

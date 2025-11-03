@@ -16,3 +16,4 @@ export const COMMUNITY_DRAGON_URL = 'https://raw.communitydragon.org/latest';
  */
 export const getCDNUrl = (path: string) => `${CDN_BASE_URL}/${LOL_VERSION}/${path}`;
 export const getPerksUrl = (path: string) => `${CDN_BASE_URL}/img/${path}`;
+export const getProfileIconUrl = (iconId: number) => `${COMMUNITY_DRAGON_URL}/plugins/rcp-be-lol-game-data/global/default/v1/profile-icons/${iconId}.jpg`;

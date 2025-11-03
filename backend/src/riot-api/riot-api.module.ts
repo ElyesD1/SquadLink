@@ -5,7 +5,9 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { RiotApiController } from './riot-api.controller';
 import { RiotApiService } from './riot-api.service';
 import { MatchCacheService } from './match-cache.service';
+import { SummonerCacheService } from './summoner-cache.service';
 import { MatchCache, MatchCacheSchema } from './entities/match-cache.entity';
+import { SummonerCache, SummonerCacheSchema } from './entities/summoner-cache.entity';
 
 @Module({
   imports: [
@@ -15,11 +17,12 @@ import { MatchCache, MatchCacheSchema } from './entities/match-cache.entity';
     }),
     ConfigModule,
     MongooseModule.forFeature([
-      { name: MatchCache.name, schema: MatchCacheSchema }
+      { name: MatchCache.name, schema: MatchCacheSchema },
+      { name: SummonerCache.name, schema: SummonerCacheSchema }
     ]),
   ],
   controllers: [RiotApiController],
-  providers: [RiotApiService, MatchCacheService],
-  exports: [RiotApiService, MatchCacheService],
+  providers: [RiotApiService, MatchCacheService, SummonerCacheService],
+  exports: [RiotApiService, MatchCacheService, SummonerCacheService],
 })
 export class RiotApiModule {}

@@ -11,7 +11,7 @@ import { AnimatedLogo } from '@/components/ui/AnimatedLogo';
 import NavigationDrawer from '@/components/ui/NavigationDrawer';
 import { ChevronDown, ChevronUp, Loader2, Trophy, Target, Shield, Skull, Users, Clock, AlertCircle, TrendingUp, TrendingDown, Swords } from 'lucide-react';
 import { lolService, type LolAccount } from '@/lib/lol-service';
-import { LOL_VERSION, getCDNUrl } from '@/lib/constants';
+import { LOL_VERSION, getCDNUrl, getProfileIconUrl } from '@/lib/constants';
 
 interface UserProfile {
   lolAccount?: LolAccount;
@@ -96,6 +96,9 @@ export default function MatchHistoryPage() {
   const [activeTab, setActiveTab] = useState<{ [matchId: string]: string }>({});
   const [timelineData, setTimelineData] = useState<{ [matchId: string]: any }>({});
   const [loadingTimeline, setLoadingTimeline] = useState<{ [matchId: string]: boolean }>({});
+  const [selectedPlayers, setSelectedPlayers] = useState<{ [matchId: string]: Set<number> }>({});
+  const [activeMetric, setActiveMetric] = useState<{ [matchId: string]: 'gold' | 'damage' | 'cs' | 'exp' }>({});
+  const [teammateIcons, setTeammateIcons] = useState<{ [puuid: string]: number }>({});
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
@@ -145,6 +148,115 @@ export default function MatchHistoryPage() {
       setLoading(false);
     }
   }, [profile]);
+
+  // Fetch teammate profile icons when matches change
+  useEffect(() => {
+    if (matches.length > 0 && profile?.lolAccount?.puuid) {
+      fetchTeammateIcons();
+    }
+  }, [matches, profile]);
+
+  // Load cached teammate icons from localStorage on mount
+  useEffect(() => {
+    const cachedIcons = localStorage.getItem('teammateIcons');
+    if (cachedIcons) {
+      try {
+        const parsed = JSON.parse(cachedIcons);
+        const cacheTime = localStorage.getItem('teammateIconsTime');
+        const now = Date.now();
+        
+        // Use cache if less than 24 hours old
+        if (cacheTime && (now - parseInt(cacheTime)) < 24 * 60 * 60 * 1000) {
+          console.log('[Teammate Icons] Loaded from localStorage cache');
+          setTeammateIcons(parsed);
+        } else {
+          // Clear expired cache
+          localStorage.removeItem('teammateIcons');
+          localStorage.removeItem('teammateIconsTime');
+        }
+      } catch (error) {
+        console.error('[Teammate Icons] Error loading cache:', error);
+      }
+    }
+  }, []);
+
+  const fetchTeammateIcons = async () => {
+    if (!profile?.lolAccount?.puuid || matches.length === 0) return;
+
+    const region = profile.lolAccount.region;
+    const uniquePuuids = new Set<string>();
+    
+    // Collect all unique teammate PUUIDs
+    matches.forEach(match => {
+      const playerData = match.info.participants.find(p => p.puuid === profile.lolAccount?.puuid);
+      if (!playerData) return;
+      
+      // Find teammates (same team, different player)
+      match.info.participants
+        .filter(p => p.teamId === playerData.teamId && p.puuid !== profile.lolAccount?.puuid)
+        .forEach(teammate => {
+          uniquePuuids.add(teammate.puuid);
+        });
+    });
+
+    // Skip if already fetched all icons
+    const alreadyFetched = Array.from(uniquePuuids).every(puuid => teammateIcons[puuid] !== undefined);
+    if (alreadyFetched) {
+      console.log('[Teammate Icons] All icons already fetched, skipping');
+      return;
+    }
+
+    console.log(`[Teammate Icons] Fetching icons for ${uniquePuuids.size} teammates...`);
+
+    try {
+      // Use batch endpoint for efficient fetching with caching
+      const response = await fetch(
+        'http://localhost:3001/api/v1/riot/summoner/batch',
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            summoners: Array.from(uniquePuuids).map(puuid => ({ puuid, region }))
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch summoner batch');
+      }
+
+      const data = await response.json();
+      console.log(`[Teammate Icons] Fetched ${data.fetched} new, ${data.cached} from cache`);
+
+      // Build icon map from results
+      const icons: { [puuid: string]: number } = { ...teammateIcons }; // Keep existing icons
+      
+      data.summoners.forEach((summoner: any) => {
+        icons[summoner.puuid] = summoner.profileIconId;
+      });
+
+      setTeammateIcons(icons);
+      
+      // Save to localStorage for persistence across refreshes
+      try {
+        localStorage.setItem('teammateIcons', JSON.stringify(icons));
+        localStorage.setItem('teammateIconsTime', Date.now().toString());
+      } catch (error) {
+        console.error('[Teammate Icons] Error saving to localStorage:', error);
+      }
+    } catch (error) {
+      console.error('[Teammate Icons] Error fetching batch:', error);
+      
+      // Fallback: set default icons for any missing
+      const icons: { [puuid: string]: number } = { ...teammateIcons };
+      Array.from(uniquePuuids).forEach(puuid => {
+        if (!icons[puuid]) {
+          icons[puuid] = 29; // Default icon
+        }
+      });
+      setTeammateIcons(icons);
+    }
+  };
 
   const loadCachedMatches = async () => {
     if (!profile?.lolAccount?.puuid) return;
@@ -588,7 +700,12 @@ export default function MatchHistoryPage() {
         <NavigationDrawer>
           <div /></NavigationDrawer>
 
-      <div className="container mx-auto px-4 pb-6 max-w-[1400px]" style={{ marginTop: '-700px' }}>
+      {/* Header with Logo */}
+      <header className="container mx-auto px-4 pt-8 pb-4 max-w-[1400px] flex items-center justify-center" style={{ marginTop: '-750px' }}>
+        <AnimatedLogo size="md" />
+      </header>
+
+      <div className="container mx-auto px-4 pb-6 max-w-[1400px]">
         {/* Main Grid Layout */}
         <div className="grid grid-cols-12 gap-4">
           {/* Left Sidebar - Profile & Stats */}
@@ -652,8 +769,8 @@ export default function MatchHistoryPage() {
                       className="relative group/btn bg-gradient-to-r from-[#5383E8] to-cyan-400 hover:from-cyan-400 hover:to-[#5383E8] text-white text-sm px-4 py-2 font-bold font-mono transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2 border border-cyan-400/50 shadow-[0_0_15px_rgba(0,255,255,0.3)] hover:shadow-[0_0_25px_rgba(0,255,255,0.5)]"
                     >
                       {/* Button corner accents */}
-                      <div className="absolute top-0 left-0 w-2 h-2 border-t-2 border-l-2 border-white/50"></div>
-                      <div className="absolute bottom-0 right-0 w-2 h-2 border-b-2 border-r-2 border-white/50"></div>
+                      <div className="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2 border-white/50"></div>
+                      <div className="absolute bottom-0 right-0 w-3 h-3 border-b-2 border-r-2 border-white/50"></div>
                       
                       {refreshing ? (
                         <>
@@ -793,6 +910,166 @@ export default function MatchHistoryPage() {
               </motion.div>
             )}
 
+            {/* Recently Played With Card */}
+            {profile?.lolAccount && matches.length > 0 && (
+              <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.1 }}
+                className="bg-gradient-to-br from-[#0a1628] via-[#0f1f3a] to-[#0a1628] rounded-none p-5 border-2 border-cyan-400/20 shadow-[0_0_30px_rgba(83,131,232,0.2)] relative overflow-hidden"
+              >
+                {/* Top tech line */}
+                <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-cyan-400/50 to-transparent"></div>
+                
+                {/* Side accent */}
+                <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-transparent via-[#5383E8] to-transparent shadow-[0_0_10px_#5383E8]"></div>
+                
+                {/* Corner brackets */}
+                <div className="absolute top-0 left-0 w-8 h-8 border-t-2 border-l-2 border-cyan-400/40"></div>
+                <div className="absolute top-0 right-0 w-8 h-8 border-t-2 border-r-2 border-cyan-400/40"></div>
+                
+                {/* Header */}
+                <div className="flex items-center justify-between mb-4 relative z-10">
+                  <h3 className="text-sm font-bold text-white font-mono tracking-wider uppercase drop-shadow-[0_0_10px_rgba(255,255,255,0.3)]">
+                    Recently Played With
+                  </h3>
+                  <span className="text-xs text-gray-500 font-mono">Last {matches.length} games</span>
+                </div>
+                
+                {/* Calculate teammate statistics */}
+                {(() => {
+                  const teammateStats = new Map<string, {
+                    puuid: string;
+                    gameName: string;
+                    tagLine: string;
+                    profileIconId: number;
+                    gamesPlayed: number;
+                    wins: number;
+                    losses: number;
+                    lastPlayed: number;
+                  }>();
+                  
+                  // Process matches to find teammates
+                  matches.forEach(match => {
+                    const playerData = match.info.participants.find(p => p.puuid === profile.lolAccount?.puuid);
+                    if (!playerData) return;
+                    
+                    // Find teammates (same team)
+                    match.info.participants
+                      .filter(p => p.teamId === playerData.teamId && p.puuid !== profile.lolAccount?.puuid)
+                      .forEach(teammate => {
+                        const key = teammate.puuid;
+                        const existing = teammateStats.get(key);
+                        
+                        if (existing) {
+                          existing.gamesPlayed += 1;
+                          if (teammate.win) existing.wins += 1;
+                          else existing.losses += 1;
+                          existing.lastPlayed = Math.max(existing.lastPlayed, match.info.gameCreation);
+                        } else {
+                          teammateStats.set(key, {
+                            puuid: teammate.puuid,
+                            gameName: teammate.riotIdGameName || 'Player',
+                            tagLine: teammate.riotIdTagline || '',
+                            profileIconId: teammateIcons[teammate.puuid] || 29, // Use fetched icon or default
+                            gamesPlayed: 1,
+                            wins: teammate.win ? 1 : 0,
+                            losses: teammate.win ? 0 : 1,
+                            lastPlayed: match.info.gameCreation,
+                          });
+                        }
+                      });
+                  });
+                  
+                  // Sort by games played (descending) then by last played (most recent first)
+                  const topTeammates = Array.from(teammateStats.values())
+                    .sort((a, b) => {
+                      if (b.gamesPlayed !== a.gamesPlayed) {
+                        return b.gamesPlayed - a.gamesPlayed;
+                      }
+                      return b.lastPlayed - a.lastPlayed;
+                    })
+                    .slice(0, 5);
+                  
+                  return (
+                    <div className="space-y-2 relative z-10">
+                      {/* Table Header */}
+                      <div className="grid grid-cols-12 gap-2 pb-2 border-b border-cyan-400/20 text-xs font-mono text-gray-500 uppercase tracking-wider">
+                        <div className="col-span-5">Summoner</div>
+                        <div className="col-span-2 text-center">Played</div>
+                        <div className="col-span-3 text-center">W - L</div>
+                        <div className="col-span-2 text-right">Win Ratio</div>
+                      </div>
+                      
+                      {/* Teammate List */}
+                      {topTeammates.length > 0 ? (
+                        topTeammates.map((teammate, index) => {
+                          const winRate = (teammate.wins / teammate.gamesPlayed * 100).toFixed(0);
+                          
+                          return (
+                            <div 
+                              key={teammate.puuid}
+                              className="grid grid-cols-12 gap-2 items-center py-2 border-b border-cyan-400/10 hover:bg-cyan-400/5 transition-colors group"
+                            >
+                              {/* Summoner Info */}
+                              <div className="col-span-5 flex items-center space-x-2">
+                                <div className="relative w-8 h-8 flex-shrink-0">
+                                  <div className="absolute inset-0 bg-cyan-400/20 blur-md opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                                  <div className="relative w-full h-full overflow-hidden border border-cyan-400/30 bg-[#0a1628]">
+                                    <img
+                                      src={getProfileIconUrl(teammate.profileIconId)}
+                                      alt="Icon"
+                                      className="w-full h-full object-cover"
+                                    />
+                                  </div>
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                  <div className="text-sm font-medium text-white truncate font-mono">
+                                    {teammate.gameName}
+                                  </div>
+                                </div>
+                              </div>
+                              
+                              {/* Games Played */}
+                              <div className="col-span-2 text-center">
+                                <span className="text-sm font-bold text-cyan-400 font-mono">
+                                  {teammate.gamesPlayed}
+                                </span>
+                              </div>
+                              
+                              {/* W - L */}
+                              <div className="col-span-3 text-center">
+                                <span className="text-sm font-mono text-gray-400">
+                                  <span className="text-green-400">{teammate.wins}</span>
+                                  {' - '}
+                                  <span className="text-red-400">{teammate.losses}</span>
+                                </span>
+                              </div>
+                              
+                              {/* Win Rate */}
+                              <div className="col-span-2 text-right">
+                                <span className={`text-sm font-bold font-mono ${
+                                  parseFloat(winRate) >= 50
+                                    ? 'text-green-400 drop-shadow-[0_0_5px_rgba(74,222,128,0.5)]'
+                                    : 'text-red-400 drop-shadow-[0_0_5px_rgba(248,113,113,0.5)]'
+                                }`}>
+                                  {winRate}%
+                                </span>
+                              </div>
+                            </div>
+                          );
+                        })
+                      ) : (
+                        <div className="text-center py-6 text-gray-500 text-sm font-mono">
+                          No teammates found
+                        </div>
+                      )}
+                    </div>
+                  );
+                })()}
+              </motion.div>
+            )}
+
             {!profile?.lolAccount && (
               <motion.div
                 initial={{ opacity: 0, x: -20 }}
@@ -850,39 +1127,36 @@ export default function MatchHistoryPage() {
                     
                     {/* Recent Performance Summary */}
                     <div className="flex items-center space-x-6">
-                    {/* Last 20 Games Stats */}
+                    {/* All Loaded Games Stats */}
                     <div className="flex items-center space-x-3">
                       <div className="text-center">
                         <div className="text-sm font-bold text-cyan-400 font-mono drop-shadow-[0_0_5px_rgba(0,255,255,0.5)]">
                           {(() => {
-                            const recentMatches = matches.slice(0, 20);
-                            const wins = recentMatches.filter(m => {
+                            const wins = matches.filter(m => {
                               const player = getPlayerData(m);
                               return player?.win;
                             }).length;
-                            const losses = recentMatches.length - wins;
-                            const winRate = recentMatches.length > 0 ? (wins / recentMatches.length * 100).toFixed(0) : 0;
+                            const losses = matches.length - wins;
+                            const winRate = matches.length > 0 ? (wins / matches.length * 100).toFixed(0) : 0;
                             return `${winRate}%`;
                           })()}
                         </div>
-                        <div className="text-xs text-gray-500 font-mono uppercase tracking-wider">Last 20</div>
+                        <div className="text-xs text-gray-500 font-mono uppercase tracking-wider">Last {matches.length}</div>
                       </div>
                       <div className="flex items-center space-x-1.5">
                         <div className={`relative px-3 py-1.5 border text-sm font-bold font-mono ${
                           (() => {
-                            const recentMatches = matches.slice(0, 20);
-                            const wins = recentMatches.filter(m => {
+                            const wins = matches.filter(m => {
                               const player = getPlayerData(m);
                               return player?.win;
                             }).length;
-                            return (wins / recentMatches.length * 100) >= 50 
+                            return (wins / matches.length * 100) >= 50 
                               ? 'bg-green-500/10 border-green-400/30 text-green-400 shadow-[0_0_10px_rgba(74,222,128,0.2)]' 
                               : 'bg-[#5383E8]/10 border-[#5383E8]/30 text-[#5383E8] shadow-[0_0_10px_rgba(83,131,232,0.2)]';
                           })()
                         }`}>
                           {(() => {
-                            const recentMatches = matches.slice(0, 20);
-                            const wins = recentMatches.filter(m => {
+                            const wins = matches.filter(m => {
                               const player = getPlayerData(m);
                               return player?.win;
                             }).length;
@@ -892,12 +1166,11 @@ export default function MatchHistoryPage() {
                         <div className="text-cyan-400/50 font-bold">/</div>
                         <div className="relative px-3 py-1.5 border bg-red-500/10 border-red-400/30 text-sm font-bold font-mono text-red-400 shadow-[0_0_10px_rgba(248,113,113,0.2)]">
                           {(() => {
-                            const recentMatches = matches.slice(0, 20);
-                            const wins = recentMatches.filter(m => {
+                            const wins = matches.filter(m => {
                               const player = getPlayerData(m);
                               return player?.win;
                             }).length;
-                            return `${recentMatches.length - wins}L`;
+                            return `${matches.length - wins}L`;
                           })()}
                         </div>
                       </div>
@@ -910,8 +1183,7 @@ export default function MatchHistoryPage() {
                       
                       <div className="text-sm font-bold text-white font-mono relative drop-shadow-[0_0_5px_rgba(255,255,255,0.3)]">
                         {(() => {
-                          const recentMatches = matches.slice(0, 20);
-                          const kdas = recentMatches.map(m => {
+                          const kdas = matches.map(m => {
                             const player = getPlayerData(m);
                             return player ? parseFloat(getKDA(player)) : 0;
                           });
@@ -921,9 +1193,8 @@ export default function MatchHistoryPage() {
                       </div>
                       <div className="text-xs text-gray-400 font-mono relative">
                         {(() => {
-                          const recentMatches = matches.slice(0, 20);
                           let totalK = 0, totalD = 0, totalA = 0;
-                          recentMatches.forEach(m => {
+                          matches.forEach(m => {
                             const player = getPlayerData(m);
                             if (player) {
                               totalK += player.kills;
@@ -931,9 +1202,9 @@ export default function MatchHistoryPage() {
                               totalA += player.assists;
                             }
                           });
-                          const avgK = (totalK / recentMatches.length).toFixed(1);
-                          const avgD = (totalD / recentMatches.length).toFixed(1);
-                          const avgA = (totalA / recentMatches.length).toFixed(1);
+                          const avgK = (totalK / matches.length).toFixed(1);
+                          const avgD = (totalD / matches.length).toFixed(1);
+                          const avgA = (totalA / matches.length).toFixed(1);
                           return `${avgK} / ${avgD} / ${avgA}`;
                         })()}
                       </div>
@@ -1537,8 +1808,24 @@ export default function MatchHistoryPage() {
                                   )}
                                   <span className="relative z-10">Timeline</span>
                                 </button>
-                                <button className="flex-1 px-4 py-2.5 text-sm font-medium font-mono tracking-wider uppercase text-gray-500 hover:text-cyan-400 transition-colors hover:bg-cyan-400/5">
-                                  Metrics
+                                <button 
+                                  onClick={() => {
+                                    setActiveTab({ ...activeTab, [match.metadata.matchId]: 'metrics' });
+                                    fetchTimeline(match.metadata.matchId, profile?.lolAccount?.region);
+                                  }}
+                                  className={`relative flex-1 px-4 py-2.5 text-sm font-bold font-mono tracking-wider uppercase transition-all group ${
+                                    activeTab[match.metadata.matchId] === 'metrics'
+                                      ? 'bg-gradient-to-r from-[#5383E8] to-cyan-400 text-white shadow-[0_0_15px_rgba(0,255,255,0.4)]'
+                                      : 'text-gray-500 hover:text-cyan-400 hover:bg-cyan-400/5'
+                                  }`}
+                                >
+                                  {activeTab[match.metadata.matchId] === 'metrics' && (
+                                    <>
+                                      <div className="absolute top-0 left-0 w-2 h-2 border-t border-l border-white/50"></div>
+                                      <div className="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-white/50"></div>
+                                    </>
+                                  )}
+                                  <span className="relative z-10">Metrics</span>
                                 </button>
                               </div>
 
@@ -2951,6 +3238,315 @@ export default function MatchHistoryPage() {
                                       </div>
                                     )}
                                   </div>
+                                </div>
+                              )}
+
+                              {/* Metrics Tab Content */}
+                              {activeTab[match.metadata.matchId] === 'metrics' && (
+                                <div className="space-y-6">
+                                  {timelineData[match.metadata.matchId] ? (
+                                    (() => {
+                                      const timeline = timelineData[match.metadata.matchId];
+                                      const matchId = match.metadata.matchId;
+                                      const gameDuration = match.info.gameDuration;
+                                      
+                                      // Debug: log timeline structure
+                                      console.log('[Metrics] Timeline data:', timeline);
+                                      console.log('[Metrics] Raw timeline:', timeline.rawTimeline);
+                                      
+                                      // Initialize selected players with current player if not set
+                                      if (!selectedPlayers[matchId]) {
+                                        setSelectedPlayers({
+                                          ...selectedPlayers,
+                                          [matchId]: new Set([playerData.participantId])
+                                        });
+                                      }
+                                      
+                                      // Initialize active metric if not set
+                                      if (!activeMetric[matchId]) {
+                                        setActiveMetric({ ...activeMetric, [matchId]: 'gold' });
+                                      }
+                                      
+                                      const currentSelectedPlayers = selectedPlayers[matchId] || new Set([playerData.participantId]);
+                                      const currentMetric = activeMetric[matchId] || 'gold';
+                                      
+                                      // Toggle player selection
+                                      const togglePlayer = (participantId: number) => {
+                                        const newSet = new Set(currentSelectedPlayers);
+                                        if (newSet.has(participantId)) {
+                                          if (newSet.size > 1) { // Keep at least one player selected
+                                            newSet.delete(participantId);
+                                          }
+                                        } else {
+                                          newSet.add(participantId);
+                                        }
+                                        setSelectedPlayers({ ...selectedPlayers, [matchId]: newSet });
+                                      };
+                                      
+                                      // Get participant colors
+                                      const getParticipantColor = (participantId: number) => {
+                                        const participant = match.info.participants.find(p => p.participantId === participantId);
+                                        if (!participant) return '#00FFFF';
+                                        
+                                        const colorPalette = [
+                                          '#00FFFF', // Cyan
+                                          '#FF6B9D', // Pink
+                                          '#C084FC', // Purple
+                                          '#FBBF24', // Amber
+                                          '#34D399', // Emerald
+                                          '#F472B6', // Hot Pink
+                                          '#60A5FA', // Blue
+                                          '#FB923C', // Orange
+                                          '#A78BFA', // Violet
+                                          '#22D3EE', // Cyan Light
+                                        ];
+                                        
+                                        return colorPalette[(participantId - 1) % colorPalette.length];
+                                      };
+                                      
+                                      // Process timeline frames to extract metrics at different timestamps
+                                      const processMetricsData = () => {
+                                        // Use rawTimeline.info.frames instead of timeline.info.frames
+                                        const frames = timeline.rawTimeline?.info?.frames || [];
+                                        const metricsData: any[] = [];
+                                        
+                                        console.log('[Metrics] Processing frames:', frames.length);
+                                        
+                                        frames.forEach((frame: any, index: number) => {
+                                          const timestamp = frame.timestamp || (index * 60000); // Default to minute intervals
+                                          const minutes = Math.floor(timestamp / 60000);
+                                          
+                                          const dataPoint: any = {
+                                            time: `${minutes} min`,
+                                            timestamp: minutes,
+                                          };
+                                          
+                                          frame.participantFrames && Object.keys(frame.participantFrames).forEach((key) => {
+                                            const pFrame = frame.participantFrames[key];
+                                            const participantId = parseInt(key);
+                                            
+                                            if (currentMetric === 'gold') {
+                                              dataPoint[`player${participantId}`] = pFrame.totalGold || 0;
+                                            } else if (currentMetric === 'damage') {
+                                              dataPoint[`player${participantId}`] = pFrame.damageStats?.totalDamageDoneToChampions || 0;
+                                            } else if (currentMetric === 'cs') {
+                                              dataPoint[`player${participantId}`] = (pFrame.minionsKilled || 0) + (pFrame.jungleMinionsKilled || 0);
+                                            } else if (currentMetric === 'exp') {
+                                              dataPoint[`player${participantId}`] = pFrame.xp || 0;
+                                            }
+                                          });
+                                          
+                                          metricsData.push(dataPoint);
+                                        });
+                                        
+                                        console.log('[Metrics] Processed data points:', metricsData.length);
+                                        console.log('[Metrics] Sample data:', metricsData[0]);
+                                        
+                                        return metricsData;
+                                      };
+                                      
+                                      const metricsData = processMetricsData();
+                                      
+                                      // Calculate max value for Y-axis
+                                      const getMaxValue = () => {
+                                        let max = 0;
+                                        metricsData.forEach(point => {
+                                          Array.from(currentSelectedPlayers).forEach(participantId => {
+                                            const value = point[`player${participantId}`] || 0;
+                                            if (value > max) max = value;
+                                          });
+                                        });
+                                        return Math.ceil(max / 1000) * 1000; // Round up to nearest 1000
+                                      };
+                                      
+                                      const maxValue = getMaxValue();
+                                      const yAxisSteps = 5;
+                                      const stepValue = maxValue / yAxisSteps;
+                                      
+                                      return (
+                                        <div className="relative bg-gradient-to-br from-[#0a1628]/80 to-[#1a2f4a]/80 rounded-none p-6 border border-cyan-400/20 overflow-hidden shadow-[0_0_20px_rgba(83,131,232,0.15)]">
+                                          <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-cyan-400/50 to-transparent"></div>
+                                          <div className="absolute left-0 top-0 bottom-0 w-px bg-gradient-to-b from-transparent via-cyan-400/50 to-transparent"></div>
+                                          
+                                          {/* Header */}
+                                          <div className="flex items-center justify-between mb-6 relative z-10">
+                                            <h3 className="text-lg font-bold text-white font-mono tracking-wider uppercase border-l-4 border-cyan-400 pl-3 drop-shadow-[0_0_10px_rgba(0,255,255,0.3)]">
+                                              Match Metrics
+                                            </h3>
+                                            
+                                            {/* Metric Selector */}
+                                            <div className="flex items-center space-x-2 bg-[#0a1628]/50 rounded-none p-1 border border-cyan-400/20">
+                                              {(['gold', 'damage', 'cs', 'exp'] as const).map((metric) => (
+                                                <button
+                                                  key={metric}
+                                                  onClick={() => setActiveMetric({ ...activeMetric, [matchId]: metric })}
+                                                  className={`px-4 py-1.5 text-xs font-bold font-mono uppercase transition-all ${
+                                                    currentMetric === metric
+                                                      ? 'bg-gradient-to-r from-[#5383E8] to-cyan-400 text-white shadow-[0_0_10px_rgba(0,255,255,0.4)]'
+                                                      : 'text-gray-500 hover:text-cyan-400'
+                                                  }`}
+                                                >
+                                                  {metric}
+                                                </button>
+                                              ))}
+                                            </div>
+                                          </div>
+                                          
+                                          {/* Chart */}
+                                          <div className="relative bg-[#0a1628]/30 rounded-none p-6 border border-cyan-400/10 mb-6">
+                                            <div className="relative h-[400px]">
+                                              {/* Y-Axis Labels */}
+                                              <div className="absolute left-0 top-0 bottom-0 w-16 flex flex-col justify-between text-xs text-gray-500 font-mono">
+                                                {Array.from({ length: yAxisSteps + 1 }, (_, i) => (
+                                                  <div key={i} className="text-right pr-2">
+                                                    {Math.round((maxValue - (i * stepValue)) / 1000)}k
+                                                  </div>
+                                                ))}
+                                              </div>
+                                              
+                                              {/* Chart Area */}
+                                              <div className="absolute left-16 right-0 top-0 bottom-12">
+                                                {/* Grid Lines */}
+                                                <div className="absolute inset-0">
+                                                  {Array.from({ length: yAxisSteps + 1 }, (_, i) => (
+                                                    <div
+                                                      key={i}
+                                                      className="absolute left-0 right-0 border-t border-cyan-400/10"
+                                                      style={{ top: `${(i / yAxisSteps) * 100}%` }}
+                                                    ></div>
+                                                  ))}
+                                                </div>
+                                                
+                                                {/* SVG Chart */}
+                                                <svg className="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
+                                                  {Array.from(currentSelectedPlayers).map((participantId) => {
+                                                    const participant = match.info.participants.find(p => p.participantId === participantId);
+                                                    if (!participant) return null;
+                                                    
+                                                    const color = getParticipantColor(participantId);
+                                                    
+                                                    // Build points with proper scaling
+                                                    const points: string[] = [];
+                                                    metricsData.forEach((point, index) => {
+                                                      const x = (index / (metricsData.length - 1)) * 100;
+                                                      const value = point[`player${participantId}`] || 0;
+                                                      const y = 100 - ((value / maxValue) * 100);
+                                                      points.push(`${x},${y}`);
+                                                    });
+                                                    
+                                                    return (
+                                                      <polyline
+                                                        key={participantId}
+                                                        points={points.join(' ')}
+                                                        fill="none"
+                                                        stroke={color}
+                                                        strokeWidth="0.5"
+                                                        vectorEffect="non-scaling-stroke"
+                                                        style={{ filter: `drop-shadow(0 0 2px ${color})` }}
+                                                      />
+                                                    );
+                                                  })}
+                                                </svg>
+                                              </div>
+                                              
+                                              {/* X-Axis Labels */}
+                                              <div className="absolute left-16 right-0 bottom-0 h-12 flex justify-between text-xs text-gray-500 font-mono items-end pb-2">
+                                                {metricsData.filter((_, i) => i % Math.ceil(metricsData.length / 10) === 0).map((point, index) => (
+                                                  <div key={index}>{point.time}</div>
+                                                ))}
+                                              </div>
+                                            </div>
+                                          </div>
+                                          
+                                          {/* Player Selection */}
+                                          <div className="relative z-10">
+                                            <h4 className="text-sm font-bold text-cyan-400 font-mono uppercase mb-3">Select Players</h4>
+                                            <div className="grid grid-cols-2 gap-3">
+                                              {/* Blue Team */}
+                                              <div className="space-y-2">
+                                                <div className="text-xs font-mono text-[#5383E8]/60 tracking-wider mb-2">BLUE TEAM</div>
+                                                {match.info.participants
+                                                  .filter(p => p.teamId === 100)
+                                                  .map((participant) => {
+                                                    const isSelected = currentSelectedPlayers.has(participant.participantId);
+                                                    const color = getParticipantColor(participant.participantId);
+                                                    return (
+                                                      <button
+                                                        key={participant.participantId}
+                                                        onClick={() => togglePlayer(participant.participantId)}
+                                                        className={`w-full flex items-center space-x-3 p-2 border transition-all ${
+                                                          isSelected
+                                                            ? 'bg-cyan-400/10 border-cyan-400/50 shadow-[0_0_10px_rgba(0,255,255,0.2)]'
+                                                            : 'bg-[#0a1628]/30 border-cyan-400/20 hover:border-cyan-400/40'
+                                                        }`}
+                                                      >
+                                                        <div className="w-8 h-8 overflow-hidden border border-cyan-400/30">
+                                                          <Image
+                                                            src={getChampionImageUrl(participant.championId)}
+                                                            alt={participant.championName}
+                                                            width={32}
+                                                            height={32}
+                                                            className="w-full h-full object-cover"
+                                                          />
+                                                        </div>
+                                                        <div className="flex-1 text-left">
+                                                          <div className="text-sm font-mono text-white">{participant.riotIdGameName || "Player"}</div>
+                                                        </div>
+                                                        {isSelected && (
+                                                          <div className="w-3 h-3 rounded-full" style={{ backgroundColor: color, boxShadow: `0 0 8px ${color}` }}></div>
+                                                        )}
+                                                      </button>
+                                                    );
+                                                  })}
+                                              </div>
+                                              
+                                              {/* Red Team */}
+                                              <div className="space-y-2">
+                                                <div className="text-xs font-mono text-[#E84057]/60 tracking-wider mb-2">RED TEAM</div>
+                                                {match.info.participants
+                                                  .filter(p => p.teamId === 200)
+                                                  .map((participant) => {
+                                                    const isSelected = currentSelectedPlayers.has(participant.participantId);
+                                                    const color = getParticipantColor(participant.participantId);
+                                                    return (
+                                                      <button
+                                                        key={participant.participantId}
+                                                        onClick={() => togglePlayer(participant.participantId)}
+                                                        className={`w-full flex items-center space-x-3 p-2 border transition-all ${
+                                                          isSelected
+                                                            ? 'bg-cyan-400/10 border-cyan-400/50 shadow-[0_0_10px_rgba(0,255,255,0.2)]'
+                                                            : 'bg-[#0a1628]/30 border-cyan-400/20 hover:border-cyan-400/40'
+                                                        }`}
+                                                      >
+                                                        <div className="w-8 h-8 overflow-hidden border border-cyan-400/30">
+                                                          <Image
+                                                            src={getChampionImageUrl(participant.championId)}
+                                                            alt={participant.championName}
+                                                            width={32}
+                                                            height={32}
+                                                            className="w-full h-full object-cover"
+                                                          />
+                                                        </div>
+                                                        <div className="flex-1 text-left">
+                                                          <div className="text-sm font-mono text-white">{participant.riotIdGameName || "Player"}</div>
+                                                        </div>
+                                                        {isSelected && (
+                                                          <div className="w-3 h-3 rounded-full" style={{ backgroundColor: color, boxShadow: `0 0 8px ${color}` }}></div>
+                                                        )}
+                                                      </button>
+                                                    );
+                                                  })}
+                                              </div>
+                                            </div>
+                                          </div>
+                                        </div>
+                                      );
+                                    })()
+                                  ) : (
+                                    <div className="flex items-center justify-center py-20 text-gray-500">
+                                      <p>Loading metrics data...</p>
+                                    </div>
+                                  )}
                                 </div>
                               )}
                             </div>

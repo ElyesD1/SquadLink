@@ -1,4 +1,4 @@
-import { LOL_VERSION, getCDNUrl } from './constants';
+import { LOL_VERSION, getCDNUrl, getProfileIconUrl } from './constants';
 
 const API_BASE_URL = 'http://localhost:3001';
 
@@ -141,7 +141,7 @@ class LoLService {
 
   // Get summoner icon URL (from Riot's CDN)
   getSummonerIconUrl(profileIconId: number): string {
-    return getCDNUrl(`img/profileicon/${profileIconId}.png`);
+    return getProfileIconUrl(profileIconId);
   }
 
   // Format queue type for display
