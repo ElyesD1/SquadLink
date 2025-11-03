@@ -1,0 +1,3004 @@
+'use client';
+
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import Image from 'next/image';
+import { Card, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { AnimatedLogo } from '@/components/ui/AnimatedLogo';
+import NavigationDrawer from '@/components/ui/NavigationDrawer';
+import { ChevronDown, ChevronUp, Loader2, Trophy, Target, Shield, Skull, Users, Clock, AlertCircle, TrendingUp, TrendingDown, Swords } from 'lucide-react';
+import { lolService, type LolAccount } from '@/lib/lol-service';
+import { LOL_VERSION, getCDNUrl } from '@/lib/constants';
+
+interface UserProfile {
+  lolAccount?: LolAccount;
+}
+
+interface MatchParticipant {
+  puuid: string;
+  participantId: number;
+  championId: number;
+  championName: string;
+  teamId: number;
+  teamPosition: string;
+  individualPosition: string;
+  kills: number;
+  deaths: number;
+  assists: number;
+  totalMinionsKilled: number;
+  neutralMinionsKilled: number;
+  goldEarned: number;
+  visionScore: number;
+  wardsPlaced: number;
+  wardsKilled: number;
+  item0: number;
+  item1: number;
+  item2: number;
+  item3: number;
+  item4: number;
+  item5: number;
+  item6: number;
+  summoner1Id: number;
+  summoner2Id: number;
+  perks: any;
+  totalDamageDealtToChampions: number;
+  totalDamageTaken: number;
+  win: boolean;
+  riotIdGameName: string;
+  riotIdTagline: string;
+  champLevel: number;
+}
+
+interface Match {
+  metadata: {
+    matchId: string;
+    participants: string[];
+  };
+  info: {
+    gameCreation: number;
+    gameDuration: number;
+    gameMode: string;
+    queueId: number;
+    participants: MatchParticipant[];
+    teams: any[];
+  };
+}
+
+const QUEUE_NAMES: { [key: number]: string } = {
+  420: 'Ranked Solo/Duo',
+  440: 'Ranked Flex',
+  450: 'ARAM',
+  400: 'Normal Draft',
+  430: 'Normal Blind',
+  490: 'Normal (Quickplay)',
+  1700: 'Arena',
+  1900: 'URF',
+  900: 'ARURF',
+};
+
+const POSITION_NAMES: { [key: string]: string } = {
+  TOP: 'Top',
+  JUNGLE: 'Jungle',
+  MIDDLE: 'Mid',
+  BOTTOM: 'ADC',
+  UTILITY: 'Support',
+};
+
+export default function MatchHistoryPage() {
+  const { data: session, status } = useSession();
+  const router = useRouter();
+  const [profile, setProfile] = useState<UserProfile | null>(null);
+  const [matches, setMatches] = useState<Match[]>([]);
+  const [expandedMatch, setExpandedMatch] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState<{ [matchId: string]: string }>({});
+  const [timelineData, setTimelineData] = useState<{ [matchId: string]: any }>({});
+  const [loadingTimeline, setLoadingTimeline] = useState<{ [matchId: string]: boolean }>({});
+  const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
+  const [loadingProgress, setLoadingProgress] = useState({ current: 0, total: 0 });
+  const [currentCount, setCurrentCount] = useState(20);
+  const [hasMore, setHasMore] = useState(true);
+
+  useEffect(() => {
+    if (status === 'unauthenticated') {
+      router.push('/auth/signin');
+    }
+  }, [status, router]);
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      if (!session?.user?.email) return;
+
+      try {
+        const response = await fetch('http://localhost:3001/users/profile/full', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            email: session.user.email
+          }),
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          setProfile(data);
+        }
+      } catch (error) {
+        console.error('Failed to fetch profile:', error);
+      }
+    };
+
+    if (status === 'authenticated') {
+      fetchProfile();
+    }
+  }, [status, session]);
+
+  useEffect(() => {
+    if (profile?.lolAccount?.puuid) {
+      loadCachedMatches();
+    } else {
+      setLoading(false);
+    }
+  }, [profile]);
+
+  const loadCachedMatches = async () => {
+    if (!profile?.lolAccount?.puuid) return;
+
+    setLoading(true);
+    try {
+      console.log('[Match History] Checking cache for:', {
+        puuid: profile.lolAccount.puuid,
+        region: profile.lolAccount.region,
+      });
+
+      // Try to load from cache first
+      const cachedResponse = await fetch(
+        `http://localhost:3001/api/v1/riot/matches/${profile.lolAccount.puuid}/cached?region=${profile.lolAccount.region}&count=20`
+      );
+
+      if (cachedResponse.ok) {
+        const cachedData = await cachedResponse.json();
+        
+        if (cachedData.matches && cachedData.matches.length > 0) {
+          console.log('[Match History] Loaded from cache:', cachedData.matches.length, 'matches');
+          setMatches(cachedData.matches);
+          setLoading(false);
+          return;
+        }
+      }
+
+      // No cache or cache empty, fetch and cache
+      console.log('[Match History] No cache found, fetching fresh data...');
+      await fetchAndCacheMatches(20);
+    } catch (error) {
+      console.error('[Match History] Error loading cached matches:', error);
+      setLoading(false);
+    }
+  };
+
+  const fetchAndCacheMatches = async (count: number = 20) => {
+    if (!profile?.lolAccount?.puuid) return;
+
+    try {
+      console.log('[Match History] Fetching and caching matches:', count);
+
+      const response = await fetch(
+        `http://localhost:3001/api/v1/riot/matches/${profile.lolAccount.puuid}/fetch-and-cache`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            region: profile.lolAccount.region,
+            start: 0,
+            count,
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch and cache matches');
+      }
+
+      const data = await response.json();
+      console.log('[Match History] Fetched:', data.newMatches, 'new matches');
+      
+      if (data.matches && data.matches.length > 0) {
+        setMatches(data.matches);
+      }
+    } catch (error) {
+      console.error('[Match History] Error fetching and caching:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const refreshMatches = async () => {
+    if (!profile?.lolAccount?.puuid) return;
+
+    setRefreshing(true);
+    try {
+      console.log('[Match History] Refreshing matches...');
+      
+      const response = await fetch(
+        `http://localhost:3001/api/v1/riot/matches/${profile.lolAccount.puuid}/fetch-and-cache`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            region: profile.lolAccount.region,
+            start: 0,
+            count: 20,
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error('Failed to refresh matches');
+      }
+
+      const data = await response.json();
+      console.log('[Match History] Refresh complete:', data);
+      
+      if (data.matches && data.matches.length > 0) {
+        // Remove duplicates by matchId
+        const uniqueMatches = Array.from(
+          new Map(data.matches.map((m: Match) => [m.metadata.matchId, m])).values()
+        ) as Match[];
+        setMatches(uniqueMatches);
+      }
+
+      // Show success message
+      if (data.newMatches > 0) {
+        alert(`Found ${data.newMatches} new match${data.newMatches > 1 ? 'es' : ''}!`);
+      } else {
+        alert('No new matches found. Your match history is up to date!');
+      }
+    } catch (error) {
+      console.error('[Match History] Error refreshing matches:', error);
+      alert('Failed to refresh matches');
+    } finally {
+      setRefreshing(false);
+    }
+  };
+
+  const loadMoreMatches = async () => {
+    if (!profile?.lolAccount?.puuid || loadingMore) return;
+
+    setLoadingMore(true);
+    try {
+      const offset = matches.length;
+      console.log(`[Match History] Loading 5 more matches from offset ${offset}`);
+
+      const response = await fetch(
+        `http://localhost:3001/api/v1/riot/matches/${profile.lolAccount.puuid}/load-more`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            region: profile.lolAccount.region,
+            offset,
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error('Failed to load more matches');
+      }
+
+      const data = await response.json();
+      console.log('[Match History] Loaded', data.matches.length, 'more matches');
+
+      if (data.matches && data.matches.length > 0) {
+        // Prevent duplicates by filtering out matches that already exist
+        const existingIds = new Set(matches.map(m => m.metadata.matchId));
+        const newMatches = data.matches.filter(
+          (m: Match) => !existingIds.has(m.metadata.matchId)
+        );
+        
+        if (newMatches.length > 0) {
+          setMatches(prev => [...prev, ...newMatches]);
+        }
+        setHasMore(data.hasMore);
+      } else {
+        setHasMore(false);
+      }
+    } catch (error) {
+      console.error('[Match History] Error loading more matches:', error);
+    } finally {
+      setLoadingMore(false);
+    }
+  };
+
+  const loadMatches = async (count: number = 20) => {
+    // Legacy function - redirect to cached version
+    await loadCachedMatches();
+  };
+
+  const fetchTimeline = async (matchId: string, region?: string) => {
+    if (timelineData[matchId] || loadingTimeline[matchId]) return;
+
+    setLoadingTimeline({ ...loadingTimeline, [matchId]: true });
+    try {
+      const response = await fetch(
+        `http://localhost:3001/api/v1/riot/matches/${matchId}/timeline?region=${region || 'americas'}`,
+        {
+          method: 'GET',
+          headers: { 'Content-Type': 'application/json' },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch timeline');
+      }
+
+      const data = await response.json();
+      setTimelineData({ ...timelineData, [matchId]: data });
+    } catch (error) {
+      console.error('[Timeline] Error fetching timeline:', error);
+    } finally {
+      setLoadingTimeline({ ...loadingTimeline, [matchId]: false });
+    }
+  };
+
+  const getPlayerData = (match: Match): MatchParticipant | undefined => {
+    return match.info.participants.find(
+      (p) => p.puuid === profile?.lolAccount?.puuid
+    );
+  };
+
+  const getKDA = (player: MatchParticipant): string => {
+    if (player.deaths === 0) return 'Perfect';
+    return (((player.kills + player.assists) / player.deaths)).toFixed(2);
+  };
+
+  const getCS = (player: MatchParticipant): number => {
+    return player.totalMinionsKilled + player.neutralMinionsKilled;
+  };
+
+  const getCSPerMin = (player: MatchParticipant, duration: number): string => {
+    const cs = getCS(player);
+    const minutes = duration / 60;
+    return (cs / minutes).toFixed(1);
+  };
+
+  const getChampionImageUrl = (championId: number): string => {
+    // Use Community Dragon CDN which accepts champion IDs directly
+    return `https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/v1/champion-icons/${championId}.png`;
+  };
+
+  const getItemImageUrl = (itemId: number): string => {
+    if (itemId === 0) return '';
+    return getCDNUrl(`img/item/${itemId}.png`);
+  };
+
+  const getSummonerSpellImageUrl = (spellId: number): string => {
+    const spellMap: { [key: number]: string } = {
+      1: 'SummonerBoost',
+      3: 'SummonerExhaust',
+      4: 'SummonerFlash',
+      6: 'SummonerHaste',
+      7: 'SummonerHeal',
+      11: 'SummonerSmite',
+      12: 'SummonerTeleport',
+      13: 'SummonerMana',
+      14: 'SummonerDot',
+      21: 'SummonerBarrier',
+      30: 'SummonerPoroRecall',
+      31: 'SummonerPoroThrow',
+      32: 'SummonerSnowball',
+      39: 'SummonerSnowURFSwirl',
+      54: 'Summoner_UltBookPlaceholder',
+      55: 'Summoner_UltBookSmitePlaceholder',
+    };
+    const spellKey = spellMap[spellId] || 'SummonerFlash';
+    return getCDNUrl(`img/spell/${spellKey}.png`);
+  };
+
+  // Extract keystone rune ID from perks object
+  const getKeystoneRuneId = (perks: any): number => {
+    return perks?.styles?.[0]?.selections?.[0]?.perk || 0;
+  };
+
+  // Extract secondary tree ID from perks object
+  const getSecondaryTreeId = (perks: any): number => {
+    return perks?.styles?.[1]?.style || 0;
+  };
+
+  // Get keystone rune image URL
+  const getKeystoneRuneImageUrl = (keystoneId: number): string => {
+    const keystoneMap: { [key: number]: string } = {
+      // Domination
+      8112: 'Domination/Electrocute/Electrocute',
+      8128: 'Domination/DarkHarvest/DarkHarvest',
+      9923: 'Domination/HailOfBlades/HailOfBlades',
+      // Precision
+      8005: 'Precision/PressTheAttack/PressTheAttack',
+      8008: 'Precision/LethalTempo/LethalTempoTemp',
+      8021: 'Precision/FleetFootwork/FleetFootwork',
+      8010: 'Precision/Conqueror/Conqueror',
+      // Sorcery
+      8214: 'Sorcery/SummonAery/SummonAery',
+      8229: 'Sorcery/ArcaneComet/ArcaneComet',
+      8230: 'Sorcery/PhaseRush/PhaseRush',
+      // Resolve
+      8437: 'Resolve/GraspOfTheUndying/GraspOfTheUndying',
+      8439: 'Resolve/VeteranAftershock/VeteranAftershock',
+      8465: 'Resolve/Guardian/Guardian',
+      // Inspiration
+      8351: 'Inspiration/GlacialAugment/GlacialAugment',
+      8360: 'Inspiration/UnsealedSpellbook/UnsealedSpellbook',
+      8369: 'Inspiration/FirstStrike/FirstStrike',
+    };
+
+    const runePath = keystoneMap[keystoneId];
+    if (!runePath) return '';
+    
+    return `https://ddragon.canisback.com/img/perk-images/Styles/${runePath}.png`;
+  };
+
+  // Get secondary tree icon URL
+  const getSecondaryTreeImageUrl = (treeId: number): string => {
+    const treeMap: { [key: number]: string } = {
+      8000: '7201_Precision.png',    // Precision (gold)
+      8100: '7200_Domination.png',   // Domination (red)
+      8200: '7202_Sorcery.png',      // Sorcery (blue)
+      8300: '7203_Whimsy.png',       // Inspiration (teal)
+      8400: '7204_Resolve.png',      // Resolve (green)
+    };
+
+    const treeIcon = treeMap[treeId];
+    if (!treeIcon) return '';
+    
+    return `https://ddragon.canisback.com/img/perk-images/Styles/${treeIcon}`;
+  };
+
+  const formatGameDuration = (seconds: number): string => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}m ${secs}s`;
+  };
+
+  const formatTimestamp = (timestamp: number): string => {
+    const now = Date.now();
+    const diff = now - timestamp;
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+    const hours = Math.floor(diff / (1000 * 60 * 60));
+    const minutes = Math.floor(diff / (1000 * 60));
+
+    if (days > 0) return `${days} day${days > 1 ? 's' : ''} ago`;
+    if (hours > 0) return `${hours} hour${hours > 1 ? 's' : ''} ago`;
+    if (minutes > 0) return `${minutes} minute${minutes > 1 ? 's' : ''} ago`;
+    return 'Just now';
+  };
+
+  // Get role icon URL
+  const getRoleIconUrl = (position: string): string => {
+    const roleMap: { [key: string]: string } = {
+      'TOP': '/Position_Challenger-Top.png',
+      'JUNGLE': '/Position_Challenger-Jungle.png',
+      'MIDDLE': '/Position_Challenger-Mid.png',
+      'BOTTOM': '/Position_Challenger-Bot.png',
+      'UTILITY': '/Position_Challenger-Support.png',
+    };
+    return roleMap[position] || '';
+  };
+
+  // Get player position with proper fallback logic
+  const getPlayerPosition = (participant: MatchParticipant): string => {
+    // Primary source: teamPosition (most reliable for ranked games)
+    if (participant.teamPosition && participant.teamPosition !== '' && participant.teamPosition !== 'NONE') {
+      return participant.teamPosition;
+    }
+    // Fallback: individualPosition
+    if (participant.individualPosition && participant.individualPosition !== '' && participant.individualPosition !== 'NONE') {
+      return participant.individualPosition;
+    }
+    return '';
+  };
+
+  // Check if game mode has positions
+  const hasPositions = (queueId: number): boolean => {
+    // Queue IDs that have defined positions
+    const positionQueues = [
+      420, // Ranked Solo/Duo
+      440, // Ranked Flex
+      400, // Normal Draft
+      430, // Normal Blind
+      490, // Normal (Quickplay)
+    ];
+    return positionQueues.includes(queueId);
+  };
+
+  if (status === 'loading' || loading) {
+    return (
+      <div className="min-h-screen bg-[#050a15] relative overflow-hidden">
+        {/* Animated grid background */}
+        <div className="absolute inset-0 bg-[linear-gradient(rgba(0,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(0,255,255,0.03)_1px,transparent_1px)] bg-[size:50px_50px] [mask-image:radial-gradient(ellipse_80%_50%_at_50%_50%,black,transparent)]"></div>
+        
+        {/* Glowing orbs */}
+        <div className="absolute top-20 left-20 w-96 h-96 bg-[#5383E8]/20 rounded-full blur-[100px] animate-pulse"></div>
+        <div className="absolute bottom-20 right-20 w-96 h-96 bg-cyan-400/20 rounded-full blur-[100px] animate-pulse" style={{ animationDelay: '1s' }}></div>
+        
+        {/* Scan lines */}
+        <div className="absolute inset-0 bg-[linear-gradient(transparent_50%,rgba(0,255,255,0.03)_50%)] bg-[length:100%_4px] pointer-events-none"></div>
+        
+        <div className="relative z-10 flex items-center justify-center min-h-screen">
+          <div className="text-center">
+            <AnimatedLogo size="lg" />
+            <p className="text-cyan-400 mt-4 font-mono tracking-wider drop-shadow-[0_0_10px_rgba(0,255,255,0.5)]">LOADING MATCH HISTORY...</p>
+            {loadingProgress.total > 0 && (
+              <div className="mt-4">
+                <div className="w-64 bg-[#0a1628] rounded-none h-2 mx-auto border border-cyan-400/30 overflow-hidden relative">
+                  {/* Progress bar glow */}
+                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-cyan-400/20 to-transparent"></div>
+                  <div
+                    className="bg-gradient-to-r from-[#5383E8] via-cyan-400 to-[#5383E8] h-full transition-all duration-300 relative shadow-[0_0_15px_rgba(0,255,255,0.8)]"
+                    style={{ width: `${(loadingProgress.current / loadingProgress.total) * 100}%` }}
+                  >
+                    {/* Animated shimmer */}
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-[shimmer_2s_infinite]"></div>
+                  </div>
+                </div>
+                <p className="text-gray-500 text-sm mt-2 font-mono">
+                  <span className="text-cyan-400">{loadingProgress.current}</span> / {loadingProgress.total}
+                </p>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-[#050a15] relative overflow-hidden">
+      {/* Futuristic Background Layers */}
+      
+      {/* Animated grid pattern */}
+      <div className="fixed inset-0 bg-[linear-gradient(rgba(0,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(0,255,255,0.03)_1px,transparent_1px)] bg-[size:50px_50px] [mask-image:radial-gradient(ellipse_80%_50%_at_50%_0%,black,transparent)]"></div>
+      
+      {/* Large glowing orbs */}
+      <div className="fixed top-0 left-1/4 w-[600px] h-[600px] bg-[#5383E8]/10 rounded-full blur-[120px] animate-pulse"></div>
+      <div className="fixed bottom-0 right-1/4 w-[600px] h-[600px] bg-cyan-400/10 rounded-full blur-[120px] animate-pulse" style={{ animationDelay: '2s' }}></div>
+      
+      {/* Scan lines effect */}
+      <div className="fixed inset-0 bg-[linear-gradient(transparent_50%,rgba(0,255,255,0.02)_50%)] bg-[length:100%_4px] pointer-events-none"></div>
+      
+      {/* Diagonal tech lines */}
+      <div className="fixed inset-0 opacity-10">
+        <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-cyan-400/50 to-transparent"></div>
+        <div className="absolute top-20 left-0 w-full h-px bg-gradient-to-r from-transparent via-[#5383E8]/30 to-transparent"></div>
+        <div className="absolute bottom-20 left-0 w-full h-px bg-gradient-to-r from-transparent via-cyan-400/30 to-transparent"></div>
+      </div>
+      
+      {/* Circuit pattern overlay */}
+      <div className="fixed inset-0 opacity-5">
+        <div className="absolute top-10 left-10 w-20 h-20 border-l-2 border-t-2 border-cyan-400"></div>
+        <div className="absolute top-10 right-10 w-20 h-20 border-r-2 border-t-2 border-cyan-400"></div>
+        <div className="absolute bottom-10 left-10 w-20 h-20 border-l-2 border-b-2 border-cyan-400"></div>
+        <div className="absolute bottom-10 right-10 w-20 h-20 border-r-2 border-b-2 border-cyan-400"></div>
+      </div>
+      
+      <div className="relative z-10">
+        <NavigationDrawer>
+          <div /></NavigationDrawer>
+
+      <div className="container mx-auto px-4 pb-6 max-w-[1400px]" style={{ marginTop: '-700px' }}>
+        {/* Main Grid Layout */}
+        <div className="grid grid-cols-12 gap-4">
+          {/* Left Sidebar - Profile & Stats */}
+          <div className="col-span-3 space-y-4">
+            {/* Profile Card */}
+            {profile?.lolAccount && (
+              <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                className="bg-gradient-to-br from-[#0a1628] via-[#0f1f3a] to-[#0a1628] rounded-none p-6 border-2 border-cyan-400/20 shadow-[0_0_30px_rgba(83,131,232,0.2)] relative overflow-hidden"
+              >
+                {/* Top tech line */}
+                <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-cyan-400/50 to-transparent"></div>
+                
+                {/* Side accent */}
+                <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-transparent via-[#5383E8] to-transparent shadow-[0_0_10px_#5383E8]"></div>
+                
+                {/* Corner brackets */}
+                <div className="absolute top-0 left-0 w-8 h-8 border-t-2 border-l-2 border-cyan-400/40"></div>
+                <div className="absolute top-0 right-0 w-8 h-8 border-t-2 border-r-2 border-cyan-400/40"></div>
+                <div className="absolute bottom-0 left-0 w-8 h-8 border-b-2 border-l-2 border-cyan-400/40"></div>
+                <div className="absolute bottom-0 right-0 w-8 h-8 border-b-2 border-r-2 border-cyan-400/40"></div>
+                
+                {/* Summoner Info */}
+                <div className="flex items-center space-x-4 mb-6 relative z-10">
+                  <div className="relative group">
+                    {/* Icon glow effect */}
+                    <div className="absolute inset-0 shadow-[0_0_30px_rgba(0,255,255,0.4)] group-hover:shadow-[0_0_40px_rgba(0,255,255,0.6)] transition-all duration-300"></div>
+                    
+                    {/* Outer glow border */}
+                    <div className="absolute -inset-1 bg-gradient-to-br from-cyan-400 via-[#5383E8] to-cyan-400 opacity-50 blur-md"></div>
+                    
+                    <div className="relative w-24 h-24 overflow-hidden border-2 border-cyan-400/50 bg-gradient-to-br from-[#0a1628] to-[#1a2f4a]">
+                      <Image
+                        src={lolService.getSummonerIconUrl(profile.lolAccount.profileIconId)}
+                        alt="Profile Icon"
+                        width={96}
+                        height={96}
+                        className="w-full h-full object-cover"
+                      />
+                      {/* Holographic overlay */}
+                      <div className="absolute inset-0 bg-gradient-to-tr from-cyan-400/10 via-transparent to-transparent"></div>
+                      {/* Corner brackets */}
+                      <div className="absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-cyan-400"></div>
+                      <div className="absolute bottom-0 right-0 w-4 h-4 border-b-2 border-r-2 border-cyan-400"></div>
+                    </div>
+                    
+                    {/* Level badge with glow */}
+                    <div className="absolute -top-2 -right-2 bg-gradient-to-br from-[#5383E8] to-cyan-400 border-2 border-cyan-400/50 px-2.5 py-1 shadow-[0_0_15px_rgba(0,255,255,0.6)]">
+                      <span className="text-xs font-bold font-mono text-white drop-shadow-[0_0_5px_rgba(255,255,255,0.8)]">{profile.lolAccount.summonerLevel}</span>
+                    </div>
+                  </div>
+                  <div className="flex-1">
+                    <h2 className="text-xl font-bold text-white mb-2 drop-shadow-[0_0_10px_rgba(255,255,255,0.3)]">
+                      {profile.lolAccount.gameName}
+                      <span className="text-gray-500 font-mono">#{profile.lolAccount.tagLine}</span>
+                    </h2>
+                    <button 
+                      onClick={refreshMatches}
+                      disabled={refreshing}
+                      className="relative group/btn bg-gradient-to-r from-[#5383E8] to-cyan-400 hover:from-cyan-400 hover:to-[#5383E8] text-white text-sm px-4 py-2 font-bold font-mono transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2 border border-cyan-400/50 shadow-[0_0_15px_rgba(0,255,255,0.3)] hover:shadow-[0_0_25px_rgba(0,255,255,0.5)]"
+                    >
+                      {/* Button corner accents */}
+                      <div className="absolute top-0 left-0 w-2 h-2 border-t-2 border-l-2 border-white/50"></div>
+                      <div className="absolute bottom-0 right-0 w-2 h-2 border-b-2 border-r-2 border-white/50"></div>
+                      
+                      {refreshing ? (
+                        <>
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                          <span>UPDATING...</span>
+                        </>
+                      ) : (
+                        <span>UPDATE</span>
+                      )}
+                    </button>
+                  </div>
+                </div>
+
+                {/* Ranked Solo Stats */}
+                <div className="relative bg-gradient-to-br from-[#0a1628]/80 to-[#1a2f4a]/80 rounded-none p-4 mb-3 border border-cyan-400/20 overflow-hidden group/rank shadow-[0_0_15px_rgba(83,131,232,0.1)] hover:shadow-[0_0_25px_rgba(83,131,232,0.2)] transition-all">
+                  {/* Tech accent line */}
+                  <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-cyan-400/30 to-transparent"></div>
+                  <div className="absolute left-0 top-0 bottom-0 w-px bg-gradient-to-b from-transparent via-[#5383E8]/50 to-transparent"></div>
+                  
+                  {/* Corner brackets */}
+                  <div className="absolute top-0 left-0 w-4 h-4 border-t border-l border-cyan-400/30"></div>
+                  <div className="absolute top-0 right-0 w-4 h-4 border-t border-r border-cyan-400/30"></div>
+                  
+                  <div className="flex items-center justify-between mb-3 relative z-10">
+                    <span className="text-sm text-cyan-400 font-bold font-mono tracking-wider uppercase">Ranked Solo</span>
+                    <button className="text-gray-500 hover:text-cyan-400 transition-colors">
+                      <ChevronDown className="w-4 h-4" />
+                    </button>
+                  </div>
+                  
+                  {(() => {
+                    const soloQueue = profile.lolAccount.rankedData?.find(r => r.queueType === 'RANKED_SOLO_5x5');
+                    return soloQueue ? (
+                      <div className="flex items-center space-x-3 relative z-10">
+                        <div className="relative w-16 h-16 flex items-center justify-center group/emblem">
+                          {/* Emblem glow */}
+                          <div className="absolute inset-0 bg-gradient-to-br from-cyan-400/20 to-[#5383E8]/20 blur-lg opacity-0 group-hover/emblem:opacity-100 transition-opacity"></div>
+                          <Image
+                            src={`/Rank=${soloQueue.tier}.png`}
+                            alt={soloQueue.tier}
+                            width={64}
+                            height={64}
+                            className="w-full h-full object-contain relative drop-shadow-[0_0_10px_rgba(0,255,255,0.3)]"
+                          />
+                        </div>
+                        <div className="flex-1">
+                          <div className="text-white font-bold mb-1 drop-shadow-[0_0_5px_rgba(255,255,255,0.3)]">
+                            {soloQueue.tier} {soloQueue.rank}
+                          </div>
+                          <div className="text-sm text-cyan-400 font-mono font-bold">
+                            {soloQueue.leaguePoints} <span className="text-xs text-gray-500">LP</span>
+                          </div>
+                          <div className="flex items-center space-x-2 mt-1">
+                            <span className="text-xs text-gray-400 font-mono">
+                              {soloQueue.wins}<span className="text-green-400">W</span> {soloQueue.losses}<span className="text-red-400">L</span>
+                            </span>
+                            <span className="text-xs text-cyan-400/50">•</span>
+                            <span className={`text-xs font-bold font-mono ${
+                              (soloQueue.wins / (soloQueue.wins + soloQueue.losses) * 100) >= 50
+                                ? 'text-green-400 drop-shadow-[0_0_5px_rgba(74,222,128,0.5)]' 
+                                : 'text-red-400 drop-shadow-[0_0_5px_rgba(248,113,113,0.5)]'
+                            }`}>
+                              {Math.round((soloQueue.wins / (soloQueue.wins + soloQueue.losses) * 100))}%
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="text-center py-4 relative z-10">
+                        <p className="text-gray-500 text-sm font-mono uppercase tracking-wider">Unranked</p>
+                      </div>
+                    );
+                  })()}
+                </div>
+
+                {/* Ranked Flex Stats */}
+                <div className="relative bg-gradient-to-br from-[#0a1628]/80 to-[#1a2f4a]/80 rounded-none p-4 border border-cyan-400/20 overflow-hidden group/rank shadow-[0_0_15px_rgba(83,131,232,0.1)] hover:shadow-[0_0_25px_rgba(83,131,232,0.2)] transition-all">
+                  {/* Tech accent line */}
+                  <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-cyan-400/30 to-transparent"></div>
+                  <div className="absolute left-0 top-0 bottom-0 w-px bg-gradient-to-b from-transparent via-[#5383E8]/50 to-transparent"></div>
+                  
+                  {/* Corner brackets */}
+                  <div className="absolute top-0 left-0 w-4 h-4 border-t border-l border-cyan-400/30"></div>
+                  <div className="absolute top-0 right-0 w-4 h-4 border-t border-r border-cyan-400/30"></div>
+                  
+                  <div className="flex items-center justify-between mb-3 relative z-10">
+                    <span className="text-sm text-cyan-400 font-bold font-mono tracking-wider uppercase">Ranked Flex</span>
+                    <button className="text-gray-500 hover:text-cyan-400 transition-colors">
+                      <ChevronDown className="w-4 h-4" />
+                    </button>
+                  </div>
+                  
+                  {(() => {
+                    const flexQueue = profile.lolAccount.rankedData?.find(r => r.queueType === 'RANKED_FLEX_SR');
+                    return flexQueue ? (
+                      <div className="flex items-center space-x-3 relative z-10">
+                        <div className="relative w-16 h-16 flex items-center justify-center group/emblem">
+                          {/* Emblem glow */}
+                          <div className="absolute inset-0 bg-gradient-to-br from-cyan-400/20 to-[#5383E8]/20 blur-lg opacity-0 group-hover/emblem:opacity-100 transition-opacity"></div>
+                          <Image
+                            src={`/Rank=${flexQueue.tier}.png`}
+                            alt={flexQueue.tier}
+                            width={64}
+                            height={64}
+                            className="w-full h-full object-contain relative drop-shadow-[0_0_10px_rgba(0,255,255,0.3)]"
+                          />
+                        </div>
+                        <div className="flex-1">
+                          <div className="text-white font-bold mb-1 drop-shadow-[0_0_5px_rgba(255,255,255,0.3)]">
+                            {flexQueue.tier} {flexQueue.rank}
+                          </div>
+                          <div className="text-sm text-cyan-400 font-mono font-bold">
+                            {flexQueue.leaguePoints} <span className="text-xs text-gray-500">LP</span>
+                          </div>
+                          <div className="flex items-center space-x-2 mt-1">
+                            <span className="text-xs text-gray-400 font-mono">
+                              {flexQueue.wins}<span className="text-green-400">W</span> {flexQueue.losses}<span className="text-red-400">L</span>
+                            </span>
+                            <span className="text-xs text-cyan-400/50">•</span>
+                            <span className={`text-xs font-bold font-mono ${
+                              (flexQueue.wins / (flexQueue.wins + flexQueue.losses) * 100) >= 50
+                                ? 'text-green-400 drop-shadow-[0_0_5px_rgba(74,222,128,0.5)]' 
+                                : 'text-red-400 drop-shadow-[0_0_5px_rgba(248,113,113,0.5)]'
+                            }`}>
+                              {Math.round((flexQueue.wins / (flexQueue.wins + flexQueue.losses) * 100))}%
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="text-center py-4 relative z-10">
+                        <p className="text-gray-500 text-sm font-mono uppercase tracking-wider">Unranked</p>
+                      </div>
+                    );
+                  })()}
+                </div>
+              </motion.div>
+            )}
+
+            {!profile?.lolAccount && (
+              <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                className="relative bg-gradient-to-br from-yellow-500/10 to-orange-500/10 border-2 border-yellow-500/40 rounded-none p-4 overflow-hidden shadow-[0_0_20px_rgba(234,179,8,0.2)]"
+              >
+                {/* Tech corners */}
+                <div className="absolute top-0 left-0 w-6 h-6 border-t-2 border-l-2 border-yellow-400/50"></div>
+                <div className="absolute top-0 right-0 w-6 h-6 border-t-2 border-r-2 border-yellow-400/50"></div>
+                <div className="absolute bottom-0 left-0 w-6 h-6 border-b-2 border-l-2 border-yellow-400/50"></div>
+                <div className="absolute bottom-0 right-0 w-6 h-6 border-b-2 border-r-2 border-yellow-400/50"></div>
+                
+                {/* Warning accent line */}
+                <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-yellow-400/50 to-transparent"></div>
+                
+                <div className="flex items-start space-x-3 relative z-10">
+                  <div className="relative">
+                    <div className="absolute inset-0 bg-yellow-400/20 blur-lg"></div>
+                    <AlertCircle className="relative w-5 h-5 text-yellow-400 mt-0.5 flex-shrink-0 drop-shadow-[0_0_10px_rgba(250,204,21,0.6)]" />
+                  </div>
+                  <div>
+                    <p className="text-yellow-200 font-bold text-sm font-mono tracking-wider uppercase drop-shadow-[0_0_5px_rgba(250,204,21,0.3)]">No Account Linked</p>
+                    <p className="text-yellow-300/80 text-xs mt-1 font-mono">
+                      Link your LoL account to view stats
+                    </p>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+          </div>
+
+          {/* Right Content - Match History */}
+          <div className="col-span-9 space-y-4">
+            {/* Match History Header with Stats */}
+            {profile?.lolAccount && matches.length > 0 && (
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="relative bg-gradient-to-br from-[#0a1628] via-[#0f1f3a] to-[#0a1628] rounded-none p-5 border-2 border-cyan-400/20 shadow-[0_0_30px_rgba(83,131,232,0.2)] overflow-hidden"
+              >
+                {/* Tech lines */}
+                <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-cyan-400/50 to-transparent"></div>
+                <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-transparent via-[#5383E8] to-transparent shadow-[0_0_10px_#5383E8]"></div>
+                
+                {/* Corner brackets */}
+                <div className="absolute top-0 left-0 w-8 h-8 border-t-2 border-l-2 border-cyan-400/40"></div>
+                <div className="absolute top-0 right-0 w-8 h-8 border-t-2 border-r-2 border-cyan-400/40"></div>
+                
+                <div className="relative z-10">
+                  {/* Header Row */}
+                  <div className="flex items-center justify-between mb-6">
+                    <h3 className="text-lg font-bold text-white font-mono tracking-wider uppercase drop-shadow-[0_0_10px_rgba(255,255,255,0.3)]">
+                      Match History
+                    </h3>
+                    
+                    {/* Recent Performance Summary */}
+                    <div className="flex items-center space-x-6">
+                    {/* Last 20 Games Stats */}
+                    <div className="flex items-center space-x-3">
+                      <div className="text-center">
+                        <div className="text-sm font-bold text-cyan-400 font-mono drop-shadow-[0_0_5px_rgba(0,255,255,0.5)]">
+                          {(() => {
+                            const recentMatches = matches.slice(0, 20);
+                            const wins = recentMatches.filter(m => {
+                              const player = getPlayerData(m);
+                              return player?.win;
+                            }).length;
+                            const losses = recentMatches.length - wins;
+                            const winRate = recentMatches.length > 0 ? (wins / recentMatches.length * 100).toFixed(0) : 0;
+                            return `${winRate}%`;
+                          })()}
+                        </div>
+                        <div className="text-xs text-gray-500 font-mono uppercase tracking-wider">Last 20</div>
+                      </div>
+                      <div className="flex items-center space-x-1.5">
+                        <div className={`relative px-3 py-1.5 border text-sm font-bold font-mono ${
+                          (() => {
+                            const recentMatches = matches.slice(0, 20);
+                            const wins = recentMatches.filter(m => {
+                              const player = getPlayerData(m);
+                              return player?.win;
+                            }).length;
+                            return (wins / recentMatches.length * 100) >= 50 
+                              ? 'bg-green-500/10 border-green-400/30 text-green-400 shadow-[0_0_10px_rgba(74,222,128,0.2)]' 
+                              : 'bg-[#5383E8]/10 border-[#5383E8]/30 text-[#5383E8] shadow-[0_0_10px_rgba(83,131,232,0.2)]';
+                          })()
+                        }`}>
+                          {(() => {
+                            const recentMatches = matches.slice(0, 20);
+                            const wins = recentMatches.filter(m => {
+                              const player = getPlayerData(m);
+                              return player?.win;
+                            }).length;
+                            return `${wins}W`;
+                          })()}
+                        </div>
+                        <div className="text-cyan-400/50 font-bold">/</div>
+                        <div className="relative px-3 py-1.5 border bg-red-500/10 border-red-400/30 text-sm font-bold font-mono text-red-400 shadow-[0_0_10px_rgba(248,113,113,0.2)]">
+                          {(() => {
+                            const recentMatches = matches.slice(0, 20);
+                            const wins = recentMatches.filter(m => {
+                              const player = getPlayerData(m);
+                              return player?.win;
+                            }).length;
+                            return `${recentMatches.length - wins}L`;
+                          })()}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Average KDA */}
+                    <div className="text-center relative">
+                      {/* Glow background */}
+                      <div className="absolute inset-0 bg-gradient-to-r from-cyan-400/5 via-transparent to-cyan-400/5 blur-xl"></div>
+                      
+                      <div className="text-sm font-bold text-white font-mono relative drop-shadow-[0_0_5px_rgba(255,255,255,0.3)]">
+                        {(() => {
+                          const recentMatches = matches.slice(0, 20);
+                          const kdas = recentMatches.map(m => {
+                            const player = getPlayerData(m);
+                            return player ? parseFloat(getKDA(player)) : 0;
+                          });
+                          const avgKDA = kdas.reduce((a, b) => a + b, 0) / kdas.length;
+                          return avgKDA.toFixed(2);
+                        })()} <span className="text-xs text-cyan-400">KDA</span>
+                      </div>
+                      <div className="text-xs text-gray-400 font-mono relative">
+                        {(() => {
+                          const recentMatches = matches.slice(0, 20);
+                          let totalK = 0, totalD = 0, totalA = 0;
+                          recentMatches.forEach(m => {
+                            const player = getPlayerData(m);
+                            if (player) {
+                              totalK += player.kills;
+                              totalD += player.deaths;
+                              totalA += player.assists;
+                            }
+                          });
+                          const avgK = (totalK / recentMatches.length).toFixed(1);
+                          const avgD = (totalD / recentMatches.length).toFixed(1);
+                          const avgA = (totalA / recentMatches.length).toFixed(1);
+                          return `${avgK} / ${avgD} / ${avgA}`;
+                        })()}
+                      </div>
+                      
+                      {/* Corner accents */}
+                      <div className="absolute -top-1 -left-1 w-2 h-2 border-t border-l border-cyan-400/30"></div>
+                      <div className="absolute -bottom-1 -right-1 w-2 h-2 border-b border-r border-cyan-400/30"></div>
+                    </div>
+                  </div>
+                  </div>
+                
+                  {/* Top 3 Most Played Champions */}
+                  <div className="flex items-center justify-center space-x-6 mt-4 pt-4 border-t border-cyan-400/10">
+                  {(() => {
+                    const championStats = new Map<string, { 
+                      count: number; 
+                      wins: number; 
+                      championName: string;
+                      championId: number;
+                    }>();
+                    
+                    // Calculate champion stats from current matches
+                    matches.forEach(m => {
+                      const player = getPlayerData(m);
+                      if (player) {
+                        const champName = player.championName;
+                        const champId = player.championId;
+                        const existing = championStats.get(champName) || { 
+                          count: 0, 
+                          wins: 0, 
+                          championName: champName,
+                          championId: champId
+                        };
+                        existing.count += 1;
+                        if (player.win) existing.wins += 1;
+                        championStats.set(champName, existing);
+                      }
+                    });
+                    
+                    // Get top 3 most played
+                    const topChampions = Array.from(championStats.values())
+                      .sort((a, b) => b.count - a.count)
+                      .slice(0, 3);
+                    
+                    return topChampions.map((champ, index) => {
+                      const winRate = (champ.wins / champ.count * 100).toFixed(0);
+                      const losses = champ.count - champ.wins;
+                      
+                      return (
+                        <div key={champ.championName} className="relative group">
+                          {/* Glow background */}
+                          <div className="absolute inset-0 bg-gradient-to-br from-cyan-400/10 to-blue-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-xl"></div>
+                          
+                          <div className="relative flex items-center space-x-3 px-4 py-2 border border-cyan-400/20 bg-gradient-to-br from-[#0a1628]/80 to-[#0f1f3a]/80 group-hover:border-cyan-400/40 transition-all duration-300">
+                            {/* Champion Portrait */}
+                            <div className="relative">
+                              <div className="absolute inset-0 bg-cyan-400/20 blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                              <img
+                                src={getCDNUrl(`img/champion/${champ.championName}.png`)}
+                                alt={champ.championName}
+                                className="relative w-12 h-12 rounded-none border-2 border-cyan-400/30 group-hover:border-cyan-400/50 transition-all duration-300 shadow-[0_0_10px_rgba(0,255,255,0.2)]"
+                              />
+                              {/* Rank badge */}
+                              <div className="absolute -top-1 -right-1 w-5 h-5 bg-gradient-to-br from-cyan-400 to-blue-500 rounded-none flex items-center justify-center text-[10px] font-bold text-black shadow-[0_0_8px_rgba(0,255,255,0.6)]">
+                                {index + 1}
+                              </div>
+                            </div>
+                            
+                            {/* Stats */}
+                            <div className="flex flex-col">
+                              <div className="flex items-center space-x-2">
+                                <span className={`text-lg font-bold font-mono ${
+                                  parseFloat(winRate) >= 50
+                                    ? 'text-green-400 drop-shadow-[0_0_5px_rgba(74,222,128,0.5)]' 
+                                    : 'text-red-400 drop-shadow-[0_0_5px_rgba(248,113,113,0.5)]'
+                                }`}>
+                                  {winRate}%
+                                </span>
+                                <span className="text-xs text-gray-500 font-mono uppercase">WR</span>
+                              </div>
+                              <div className="flex items-center space-x-1.5 mt-0.5">
+                                <span className="text-xs text-green-400 font-mono">{champ.wins}W</span>
+                                <span className="text-xs text-gray-600">/</span>
+                                <span className="text-xs text-red-400 font-mono">{losses}L</span>
+                              </div>
+                              <div className="text-[10px] text-cyan-400/60 font-mono mt-0.5">
+                                {champ.count} {champ.count === 1 ? 'game' : 'games'}
+                              </div>
+                            </div>
+                            
+                            {/* Corner accents */}
+                            <div className="absolute top-0 left-0 w-3 h-3 border-t border-l border-cyan-400/30"></div>
+                            <div className="absolute bottom-0 right-0 w-3 h-3 border-b border-r border-cyan-400/30"></div>
+                          </div>
+                        </div>
+                      );
+                    });
+                  })()}
+                </div>
+                </div>
+              </motion.div>
+            )}
+
+            {/* Matches List */}
+            {profile?.lolAccount && (
+              <div className="space-y-2">
+                {matches.map((match) => {
+                  const playerData = getPlayerData(match);
+                  if (!playerData) return null;
+
+                  const isExpanded = expandedMatch === match.metadata.matchId;
+                  const playerTeam = match.info.teams.find(t => t.teamId === playerData.teamId);
+                  const enemyTeam = match.info.teams.find(t => t.teamId !== playerData.teamId);
+
+                  return (
+                    <motion.div
+                      key={match.metadata.matchId}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className={`rounded-none overflow-hidden transition-all relative group ${
+                        playerData.win
+                          ? 'bg-gradient-to-r from-[#0a1628] via-[#0f1f3a] to-[#0a1628] shadow-[0_0_20px_rgba(83,131,232,0.15)] hover:shadow-[0_0_30px_rgba(83,131,232,0.3)]'
+                          : 'bg-gradient-to-r from-[#1a0a0f] via-[#2d1419] to-[#1a0a0f] shadow-[0_0_20px_rgba(232,64,87,0.15)] hover:shadow-[0_0_30px_rgba(232,64,87,0.3)]'
+                      }`}
+                    >
+                      {/* Futuristic Side Accent */}
+                      <div className={`absolute left-0 top-0 bottom-0 w-1 ${
+                        playerData.win 
+                          ? 'bg-gradient-to-b from-transparent via-[#5383E8] to-transparent shadow-[0_0_10px_#5383E8]' 
+                          : 'bg-gradient-to-b from-transparent via-[#E84057] to-transparent shadow-[0_0_10px_#E84057]'
+                      }`}></div>
+                      
+                      {/* Top Tech Line */}
+                      <div className={`absolute top-0 left-0 right-0 h-px ${
+                        playerData.win 
+                          ? 'bg-gradient-to-r from-transparent via-[#5383E8]/50 to-transparent' 
+                          : 'bg-gradient-to-r from-transparent via-[#E84057]/50 to-transparent'
+                      }`}></div>
+                      {/* Compact Match Card */}
+                      <div
+                        className="p-4 cursor-pointer hover:bg-white/5 transition-all relative"
+                        onClick={() => setExpandedMatch(isExpanded ? null : match.metadata.matchId)}
+                      >
+                        {/* Scan Line Effect */}
+                        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-white/[0.02] to-transparent pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                        
+                        <div className="flex items-center justify-between relative z-10">
+                          {/* Left Section: Game Info */}
+                          <div className="flex flex-col items-start w-24 flex-shrink-0 relative">
+                            {/* Holographic Corner */}
+                            <div className={`absolute -left-2 -top-2 w-12 h-12 border-l-2 border-t-2 ${
+                              playerData.win ? 'border-[#5383E8]/30' : 'border-[#E84057]/30'
+                            }`}></div>
+                            
+                            <span className="text-xs font-bold uppercase text-cyan-400 tracking-wider font-mono">
+                              {QUEUE_NAMES[match.info.queueId] || 'CUSTOM'}
+                            </span>
+                            <span className="text-[10px] text-gray-500 font-mono">
+                              {formatTimestamp(match.info.gameCreation)}
+                            </span>
+                            <div className={`w-full h-px my-1.5 ${
+                              playerData.win 
+                                ? 'bg-gradient-to-r from-[#5383E8] to-transparent' 
+                                : 'bg-gradient-to-r from-[#E84057] to-transparent'
+                            }`}></div>
+                            <span className={`text-sm font-bold tracking-widest ${
+                              playerData.win 
+                                ? 'text-[#5383E8] drop-shadow-[0_0_8px_rgba(83,131,232,0.8)]' 
+                                : 'text-[#E84057] drop-shadow-[0_0_8px_rgba(232,64,87,0.8)]'
+                            }`}>
+                              {playerData.win ? 'VICTORY' : 'DEFEAT'}
+                            </span>
+                            <span className="text-xs text-gray-500 font-mono">
+                              {formatGameDuration(match.info.gameDuration)}
+                            </span>
+                          </div>
+
+                          {/* Center Section: Champion, Stats & Items */}
+                          <div className="flex items-center space-x-4 flex-1">
+                            {/* Champion + Spells/Runes */}
+                            <div className="flex items-center space-x-2">
+                              <div className="relative group/champ">
+                                {/* Hexagonal glow effect */}
+                                <div className={`absolute inset-0 ${
+                                  playerData.win 
+                                    ? 'shadow-[0_0_25px_rgba(83,131,232,0.5)]' 
+                                    : 'shadow-[0_0_25px_rgba(232,64,87,0.5)]'
+                                } group-hover/champ:shadow-[0_0_35px_rgba(0,255,255,0.6)] transition-all duration-300`}></div>
+                                
+                                {/* Outer glow border */}
+                                <div className={`absolute -inset-0.5 bg-gradient-to-br ${
+                                  playerData.win 
+                                    ? 'from-[#5383E8] via-cyan-400 to-[#5383E8]' 
+                                    : 'from-[#E84057] via-red-400 to-[#E84057]'
+                                } opacity-60 blur-sm`}></div>
+                                
+                                <div className="relative w-14 h-14 overflow-hidden border-2 border-cyan-400/40 bg-gradient-to-br from-[#0a1628] to-[#1a2f4a]">
+                                  <Image
+                                    src={getChampionImageUrl(playerData.championId)}
+                                    alt={playerData.championName}
+                                    width={56}
+                                    height={56}
+                                    className="w-full h-full object-cover"
+                                  />
+                                  {/* Holographic scanline */}
+                                  <div className="absolute inset-0 bg-gradient-to-b from-cyan-400/20 via-transparent to-transparent opacity-0 group-hover/champ:opacity-100 transition-opacity"></div>
+                                  {/* Corner brackets */}
+                                  <div className="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2 border-cyan-400"></div>
+                                  <div className="absolute bottom-0 right-0 w-3 h-3 border-b-2 border-r-2 border-cyan-400"></div>
+                                </div>
+                                <div className={`absolute -bottom-0.5 -right-0.5 px-1.5 text-[9px] font-bold font-mono ${
+                                  playerData.win 
+                                    ? 'bg-gradient-to-br from-[#5383E8] to-cyan-400 text-white shadow-[0_0_10px_#5383E8]' 
+                                    : 'bg-gradient-to-br from-[#E84057] to-red-400 text-white shadow-[0_0_10px_#E84057]'
+                                } border border-cyan-400/50`}>
+                                  {playerData.champLevel}
+                                </div>
+                              </div>
+                              
+                              <div className="flex space-x-0.5">
+                                <div className="flex flex-col space-y-0.5">
+                                  <div className="relative group/spell w-5 h-5 overflow-hidden bg-[#0a1628] border border-cyan-400/20 hover:border-cyan-400/50 transition-colors">
+                                    <div className="absolute -inset-0.5 bg-gradient-to-br from-[#5383E8]/20 to-cyan-400/20 opacity-0 group-hover/spell:opacity-100 transition-opacity blur-sm"></div>
+                                    <Image
+                                      src={getSummonerSpellImageUrl(playerData.summoner1Id)}
+                                      alt="Spell 1"
+                                      width={20}
+                                      height={20}
+                                      className="relative w-full h-full object-cover"
+                                    />
+                                  </div>
+                                  <div className="relative group/spell w-5 h-5 overflow-hidden bg-[#0a1628] border border-cyan-400/20 hover:border-cyan-400/50 transition-colors">
+                                    <div className="absolute -inset-0.5 bg-gradient-to-br from-[#5383E8]/20 to-cyan-400/20 opacity-0 group-hover/spell:opacity-100 transition-opacity blur-sm"></div>
+                                    <Image
+                                      src={getSummonerSpellImageUrl(playerData.summoner2Id)}
+                                      alt="Spell 2"
+                                      width={20}
+                                      height={20}
+                                      className="relative w-full h-full object-cover"
+                                    />
+                                  </div>
+                                </div>
+                                <div className="flex flex-col space-y-0.5">
+                                  {getKeystoneRuneImageUrl(getKeystoneRuneId(playerData.perks)) && (
+                                    <div className="relative group/rune w-5 h-5 rounded-full overflow-hidden bg-[#0a1628] border border-cyan-400/20 hover:border-cyan-400/50 transition-colors">
+                                      <div className="absolute -inset-0.5 bg-gradient-to-br from-[#5383E8]/20 to-cyan-400/20 opacity-0 group-hover/rune:opacity-100 transition-opacity blur-sm"></div>
+                                      <Image
+                                        src={getKeystoneRuneImageUrl(getKeystoneRuneId(playerData.perks))}
+                                        alt="Rune"
+                                        width={20}
+                                        height={20}
+                                        className="relative w-full h-full object-cover"
+                                      />
+                                    </div>
+                                  )}
+                                  {getSecondaryTreeImageUrl(getSecondaryTreeId(playerData.perks)) && (
+                                    <div className="relative group/rune w-5 h-5 rounded-full overflow-hidden bg-[#0a1628] border border-cyan-400/20 hover:border-cyan-400/50 transition-colors">
+                                      <div className="absolute -inset-0.5 bg-gradient-to-br from-[#5383E8]/20 to-cyan-400/20 opacity-0 group-hover/rune:opacity-100 transition-opacity blur-sm"></div>
+                                      <Image
+                                        src={getSecondaryTreeImageUrl(getSecondaryTreeId(playerData.perks))}
+                                        alt="Tree"
+                                        width={20}
+                                        height={20}
+                                        className="relative w-full h-full object-cover"
+                                      />
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+
+                            {/* KDA & Stats */}
+                            <div className="flex items-center space-x-6">
+                              <div className="text-center relative">
+                                {/* Holographic background glow */}
+                                <div className="absolute inset-0 bg-gradient-to-r from-cyan-400/5 via-transparent to-cyan-400/5 blur-xl"></div>
+                                
+                                <div className="mb-0.5 relative font-mono">
+                                  <span className="text-white font-bold drop-shadow-[0_0_5px_rgba(255,255,255,0.5)]">{playerData.kills}</span>
+                                  <span className="text-gray-500 mx-0.5">/</span>
+                                  <span className="text-red-400 font-bold drop-shadow-[0_0_5px_rgba(232,64,87,0.5)]">{playerData.deaths}</span>
+                                  <span className="text-gray-500 mx-0.5">/</span>
+                                  <span className="text-white font-bold drop-shadow-[0_0_5px_rgba(255,255,255,0.5)]">{playerData.assists}</span>
+                                </div>
+                                <div className={`text-sm font-bold font-mono tracking-wider relative ${
+                                  parseFloat(getKDA(playerData)) >= 5 ? 'text-[#ECBC2C] drop-shadow-[0_0_10px_rgba(236,188,44,0.8)]' :
+                                  parseFloat(getKDA(playerData)) >= 3 ? 'text-cyan-400 drop-shadow-[0_0_10px_rgba(0,255,255,0.6)]' : 'text-gray-400'
+                                }`}>
+                                  {getKDA(playerData)} <span className="text-xs text-gray-500">KDA</span>
+                                </div>
+                                {/* Corner accents */}
+                                <div className="absolute -top-1 -left-1 w-2 h-2 border-t border-l border-cyan-400/30"></div>
+                                <div className="absolute -bottom-1 -right-1 w-2 h-2 border-b border-r border-cyan-400/30"></div>
+                              </div>
+
+                              <div className="text-xs text-gray-400 space-y-0.5 font-mono">
+                                <div className="flex items-center gap-1">
+                                  <span className="text-cyan-400/60">▸</span>
+                                  <span className="text-white">{getCS(playerData)}</span> CS
+                                  <span className="text-gray-600">({getCSPerMin(playerData, match.info.gameDuration)})</span>
+                                </div>
+                                <div className="flex items-center gap-1">
+                                  <span className="text-cyan-400/60">▸</span>
+                                  <span className="text-white">{playerData.visionScore}</span> vision
+                                </div>
+                              </div>
+                            </div>
+
+                            {/* Items */}
+                            <div className="flex items-center space-x-0.5">
+                              {[0, 1, 2, 3, 4, 5].map((index) => {
+                                const itemId = (playerData as any)[`item${index}`];
+                                return (
+                                  <div 
+                                    key={index} 
+                                    className={`relative group/item w-6 h-6 ${
+                                      itemId > 0 ? 'bg-[#0a1628]' : 'bg-[#0a1628]/30'
+                                    } border ${
+                                      itemId > 0 ? 'border-cyan-400/30 hover:border-cyan-400/60' : 'border-gray-700/20'
+                                    } flex items-center justify-center overflow-hidden transition-all`}
+                                  >
+                                    {/* Glow effect on hover */}
+                                    {itemId > 0 && (
+                                      <div className="absolute -inset-0.5 bg-gradient-to-br from-cyan-400/20 to-[#5383E8]/20 opacity-0 group-hover/item:opacity-100 transition-opacity blur-sm"></div>
+                                    )}
+                                    {/* Corner tech accents */}
+                                    {itemId > 0 && (
+                                      <>
+                                        <div className="absolute top-0 left-0 w-1 h-1 border-t border-l border-cyan-400/50 opacity-0 group-hover/item:opacity-100 transition-opacity"></div>
+                                        <div className="absolute bottom-0 right-0 w-1 h-1 border-b border-r border-cyan-400/50 opacity-0 group-hover/item:opacity-100 transition-opacity"></div>
+                                      </>
+                                    )}
+                                    {itemId > 0 && (
+                                      <Image
+                                        src={getItemImageUrl(itemId)}
+                                        alt={`Item ${index}`}
+                                        width={24}
+                                        height={24}
+                                        className="relative w-full h-full object-cover"
+                                      />
+                                    )}
+                                    {/* Empty slot pattern */}
+                                    {itemId === 0 && (
+                                      <div className="absolute inset-0 bg-gradient-to-br from-gray-800/10 to-gray-900/10"></div>
+                                    )}
+                                  </div>
+                                );
+                              })}
+                              {(() => {
+                                const itemId = (playerData as any)[`item6`];
+                                return (
+                                  <div 
+                                    className={`relative group/item w-6 h-6 rounded-full ${
+                                      itemId > 0 ? 'bg-[#0a1628]' : 'bg-[#0a1628]/30'
+                                    } border ${
+                                      itemId > 0 ? 'border-cyan-400/30 hover:border-cyan-400/60' : 'border-gray-700/20'
+                                    } flex items-center justify-center overflow-hidden transition-all`}
+                                  >
+                                    {/* Glow effect on hover */}
+                                    {itemId > 0 && (
+                                      <div className="absolute -inset-1 bg-gradient-to-br from-cyan-400/30 to-[#5383E8]/30 opacity-0 group-hover/item:opacity-100 transition-opacity blur-md rounded-full"></div>
+                                    )}
+                                    {itemId > 0 && (
+                                      <Image
+                                        src={getItemImageUrl(itemId)}
+                                        alt="Trinket"
+                                        width={24}
+                                        height={24}
+                                        className="relative w-full h-full object-cover"
+                                      />
+                                    )}
+                                    {/* Empty slot pattern */}
+                                    {itemId === 0 && (
+                                      <div className="absolute inset-0 bg-gradient-to-br from-gray-800/10 to-gray-900/10 rounded-full"></div>
+                                    )}
+                                  </div>
+                                );
+                              })()}
+                            </div>
+                          </div>
+
+                          {/* Right Section: All Players */}
+                          <div className="flex items-center space-x-4 ml-6">
+                            {/* Blue Team */}
+                            <div className="flex items-center space-x-1 relative">
+                              {/* Team label */}
+                              <div className="absolute -top-4 left-0 text-[9px] font-mono text-[#5383E8]/60 tracking-wider">BLUE</div>
+                              {match.info.participants
+                                .filter(p => p.teamId === 100)
+                                .sort((a, b) => {
+                                  const orderMap: any = { TOP: 1, JUNGLE: 2, MIDDLE: 3, BOTTOM: 4, UTILITY: 5 };
+                                  const posA = getPlayerPosition(a);
+                                  const posB = getPlayerPosition(b);
+                                  return (orderMap[posA] || 6) - (orderMap[posB] || 6);
+                                })
+                                .map((participant, idx) => {
+                                  const isCurrentPlayer = participant.puuid === playerData.puuid;
+                                  const playerPos = getPlayerPosition(participant);
+                                  const roleIconUrl = getRoleIconUrl(playerPos);
+                                  return (
+                                    <div key={idx} className="flex flex-col items-center space-y-0.5">
+                                      <div 
+                                        className={`relative group/champion w-5 h-5 overflow-hidden transition-all ${
+                                          isCurrentPlayer 
+                                            ? 'ring-1 ring-[#5383E8] border-2 border-[#5383E8] shadow-[0_0_10px_rgba(83,131,232,0.6)]' 
+                                            : 'border border-cyan-400/20 hover:border-cyan-400/50'
+                                        }`}
+                                      >
+                                        {/* Glow effect */}
+                                        {isCurrentPlayer && (
+                                          <div className="absolute -inset-1 bg-[#5383E8]/30 blur-md"></div>
+                                        )}
+                                        <Image
+                                          src={getChampionImageUrl(participant.championId)}
+                                          alt={participant.championName}
+                                          width={20}
+                                          height={20}
+                                          className="relative w-full h-full object-cover"
+                                        />
+                                        {/* Hover overlay */}
+                                        <div className="absolute inset-0 bg-gradient-to-t from-[#5383E8]/20 to-transparent opacity-0 group-hover/champion:opacity-100 transition-opacity"></div>
+                                      </div>
+                                      {/* Role Icon */}
+                                      {hasPositions(match.info.queueId) && playerPos && roleIconUrl && (
+                                        <div className="w-3 h-3 relative flex-shrink-0">
+                                          <Image
+                                            src={roleIconUrl}
+                                            alt={playerPos}
+                                            width={12}
+                                            height={12}
+                                            className="w-full h-full object-contain opacity-50"
+                                          />
+                                        </div>
+                                      )}
+                                    </div>
+                                  );
+                                })}
+                            </div>
+
+                            {/* Team Divider */}
+                            <div className="h-6 w-px bg-gradient-to-b from-transparent via-cyan-400/30 to-transparent"></div>
+
+                            {/* Red Team */}
+                            <div className="flex items-center space-x-1 relative">
+                              {/* Team label */}
+                              <div className="absolute -top-4 left-0 text-[9px] font-mono text-[#E84057]/60 tracking-wider">RED</div>
+                              {match.info.participants
+                                .filter(p => p.teamId === 200)
+                                .sort((a, b) => {
+                                  const orderMap: any = { TOP: 1, JUNGLE: 2, MIDDLE: 3, BOTTOM: 4, UTILITY: 5 };
+                                  const posA = getPlayerPosition(a);
+                                  const posB = getPlayerPosition(b);
+                                  return (orderMap[posA] || 6) - (orderMap[posB] || 6);
+                                })
+                                .map((participant, idx) => {
+                                  const isCurrentPlayer = participant.puuid === playerData.puuid;
+                                  const playerPos = getPlayerPosition(participant);
+                                  const roleIconUrl = getRoleIconUrl(playerPos);
+                                  return (
+                                    <div key={idx} className="flex flex-col items-center space-y-0.5">
+                                      <div 
+                                        className={`relative group/champion w-5 h-5 overflow-hidden transition-all ${
+                                          isCurrentPlayer 
+                                            ? 'ring-1 ring-[#E84057] border-2 border-[#E84057] shadow-[0_0_10px_rgba(232,64,87,0.6)]' 
+                                            : 'border border-red-400/20 hover:border-red-400/50'
+                                        }`}
+                                      >
+                                        {/* Glow effect */}
+                                        {isCurrentPlayer && (
+                                          <div className="absolute -inset-1 bg-[#E84057]/30 blur-md"></div>
+                                        )}
+                                        <Image
+                                          src={getChampionImageUrl(participant.championId)}
+                                          alt={participant.championName}
+                                          width={20}
+                                          height={20}
+                                          className="relative w-full h-full object-cover"
+                                        />
+                                        {/* Hover overlay */}
+                                        <div className="absolute inset-0 bg-gradient-to-t from-[#E84057]/20 to-transparent opacity-0 group-hover/champion:opacity-100 transition-opacity"></div>
+                                      </div>
+                                      {/* Role Icon */}
+                                      {hasPositions(match.info.queueId) && playerPos && roleIconUrl && (
+                                        <div className="w-3 h-3 relative flex-shrink-0">
+                                          <Image
+                                            src={roleIconUrl}
+                                            alt={playerPos}
+                                            width={12}
+                                            height={12}
+                                            className="w-full h-full object-contain opacity-50"
+                                          />
+                                        </div>
+                                      )}
+                                    </div>
+                                  );
+                                })}
+                            </div>
+
+                            {/* Expand Button */}
+                            <button className="relative group/expand ml-2 p-1.5 border border-cyan-400/20 hover:border-cyan-400/50 transition-all bg-[#0a1628] hover:bg-[#0a1628]/80">
+                              {/* Button glow on hover */}
+                              <div className="absolute -inset-0.5 bg-gradient-to-br from-cyan-400/20 to-[#5383E8]/20 opacity-0 group-hover/expand:opacity-100 transition-opacity blur-sm"></div>
+                              <div className="relative">
+                                {isExpanded ? (
+                                  <ChevronUp className="w-4 h-4 text-cyan-400" />
+                                ) : (
+                                  <ChevronDown className="w-4 h-4 text-gray-500 group-hover/expand:text-cyan-400 transition-colors" />
+                                )}
+                              </div>
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Expanded Details */}
+                      <AnimatePresence>
+                        {isExpanded && (
+                          <motion.div
+                            initial={{ height: 0, opacity: 0 }}
+                            animate={{ height: 'auto', opacity: 1 }}
+                            exit={{ height: 0, opacity: 0 }}
+                            transition={{ duration: 0.2 }}
+                            className="border-t border-cyan-400/20 bg-gradient-to-br from-[#0a1628]/95 to-[#0f1f3a]/95 relative overflow-hidden"
+                          >
+                            {/* Tech accent line */}
+                            <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-cyan-400/50 to-transparent"></div>
+                            
+                            <div className="p-6 relative z-10">
+                              {/* Tabs */}
+                              <div className="flex items-center space-x-2 mb-6 bg-[#0a1628]/50 rounded-none p-1 border border-cyan-400/20 relative overflow-hidden">
+                                {/* Background glow */}
+                                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-cyan-400/5 to-transparent"></div>
+                                
+                                <button 
+                                  onClick={() => setActiveTab({ ...activeTab, [match.metadata.matchId]: 'post-game' })}
+                                  className={`relative flex-1 px-4 py-2.5 text-sm font-bold font-mono tracking-wider uppercase transition-all group ${
+                                    (!activeTab[match.metadata.matchId] || activeTab[match.metadata.matchId] === 'post-game')
+                                      ? 'bg-gradient-to-r from-[#5383E8] to-cyan-400 text-white shadow-[0_0_15px_rgba(0,255,255,0.4)]'
+                                      : 'text-gray-500 hover:text-cyan-400 hover:bg-cyan-400/5'
+                                  }`}
+                                >
+                                  {(!activeTab[match.metadata.matchId] || activeTab[match.metadata.matchId] === 'post-game') && (
+                                    <>
+                                      <div className="absolute top-0 left-0 w-2 h-2 border-t border-l border-white/50"></div>
+                                      <div className="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-white/50"></div>
+                                    </>
+                                  )}
+                                  <span className="relative z-10">Post Game</span>
+                                </button>
+                                <button 
+                                  onClick={() => setActiveTab({ ...activeTab, [match.metadata.matchId]: 'performance' })}
+                                  className={`relative flex-1 px-4 py-2.5 text-sm font-bold font-mono tracking-wider uppercase transition-all group ${
+                                    activeTab[match.metadata.matchId] === 'performance'
+                                      ? 'bg-gradient-to-r from-[#5383E8] to-cyan-400 text-white shadow-[0_0_15px_rgba(0,255,255,0.4)]'
+                                      : 'text-gray-500 hover:text-cyan-400 hover:bg-cyan-400/5'
+                                  }`}
+                                >
+                                  {activeTab[match.metadata.matchId] === 'performance' && (
+                                    <>
+                                      <div className="absolute top-0 left-0 w-2 h-2 border-t border-l border-white/50"></div>
+                                      <div className="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-white/50"></div>
+                                    </>
+                                  )}
+                                  <span className="relative z-10">Performance</span>
+                                </button>
+                                <button 
+                                  onClick={() => {
+                                    setActiveTab({ ...activeTab, [match.metadata.matchId]: 'item-build' });
+                                    fetchTimeline(match.metadata.matchId, profile?.lolAccount?.region);
+                                  }}
+                                  className={`relative flex-1 px-4 py-2.5 text-sm font-bold font-mono tracking-wider uppercase transition-all group ${
+                                    activeTab[match.metadata.matchId] === 'item-build'
+                                      ? 'bg-gradient-to-r from-[#5383E8] to-cyan-400 text-white shadow-[0_0_15px_rgba(0,255,255,0.4)]'
+                                      : 'text-gray-500 hover:text-cyan-400 hover:bg-cyan-400/5'
+                                  }`}
+                                >
+                                  {activeTab[match.metadata.matchId] === 'item-build' && (
+                                    <>
+                                      <div className="absolute top-0 left-0 w-2 h-2 border-t border-l border-white/50"></div>
+                                      <div className="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-white/50"></div>
+                                    </>
+                                  )}
+                                  <span className="relative z-10">Item Build</span>
+                                </button>
+                                <button 
+                                  onClick={() => {
+                                    setActiveTab({ ...activeTab, [match.metadata.matchId]: 'timeline' });
+                                    fetchTimeline(match.metadata.matchId, profile?.lolAccount?.region);
+                                  }}
+                                  className={`relative flex-1 px-4 py-2.5 text-sm font-bold font-mono tracking-wider uppercase transition-all group ${
+                                    activeTab[match.metadata.matchId] === 'timeline'
+                                      ? 'bg-gradient-to-r from-[#5383E8] to-cyan-400 text-white shadow-[0_0_15px_rgba(0,255,255,0.4)]'
+                                      : 'text-gray-500 hover:text-cyan-400 hover:bg-cyan-400/5'
+                                  }`}
+                                >
+                                  {activeTab[match.metadata.matchId] === 'timeline' && (
+                                    <>
+                                      <div className="absolute top-0 left-0 w-2 h-2 border-t border-l border-white/50"></div>
+                                      <div className="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-white/50"></div>
+                                    </>
+                                  )}
+                                  <span className="relative z-10">Timeline</span>
+                                </button>
+                                <button className="flex-1 px-4 py-2.5 text-sm font-medium font-mono tracking-wider uppercase text-gray-500 hover:text-cyan-400 transition-colors hover:bg-cyan-400/5">
+                                  Metrics
+                                </button>
+                              </div>
+
+                              {/* Post Game Tab Content */}
+                              {(!activeTab[match.metadata.matchId] || activeTab[match.metadata.matchId] === 'post-game') && (
+                              <div className="space-y-4">
+                                {/* Blue Team (Victory/Defeat) */}
+                                <div className="relative bg-gradient-to-br from-[#0a1628]/80 to-[#1a2f4a]/80 rounded-none p-5 border border-cyan-400/20 overflow-hidden shadow-[0_0_20px_rgba(83,131,232,0.15)]">
+                                  {/* Tech lines */}
+                                  <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#5383E8]/50 to-transparent"></div>
+                                  <div className="absolute left-0 top-0 bottom-0 w-px bg-gradient-to-b from-transparent via-[#5383E8]/50 to-transparent"></div>
+                                  
+                                  {/* Corner brackets */}
+                                  <div className="absolute top-0 left-0 w-6 h-6 border-t-2 border-l-2 border-[#5383E8]/40"></div>
+                                  <div className="absolute top-0 right-0 w-6 h-6 border-t-2 border-r-2 border-[#5383E8]/40"></div>
+                                  
+                                  <div className="flex items-center justify-between mb-4 relative z-10">
+                                    <div className="flex items-center space-x-3">
+                                      <span className={`font-bold text-base font-mono tracking-wider uppercase drop-shadow-[0_0_10px_rgba(83,131,232,0.6)] ${
+                                        playerTeam?.teamId === 100 && playerData.win ? 'text-[#5383E8]' :
+                                        playerTeam?.teamId === 100 && !playerData.win ? 'text-[#E84057]' :
+                                        playerTeam?.teamId === 200 && playerData.win ? 'text-[#E84057]' : 'text-[#5383E8]'
+                                      }`}>
+                                        {playerTeam?.teamId === 100 ? 
+                                          (playerData.win ? 'VICTORY' : 'DEFEAT') : 
+                                          (playerData.win ? 'DEFEAT' : 'VICTORY')
+                                        }
+                                      </span>
+                                      <span className="text-gray-500 text-xs font-mono uppercase tracking-wider">(Blue Team)</span>
+                                    </div>
+                                    <div className="flex items-center text-xs text-gray-500 font-bold font-mono uppercase tracking-wider">
+                                      <div className="flex-1 min-w-0"></div> {/* Spacer for champion/name section */}
+                                      <div className="flex items-center space-x-4">
+                                        <span className="w-12 text-center flex-shrink-0">Carry</span>
+                                        <span className="w-20 text-center flex-shrink-0">KDA</span>
+                                        <span className="w-20 text-center flex-shrink-0">Damage</span>
+                                        <span className="w-16 text-center flex-shrink-0">Gold</span>
+                                        <span className="w-12 text-center flex-shrink-0">CS</span>
+                                        <span className="w-16 text-center flex-shrink-0">Wards</span>
+                                        <span className="ml-4 flex-shrink-0" style={{ width: '192px' }}>Items</span>
+                                      </div>
+                                    </div>
+                                  </div>
+
+                                  <div className="space-y-1.5 relative z-10">
+                                    {match.info.participants
+                                      .filter(p => p.teamId === 100)
+                                      .sort((a, b) => {
+                                        const orderMap: any = { TOP: 1, JUNGLE: 2, MIDDLE: 3, BOTTOM: 4, UTILITY: 5 };
+                                        const posA = getPlayerPosition(a);
+                                        const posB = getPlayerPosition(b);
+                                        return (orderMap[posA] || 6) - (orderMap[posB] || 6);
+                                      })
+                                      .map((participant, idx) => {
+                                        const isPlayer = participant.puuid === playerData.puuid;
+                                        const participantKDA = parseFloat(getKDA(participant));
+                                        
+                                        return (
+                                          <div
+                                            key={idx}
+                                            className={`relative flex items-center justify-between p-3 rounded-none transition-all overflow-hidden group/player ${
+                                              isPlayer 
+                                                ? 'bg-[#5383E8]/15 border-l-2 border-[#5383E8] shadow-[0_0_15px_rgba(83,131,232,0.3)]' 
+                                                : 'hover:bg-cyan-400/5 border-l-2 border-transparent hover:border-cyan-400/30'
+                                            }`}
+                                          >
+                                            {/* Scan line effect on hover */}
+                                            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-cyan-400/5 to-transparent opacity-0 group-hover/player:opacity-100 transition-opacity"></div>
+                                            
+                                            {/* Champion Info */}
+                                            <div className="flex items-center space-x-3 flex-1 min-w-0 relative z-10">
+                                              <div className="relative flex-shrink-0 group/champ">
+                                                {/* Champion glow */}
+                                                {isPlayer && (
+                                                  <div className="absolute inset-0 bg-[#5383E8]/30 blur-md"></div>
+                                                )}
+                                                <div className={`relative w-10 h-10 overflow-hidden border ${
+                                                  isPlayer ? 'border-[#5383E8]/50' : 'border-cyan-400/20'
+                                                }`}>
+                                                  <Image
+                                                    src={getChampionImageUrl(participant.championId)}
+                                                    alt={participant.championName}
+                                                    width={40}
+                                                    height={40}
+                                                    className="w-full h-full object-cover"
+                                                  />
+                                                  {/* Corner brackets */}
+                                                  {isPlayer && (
+                                                    <>
+                                                      <div className="absolute top-0 left-0 w-2 h-2 border-t border-l border-[#5383E8]"></div>
+                                                      <div className="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-[#5383E8]"></div>
+                                                    </>
+                                                  )}
+                                                </div>
+                                                <div className={`absolute -bottom-0.5 -right-0.5 px-1 text-[9px] font-bold font-mono border ${
+                                                  isPlayer 
+                                                    ? 'bg-gradient-to-br from-[#5383E8] to-cyan-400 text-white border-cyan-400/50 shadow-[0_0_8px_rgba(0,255,255,0.5)]' 
+                                                    : 'bg-[#0a1628] text-white border-gray-700'
+                                                }`}>
+                                                  {participant.champLevel}
+                                                </div>
+                                              </div>
+                                              
+                                              {/* Spells & Runes */}
+                                              <div className="flex flex-col space-y-0.5 flex-shrink-0">
+                                                <div className="flex space-x-0.5">
+                                                  <div className="w-4 h-4 overflow-hidden bg-[#0a1628] border border-cyan-400/20">
+                                                    <Image
+                                                      src={getSummonerSpellImageUrl(participant.summoner1Id)}
+                                                      alt="Spell"
+                                                      width={16}
+                                                      height={16}
+                                                    />
+                                                  </div>
+                                                  <div className="w-4 h-4 overflow-hidden bg-[#0a1628] border border-cyan-400/20">
+                                                    <Image
+                                                      src={getSummonerSpellImageUrl(participant.summoner2Id)}
+                                                      alt="Spell"
+                                                      width={16}
+                                                      height={16}
+                                                    />
+                                                  </div>
+                                                </div>
+                                                <div className="flex space-x-0.5">
+                                                  {getKeystoneRuneImageUrl(getKeystoneRuneId(participant.perks)) && (
+                                                    <div className="w-4 h-4 rounded-full overflow-hidden bg-[#0a1628] border border-cyan-400/20">
+                                                      <Image
+                                                        src={getKeystoneRuneImageUrl(getKeystoneRuneId(participant.perks))}
+                                                        alt="Rune"
+                                                        width={16}
+                                                        height={16}
+                                                      />
+                                                    </div>
+                                                  )}
+                                                  {getSecondaryTreeImageUrl(getSecondaryTreeId(participant.perks)) && (
+                                                    <div className="w-4 h-4 rounded-full overflow-hidden bg-[#0a1628] border border-cyan-400/20">
+                                                      <Image
+                                                        src={getSecondaryTreeImageUrl(getSecondaryTreeId(participant.perks))}
+                                                        alt="Tree"
+                                                        width={16}
+                                                        height={16}
+                                                      />
+                                                    </div>
+                                                  )}
+                                                </div>
+                                              </div>
+
+                                              {/* Player Name & Position */}
+                                              <div className="flex-1 min-w-0">
+                                                <div className={`text-xs font-medium truncate ${
+                                                  isPlayer ? 'text-cyan-400 font-bold drop-shadow-[0_0_5px_rgba(0,255,255,0.5)]' : 'text-white'
+                                                }`}>
+                                                  {participant.riotIdGameName}
+                                                </div>
+                                                <div className="flex items-center space-x-1.5">
+                                                  {hasPositions(match.info.queueId) && getPlayerPosition(participant) && getRoleIconUrl(getPlayerPosition(participant)) && (
+                                                    <div className="w-3 h-3 relative flex-shrink-0">
+                                                      <Image
+                                                        src={getRoleIconUrl(getPlayerPosition(participant))}
+                                                        alt={getPlayerPosition(participant)}
+                                                        width={12}
+                                                        height={12}
+                                                        className="w-full h-full object-contain opacity-60"
+                                                      />
+                                                    </div>
+                                                  )}
+                                                  {isPlayer && (
+                                                    <span className="text-[10px] text-[#5383E8] font-bold font-mono uppercase tracking-wider drop-shadow-[0_0_5px_rgba(83,131,232,0.6)]">You</span>
+                                                  )}
+                                                </div>
+                                              </div>
+                                            </div>
+
+                                            {/* Stats Row */}
+                                            <div className="flex items-center space-x-4 text-xs relative z-10">
+                                              {/* Carry Score */}
+                                              <div className="w-12 text-center flex-shrink-0">
+                                                <div className={`font-bold font-mono drop-shadow-[0_0_5px_rgba(236,188,44,0.3)] ${
+                                                  participantKDA >= 5 ? 'text-[#ECBC2C]' :
+                                                  participantKDA >= 3 ? 'text-cyan-400' : 'text-gray-400'
+                                                }`}>
+                                                  {(() => {
+                                                    const score = (participant.kills * 2 + participant.assists) / Math.max(participant.deaths, 1);
+                                                    return Math.round(score * 10);
+                                                  })()}
+                                                </div>
+                                              </div>
+
+                                              {/* KDA */}
+                                              <div className="w-20 flex-shrink-0">
+                                                <div className="text-center">
+                                                  <div className="text-white text-[10px] font-medium font-mono whitespace-nowrap leading-tight">
+                                                    {participant.kills}<span className="text-gray-600 mx-0.5">/</span><span className="text-[#E84057] font-bold">{participant.deaths}</span><span className="text-gray-600 mx-0.5">/</span>{participant.assists}
+                                                  </div>
+                                                  <div className={`text-[9px] font-bold font-mono mt-0.5 ${
+                                                    participantKDA >= 5 ? 'text-[#ECBC2C] drop-shadow-[0_0_5px_rgba(236,188,44,0.5)]' :
+                                                    participantKDA >= 3 ? 'text-cyan-400 drop-shadow-[0_0_5px_rgba(0,255,255,0.5)]' : 'text-gray-400'
+                                                  }`}>
+                                                    {getKDA(participant)}
+                                                  </div>
+                                                </div>
+                                              </div>
+
+                                              {/* Damage */}
+                                              <div className="w-20 flex-shrink-0">
+                                                <div className="text-white text-center font-mono font-bold">{(participant.totalDamageDealtToChampions / 1000).toFixed(1)}k</div>
+                                                <div className="w-full bg-[#0a1628] h-1.5 rounded-none mt-1 border border-cyan-400/20 overflow-hidden">
+                                                  <div 
+                                                    className="bg-gradient-to-r from-[#5383E8] to-cyan-400 h-full shadow-[0_0_8px_rgba(0,255,255,0.6)]"
+                                                    style={{ 
+                                                      width: `${Math.min(100, (participant.totalDamageDealtToChampions / Math.max(...match.info.participants.filter(p => p.teamId === 100).map(p => p.totalDamageDealtToChampions))) * 100)}%` 
+                                                    }}
+                                                  ></div>
+                                                </div>
+                                              </div>
+
+                                              {/* Gold */}
+                                              <div className="w-16 text-center flex-shrink-0">
+                                                <div className="text-[#ECBC2C] font-bold font-mono drop-shadow-[0_0_5px_rgba(236,188,44,0.5)]">{(participant.goldEarned / 1000).toFixed(1)}k</div>
+                                              </div>
+
+                                              {/* CS */}
+                                              <div className="w-12 text-center flex-shrink-0">
+                                                <div className="text-white font-mono font-bold">{getCS(participant)}</div>
+                                                <div className="text-[10px] text-gray-500 font-mono">
+                                                  ({getCSPerMin(participant, match.info.gameDuration)})
+                                                </div>
+                                              </div>
+
+                                              {/* Wards */}
+                                              <div className="w-16 text-center flex-shrink-0">
+                                                <div className="text-white font-mono font-bold">{participant.visionScore}</div>
+                                              </div>
+
+                                              {/* Items */}
+                                              <div className="flex space-x-1 flex-shrink-0 ml-4">
+                                                {[0, 1, 2, 3, 4, 5, 6].map((itemIdx) => {
+                                                  const itemId = (participant as any)[`item${itemIdx}`];
+                                                  return (
+                                                    <div 
+                                                      key={itemIdx} 
+                                                      className={`relative group/item w-6 h-6 ${itemIdx === 6 ? 'rounded-full' : 'rounded-none'} ${
+                                                        itemId > 0 ? 'bg-[#0a1628]' : 'bg-[#0a1628]/30'
+                                                      } border ${
+                                                        itemId > 0 ? 'border-cyan-400/30 hover:border-cyan-400/60' : 'border-gray-700/20'
+                                                      } overflow-hidden flex items-center justify-center transition-all`}
+                                                    >
+                                                      {/* Item glow on hover */}
+                                                      {itemId > 0 && (
+                                                        <div className={`absolute ${itemIdx === 6 ? '-inset-1 rounded-full' : '-inset-0.5'} bg-gradient-to-br from-cyan-400/20 to-[#5383E8]/20 opacity-0 group-hover/item:opacity-100 transition-opacity blur-sm`}></div>
+                                                      )}
+                                                      {itemId > 0 && (
+                                                        <Image
+                                                          src={getItemImageUrl(itemId)}
+                                                          alt="Item"
+                                                          width={24}
+                                                          height={24}
+                                                          className="w-full h-full object-cover"
+                                                        />
+                                                      )}
+                                                    </div>
+                                                  );
+                                                })}
+                                              </div>
+                                            </div>
+                                          </div>
+                                        );
+                                      })}
+                                  </div>
+                                </div>
+
+                                {/* Red Team */}
+                                <div className="relative bg-gradient-to-br from-[#1a0a0f]/80 to-[#2d1419]/80 rounded-none p-5 border border-red-400/20 overflow-hidden shadow-[0_0_20px_rgba(232,64,87,0.15)]">
+                                  {/* Tech lines */}
+                                  <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#E84057]/50 to-transparent"></div>
+                                  <div className="absolute left-0 top-0 bottom-0 w-px bg-gradient-to-b from-transparent via-[#E84057]/50 to-transparent"></div>
+                                  
+                                  {/* Corner brackets */}
+                                  <div className="absolute top-0 left-0 w-6 h-6 border-t-2 border-l-2 border-[#E84057]/40"></div>
+                                  <div className="absolute top-0 right-0 w-6 h-6 border-t-2 border-r-2 border-[#E84057]/40"></div>
+                                  
+                                  <div className="flex items-center justify-between mb-4 relative z-10">
+                                    <div className="flex items-center space-x-3">
+                                      <span className={`font-bold text-base font-mono tracking-wider uppercase drop-shadow-[0_0_10px_rgba(232,64,87,0.6)] ${
+                                        playerTeam?.teamId === 200 && playerData.win ? 'text-[#5383E8]' :
+                                        playerTeam?.teamId === 200 && !playerData.win ? 'text-[#E84057]' :
+                                        playerTeam?.teamId === 100 && playerData.win ? 'text-[#E84057]' : 'text-[#5383E8]'
+                                      }`}>
+                                        {playerTeam?.teamId === 200 ? 
+                                          (playerData.win ? 'VICTORY' : 'DEFEAT') : 
+                                          (playerData.win ? 'DEFEAT' : 'VICTORY')
+                                        }
+                                      </span>
+                                      <span className="text-gray-500 text-xs font-mono uppercase tracking-wider">(Red Team)</span>
+                                    </div>
+                                    <div className="flex items-center text-xs font-mono tracking-wider uppercase">
+                                      <div className="flex-1 min-w-0"></div> {/* Spacer for champion/name section */}
+                                      <div className="flex items-center space-x-4">
+                                        <span className="w-12 text-center flex-shrink-0 text-red-400/60 drop-shadow-[0_0_5px_rgba(232,64,87,0.3)]">Carry</span>
+                                        <span className="w-20 text-center flex-shrink-0 text-red-400/60 drop-shadow-[0_0_5px_rgba(232,64,87,0.3)]">KDA</span>
+                                        <span className="w-20 text-center flex-shrink-0 text-red-400/60 drop-shadow-[0_0_5px_rgba(232,64,87,0.3)]">Damage</span>
+                                        <span className="w-16 text-center flex-shrink-0 text-red-400/60 drop-shadow-[0_0_5px_rgba(232,64,87,0.3)]">Gold</span>
+                                        <span className="w-12 text-center flex-shrink-0 text-red-400/60 drop-shadow-[0_0_5px_rgba(232,64,87,0.3)]">CS</span>
+                                        <span className="w-16 text-center flex-shrink-0 text-red-400/60 drop-shadow-[0_0_5px_rgba(232,64,87,0.3)]">Wards</span>
+                                        <span className="ml-4 flex-shrink-0 text-red-400/60 drop-shadow-[0_0_5px_rgba(232,64,87,0.3)]" style={{ width: '192px' }}>Items</span>
+                                      </div>
+                                    </div>
+                                  </div>
+
+                                  <div className="space-y-1">
+                                    {match.info.participants
+                                      .filter(p => p.teamId === 200)
+                                      .sort((a, b) => {
+                                        const orderMap: any = { TOP: 1, JUNGLE: 2, MIDDLE: 3, BOTTOM: 4, UTILITY: 5 };
+                                        const posA = getPlayerPosition(a);
+                                        const posB = getPlayerPosition(b);
+                                        return (orderMap[posA] || 6) - (orderMap[posB] || 6);
+                                      })
+                                      .map((participant, idx) => {
+                                        const isPlayer = participant.puuid === playerData.puuid;
+                                        const participantKDA = parseFloat(getKDA(participant));
+                                        
+                                        return (
+                                          <div
+                                            key={idx}
+                                            className={`relative flex items-center justify-between p-3 rounded-none transition-all overflow-hidden group/player ${
+                                              isPlayer 
+                                                ? 'bg-[#E84057]/15 border-l-2 border-[#E84057] shadow-[0_0_15px_rgba(232,64,87,0.3)]' 
+                                                : 'hover:bg-red-400/5 border-l-2 border-transparent hover:border-red-400/30'
+                                            }`}
+                                          >
+                                            {/* Scan line effect on hover */}
+                                            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-red-400/5 to-transparent opacity-0 group-hover/player:opacity-100 transition-opacity"></div>
+                                            
+                                            {/* Champion Info */}
+                                            <div className="flex items-center space-x-3 flex-1 min-w-0 relative z-10">
+                                              <div className="relative flex-shrink-0 group/champ">
+                                                {/* Champion glow */}
+                                                {isPlayer && (
+                                                  <div className="absolute inset-0 bg-[#E84057]/30 blur-md"></div>
+                                                )}
+                                                <div className={`relative w-10 h-10 overflow-hidden border ${
+                                                  isPlayer ? 'border-[#E84057]/50' : 'border-red-400/20'
+                                                }`}>
+                                                  <Image
+                                                    src={getChampionImageUrl(participant.championId)}
+                                                    alt={participant.championName}
+                                                    width={40}
+                                                    height={40}
+                                                    className="w-full h-full object-cover"
+                                                  />
+                                                  {/* Corner brackets */}
+                                                  {isPlayer && (
+                                                    <>
+                                                      <div className="absolute top-0 left-0 w-2 h-2 border-t border-l border-[#E84057]"></div>
+                                                      <div className="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-[#E84057]"></div>
+                                                    </>
+                                                  )}
+                                                </div>
+                                                <div className={`absolute -bottom-0.5 -right-0.5 px-1 text-[9px] font-bold font-mono border ${
+                                                  isPlayer 
+                                                    ? 'bg-gradient-to-br from-[#E84057] to-red-400 text-white border-red-400/50 shadow-[0_0_8px_rgba(232,64,87,0.5)]' 
+                                                    : 'bg-[#0a1628] text-white border-gray-700'
+                                                }`}>
+                                                  {participant.champLevel}
+                                                </div>
+                                              </div>
+                                              
+                                              {/* Spells & Runes */}
+                                              <div className="flex flex-col space-y-0.5 flex-shrink-0">
+                                                <div className="flex space-x-0.5">
+                                                  <div className="w-4 h-4 overflow-hidden bg-[#0a1628] border border-red-400/20">
+                                                    <Image
+                                                      src={getSummonerSpellImageUrl(participant.summoner1Id)}
+                                                      alt="Spell"
+                                                      width={16}
+                                                      height={16}
+                                                    />
+                                                  </div>
+                                                  <div className="w-4 h-4 overflow-hidden bg-[#0a1628] border border-red-400/20">
+                                                    <Image
+                                                      src={getSummonerSpellImageUrl(participant.summoner2Id)}
+                                                      alt="Spell"
+                                                      width={16}
+                                                      height={16}
+                                                    />
+                                                  </div>
+                                                </div>
+                                                <div className="flex space-x-0.5">
+                                                  {getKeystoneRuneImageUrl(getKeystoneRuneId(participant.perks)) && (
+                                                    <div className="w-4 h-4 rounded-full overflow-hidden bg-[#0a1628] border border-red-400/20">
+                                                      <Image
+                                                        src={getKeystoneRuneImageUrl(getKeystoneRuneId(participant.perks))}
+                                                        alt="Rune"
+                                                        width={16}
+                                                        height={16}
+                                                      />
+                                                    </div>
+                                                  )}
+                                                  {getSecondaryTreeImageUrl(getSecondaryTreeId(participant.perks)) && (
+                                                    <div className="w-4 h-4 rounded-full overflow-hidden bg-[#0a1628] border border-red-400/20">
+                                                      <Image
+                                                        src={getSecondaryTreeImageUrl(getSecondaryTreeId(participant.perks))}
+                                                        alt="Tree"
+                                                        width={16}
+                                                        height={16}
+                                                      />
+                                                    </div>
+                                                  )}
+                                                </div>
+                                              </div>
+
+                                              {/* Player Name & Position */}
+                                              <div className="flex-1 min-w-0">
+                                                <div className={`text-xs font-medium truncate ${
+                                                  isPlayer ? 'text-red-400 font-bold drop-shadow-[0_0_5px_rgba(232,64,87,0.5)]' : 'text-white'
+                                                }`}>
+                                                  {participant.riotIdGameName}
+                                                </div>
+                                                <div className="flex items-center space-x-1.5">
+                                                  {hasPositions(match.info.queueId) && getPlayerPosition(participant) && getRoleIconUrl(getPlayerPosition(participant)) && (
+                                                    <div className="w-3 h-3 relative flex-shrink-0">
+                                                      <Image
+                                                        src={getRoleIconUrl(getPlayerPosition(participant))}
+                                                        alt={getPlayerPosition(participant)}
+                                                        width={12}
+                                                        height={12}
+                                                        className="w-full h-full object-contain opacity-60"
+                                                      />
+                                                    </div>
+                                                  )}
+                                                  {isPlayer && (
+                                                    <span className="text-[10px] text-[#E84057] font-bold font-mono uppercase tracking-wider drop-shadow-[0_0_5px_rgba(232,64,87,0.6)]">You</span>
+                                                  )}
+                                                </div>
+                                              </div>
+                                            </div>
+
+                                            {/* Stats Row */}
+                                            <div className="flex items-center space-x-4 text-xs relative z-10">
+                                              {/* Carry Score */}
+                                              <div className="w-12 text-center flex-shrink-0">
+                                                <div className={`font-bold font-mono drop-shadow-[0_0_5px_rgba(236,188,44,0.3)] ${
+                                                  participantKDA >= 5 ? 'text-[#ECBC2C]' :
+                                                  participantKDA >= 3 ? 'text-cyan-400' : 'text-gray-400'
+                                                }`}>
+                                                  {(() => {
+                                                    const score = (participant.kills * 2 + participant.assists) / Math.max(participant.deaths, 1);
+                                                    return Math.round(score * 10);
+                                                  })()}
+                                                </div>
+                                              </div>
+
+                                              {/* KDA */}
+                                              <div className="w-20 flex-shrink-0">
+                                                <div className="text-center">
+                                                  <div className="text-white text-[10px] font-medium font-mono whitespace-nowrap leading-tight">
+                                                    {participant.kills}<span className="text-gray-600 mx-0.5">/</span><span className="text-[#E84057] font-bold">{participant.deaths}</span><span className="text-gray-600 mx-0.5">/</span>{participant.assists}
+                                                  </div>
+                                                  <div className={`text-[9px] font-bold font-mono mt-0.5 ${
+                                                    participantKDA >= 5 ? 'text-[#ECBC2C] drop-shadow-[0_0_5px_rgba(236,188,44,0.5)]' :
+                                                    participantKDA >= 3 ? 'text-cyan-400 drop-shadow-[0_0_5px_rgba(0,255,255,0.5)]' : 'text-gray-400'
+                                                  }`}>
+                                                    {getKDA(participant)}
+                                                  </div>
+                                                </div>
+                                              </div>
+
+                                              {/* Damage */}
+                                              <div className="w-20 flex-shrink-0">
+                                                <div className="text-white text-center font-mono font-bold">{(participant.totalDamageDealtToChampions / 1000).toFixed(1)}k</div>
+                                                <div className="w-full bg-[#0a1628] h-1.5 rounded-none mt-1 border border-red-400/20 overflow-hidden">
+                                                  <div 
+                                                    className="bg-gradient-to-r from-[#E84057] to-red-400 h-full shadow-[0_0_8px_rgba(232,64,87,0.6)]"
+                                                    style={{ 
+                                                      width: `${Math.min(100, (participant.totalDamageDealtToChampions / Math.max(...match.info.participants.filter(p => p.teamId === 200).map(p => p.totalDamageDealtToChampions))) * 100)}%` 
+                                                    }}
+                                                  ></div>
+                                                </div>
+                                              </div>
+
+                                              {/* Gold */}
+                                              <div className="w-16 text-center flex-shrink-0">
+                                                <div className="text-[#ECBC2C] font-bold font-mono drop-shadow-[0_0_5px_rgba(236,188,44,0.5)]">{(participant.goldEarned / 1000).toFixed(1)}k</div>
+                                              </div>
+
+                                              {/* CS */}
+                                              <div className="w-12 text-center flex-shrink-0">
+                                                <div className="text-white font-mono font-bold">{getCS(participant)}</div>
+                                                <div className="text-[10px] text-gray-500 font-mono">
+                                                  ({getCSPerMin(participant, match.info.gameDuration)})
+                                                </div>
+                                              </div>
+
+                                              {/* Wards */}
+                                              <div className="w-16 text-center flex-shrink-0">
+                                                <div className="text-white font-mono font-bold">{participant.visionScore}</div>
+                                              </div>
+
+                                              {/* Items */}
+                                              <div className="flex space-x-1 flex-shrink-0 ml-4">
+                                                {[0, 1, 2, 3, 4, 5, 6].map((itemIdx) => {
+                                                  const itemId = (participant as any)[`item${itemIdx}`];
+                                                  return (
+                                                    <div 
+                                                      key={itemIdx} 
+                                                      className={`relative group/item w-6 h-6 ${itemIdx === 6 ? 'rounded-full' : 'rounded-none'} ${
+                                                        itemId > 0 ? 'bg-[#0a1628]' : 'bg-[#0a1628]/30'
+                                                      } border ${
+                                                        itemId > 0 ? 'border-red-400/30 hover:border-red-400/60' : 'border-gray-700/20'
+                                                      } overflow-hidden flex items-center justify-center transition-all`}
+                                                    >
+                                                      {/* Item glow on hover */}
+                                                      {itemId > 0 && (
+                                                        <div className={`absolute ${itemIdx === 6 ? '-inset-1 rounded-full' : '-inset-0.5'} bg-gradient-to-br from-red-400/20 to-[#E84057]/20 opacity-0 group-hover/item:opacity-100 transition-opacity blur-sm`}></div>
+                                                      )}
+                                                      {itemId > 0 && (
+                                                        <Image
+                                                          src={getItemImageUrl(itemId)}
+                                                          alt="Item"
+                                                          width={24}
+                                                          height={24}
+                                                          className="relative w-full h-full object-cover"
+                                                        />
+                                                      )}
+                                                    </div>
+                                                  );
+                                                })}
+                                              </div>
+                                            </div>
+                                          </div>
+                                        );
+                                      })}
+                                  </div>
+                                </div>
+                              </div>
+                              )}
+
+                              {/* Performance Tab Content */}
+                              {activeTab[match.metadata.matchId] === 'performance' && (
+                                <div className="relative">
+                                  {/* Performance Header */}
+                                  <div className="flex items-center justify-between mb-4 px-4 text-xs font-mono tracking-wider uppercase text-gray-500">
+                                    <span className="w-48">Player</span>
+                                    <span className="w-20 text-center">Kills</span>
+                                    <span className="w-20 text-center">KDA</span>
+                                    <span className="flex-1 text-center">Damage</span>
+                                    <span className="w-24 text-center">Gold</span>
+                                    <span className="w-20 text-center">Wards</span>
+                                    <span className="w-20 text-center">CS</span>
+                                  </div>
+
+                                  {/* All Players Performance */}
+                                  <div className="space-y-1">
+                                    {match.info.participants
+                                      .sort((a, b) => {
+                                        // Calculate performance score for sorting
+                                        const scoreA = (a.kills * 300 + a.assists * 150 + a.totalDamageDealtToChampions + a.goldEarned + a.visionScore * 50 + (a.totalMinionsKilled + a.neutralMinionsKilled) * 20) / Math.max(a.deaths, 1);
+                                        const scoreB = (b.kills * 300 + b.assists * 150 + b.totalDamageDealtToChampions + b.goldEarned + b.visionScore * 50 + (b.totalMinionsKilled + b.neutralMinionsKilled) * 20) / Math.max(b.deaths, 1);
+                                        return scoreB - scoreA;
+                                      })
+                                      .map((participant, idx) => {
+                                        const isPlayer = participant.puuid === playerData.puuid;
+                                        const participantKDA = parseFloat(getKDA(participant));
+                                        
+                                        // Calculate performance score (0-100)
+                                        const maxDamage = Math.max(...match.info.participants.map(p => p.totalDamageDealtToChampions));
+                                        const maxGold = Math.max(...match.info.participants.map(p => p.goldEarned));
+                                        const maxVision = Math.max(...match.info.participants.map(p => p.visionScore));
+                                        const maxCS = Math.max(...match.info.participants.map(p => p.totalMinionsKilled + p.neutralMinionsKilled));
+                                        
+                                        const damageScore = (participant.totalDamageDealtToChampions / maxDamage) * 30;
+                                        const goldScore = (participant.goldEarned / maxGold) * 20;
+                                        const kdaScore = Math.min(participantKDA * 10, 25);
+                                        const visionScore = (participant.visionScore / maxVision) * 15;
+                                        const csScore = ((participant.totalMinionsKilled + participant.neutralMinionsKilled) / maxCS) * 10;
+                                        
+                                        const performanceScore = Math.min(100, Math.round(damageScore + goldScore + kdaScore + visionScore + csScore));
+
+                                        return (
+                                          <div
+                                            key={idx}
+                                            className={`relative flex items-center p-3 rounded-none transition-all overflow-hidden group/player ${
+                                              isPlayer 
+                                                ? 'bg-cyan-400/10 border-l-2 border-cyan-400 shadow-[0_0_15px_rgba(0,255,255,0.2)]' 
+                                                : 'hover:bg-white/5 border-l-2 border-transparent'
+                                            } ${participant.teamId === 100 ? 'bg-[#5383E8]/5' : 'bg-[#E84057]/5'}`}
+                                          >
+                                            {/* Scan line effect */}
+                                            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-cyan-400/5 to-transparent opacity-0 group-hover/player:opacity-100 transition-opacity"></div>
+                                            
+                                            {/* Player Info */}
+                                            <div className="flex items-center space-x-3 w-48 flex-shrink-0 relative z-10">
+                                              <div className="relative flex-shrink-0">
+                                                <div className={`relative w-10 h-10 overflow-hidden border ${
+                                                  isPlayer ? 'border-cyan-400/50' : participant.teamId === 100 ? 'border-[#5383E8]/30' : 'border-[#E84057]/30'
+                                                }`}>
+                                                  <Image
+                                                    src={getChampionImageUrl(participant.championId)}
+                                                    alt={participant.championName}
+                                                    width={40}
+                                                    height={40}
+                                                    className="w-full h-full object-cover"
+                                                  />
+                                                </div>
+                                                <div className={`absolute -bottom-0.5 -right-0.5 px-1 text-[9px] font-bold font-mono border ${
+                                                  participant.teamId === 100 
+                                                    ? 'bg-gradient-to-br from-[#5383E8] to-cyan-400 text-white border-cyan-400/50' 
+                                                    : 'bg-gradient-to-br from-[#E84057] to-red-400 text-white border-red-400/50'
+                                                }`}>
+                                                  {participant.champLevel}
+                                                </div>
+                                              </div>
+                                              
+                                              <div className="flex-1 min-w-0">
+                                                <div className={`text-xs font-medium truncate ${
+                                                  isPlayer ? 'text-cyan-400 font-bold drop-shadow-[0_0_5px_rgba(0,255,255,0.5)]' : 'text-white'
+                                                }`}>
+                                                  {participant.riotIdGameName}
+                                                </div>
+                                                <div className="flex items-center space-x-1">
+                                                  {hasPositions(match.info.queueId) && getPlayerPosition(participant) && getRoleIconUrl(getPlayerPosition(participant)) && (
+                                                    <div className="w-3 h-3 relative flex-shrink-0">
+                                                      <Image
+                                                        src={getRoleIconUrl(getPlayerPosition(participant))}
+                                                        alt={getPlayerPosition(participant)}
+                                                        width={12}
+                                                        height={12}
+                                                        className="w-full h-full object-contain opacity-60"
+                                                      />
+                                                    </div>
+                                                  )}
+                                                </div>
+                                              </div>
+                                            </div>
+
+                                            {/* Stats */}
+                                            <div className="flex items-center flex-1 space-x-4 text-xs relative z-10">
+                                              <div className="w-20 text-center font-mono font-bold text-white">{participant.kills}</div>
+                                              
+                                              <div className="w-20 text-center">
+                                                <div className={`text-xs font-bold font-mono ${
+                                                  participantKDA >= 5 ? 'text-[#ECBC2C] drop-shadow-[0_0_5px_rgba(236,188,44,0.5)]' :
+                                                  participantKDA >= 3 ? 'text-cyan-400 drop-shadow-[0_0_5px_rgba(0,255,255,0.5)]' : 'text-gray-400'
+                                                }`}>
+                                                  {getKDA(participant)}
+                                                </div>
+                                              </div>
+                                              
+                                              <div className="flex-1 text-center font-mono text-white font-bold">
+                                                {(participant.totalDamageDealtToChampions / 1000).toFixed(1)}k
+                                              </div>
+                                              
+                                              <div className="w-24 text-center font-mono text-[#ECBC2C] font-bold drop-shadow-[0_0_5px_rgba(236,188,44,0.3)]">
+                                                {(participant.goldEarned / 1000).toFixed(1)}k
+                                              </div>
+                                              
+                                              <div className="w-20 text-center font-mono text-white font-bold">{participant.visionScore}</div>
+                                              
+                                              <div className="w-20 text-center font-mono text-white font-bold">{getCS(participant)}</div>
+                                            </div>
+
+                                            {/* Performance Bar */}
+                                            <div className="absolute bottom-0 left-0 right-0 h-1">
+                                              <div 
+                                                className={`h-full ${
+                                                  participant.teamId === 100 
+                                                    ? 'bg-gradient-to-r from-[#5383E8] to-cyan-400 shadow-[0_0_8px_rgba(0,255,255,0.5)]' 
+                                                    : 'bg-gradient-to-r from-[#E84057] to-red-400 shadow-[0_0_8px_rgba(232,64,87,0.5)]'
+                                                }`}
+                                                style={{ width: `${performanceScore}%` }}
+                                              ></div>
+                                            </div>
+                                          </div>
+                                        );
+                                      })}
+                                  </div>
+                                </div>
+                              )}
+
+                              {/* Timeline Tab Content */}
+                              {activeTab[match.metadata.matchId] === 'timeline' && (
+                                <div className="relative">
+                                  {loadingTimeline[match.metadata.matchId] ? (
+                                    <div className="flex items-center justify-center py-20">
+                                      <Loader2 className="w-8 h-8 animate-spin text-cyan-400" />
+                                    </div>
+                                  ) : timelineData[match.metadata.matchId]?.events ? (
+                                    <div className="space-y-2">
+                                      {timelineData[match.metadata.matchId].events
+                                        .filter((event: any) => {
+                                          // Filter out events we don't want to display
+                                          const excludedTypes = ['ITEM_PURCHASED', 'ITEM_SOLD', 'ITEM_DESTROYED', 'ITEM_UNDO'];
+                                          return !excludedTypes.includes(event.type);
+                                        })
+                                        .map((event: any, idx: number) => {
+                                        // Get participant data - try different ID fields based on event type
+                                        let participant = null;
+                                        
+                                        // WARD_PLACED and WARD_KILL use creatorId
+                                        if (event.type === 'WARD_PLACED' || event.type === 'WARD_KILL') {
+                                          if (event.creatorId) {
+                                            participant = match.info.participants.find(
+                                              (p: any) => p.participantId === event.creatorId
+                                            );
+                                          }
+                                        }
+                                        // CHAMPION_KILL uses killerId
+                                        else if (event.killerId) {
+                                          participant = match.info.participants.find(
+                                            (p: any) => p.participantId === event.killerId
+                                          );
+                                        } 
+                                        // Other events use participantId
+                                        else if (event.participantId) {
+                                          participant = match.info.participants.find(
+                                            (p: any) => p.participantId === event.participantId
+                                          );
+                                        }
+                                        
+                                        const victim = event.victimId ? match.info.participants.find(
+                                          (p: any) => p.participantId === event.victimId
+                                        ) : null;
+
+                                        // Skip if no participant found (shouldn't happen with filtered events)
+                                        if (!participant) return null;
+
+                                        // Determine if we should render this event
+                                        const shouldRender = 
+                                          event.type === 'CHAMPION_KILL' ||
+                                          event.type === 'ELITE_MONSTER_KILL' ||
+                                          event.type === 'BUILDING_KILL' ||
+                                          event.type === 'WARD_PLACED' ||
+                                          event.type === 'WARD_KILL' ||
+                                          event.type === 'TURRET_PLATE_DESTROYED';
+
+                                        if (!shouldRender) return null;
+
+                                        // Render different event types
+                                        return (
+                                          <div
+                                            key={idx}
+                                            className={`relative flex items-center p-3 rounded-none transition-all overflow-hidden group/event ${
+                                              participant?.teamId === 100 ? 'bg-[#5383E8]/5 hover:bg-[#5383E8]/10' : 'bg-[#E84057]/5 hover:bg-[#E84057]/10'
+                                            } border-l-2 ${
+                                              participant?.teamId === 100 ? 'border-[#5383E8]/30' : 'border-[#E84057]/30'
+                                            }`}
+                                          >
+                                            {/* Scan line effect */}
+                                            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-cyan-400/5 to-transparent opacity-0 group-hover/event:opacity-100 transition-opacity"></div>
+                                            
+                                            {/* Time */}
+                                            <div className="w-16 flex-shrink-0 text-center relative z-10">
+                                              <div className="text-sm font-bold font-mono text-cyan-400 drop-shadow-[0_0_5px_rgba(0,255,255,0.5)]">
+                                                {event.formattedTime}
+                                              </div>
+                                            </div>
+
+                                            {/* Event Content */}
+                                            <div className="flex-1 flex items-center space-x-3 relative z-10">
+                                              {/* Champion Portrait */}
+                                              {participant && (
+                                                <div className="relative flex-shrink-0">
+                                                  <div className={`w-10 h-10 overflow-hidden border ${
+                                                    participant.teamId === 100 ? 'border-[#5383E8]/30' : 'border-[#E84057]/30'
+                                                  }`}>
+                                                    <Image
+                                                      src={getChampionImageUrl(participant.championId)}
+                                                      alt={participant.championName}
+                                                      width={40}
+                                                      height={40}
+                                                      className="w-full h-full object-cover"
+                                                    />
+                                                  </div>
+                                                </div>
+                                              )}
+
+                                              {/* Event Description */}
+                                              <div className="flex-1 min-w-0">
+                                                <div className="text-sm text-white font-medium">
+                                                  {event.type === 'CHAMPION_KILL' && (
+                                                    <>
+                                                      <span className="font-bold text-cyan-400">{participant.riotIdGameName}</span>
+                                                      <span className="text-red-400 mx-2 font-bold">killed</span>
+                                                      <span className="font-bold text-gray-300">{victim?.riotIdGameName || 'Enemy'}</span>
+                                                      {event.assistingParticipantIds && event.assistingParticipantIds.length > 0 && (
+                                                        <span className="text-gray-500 ml-2">({event.assistingParticipantIds.length} assist{event.assistingParticipantIds.length > 1 ? 's' : ''})</span>
+                                                      )}
+                                                    </>
+                                                  )}
+                                                  {event.type === 'ELITE_MONSTER_KILL' && (
+                                                    <>
+                                                      <span className="font-bold text-cyan-400">{participant.riotIdGameName}</span>
+                                                      <span className="text-purple-400 mx-2">killed</span>
+                                                      <span className="font-bold text-purple-300">{event.monsterType?.replace('_', ' ')}</span>
+                                                      {event.monsterSubType && <span className="text-gray-500"> ({event.monsterSubType})</span>}
+                                                    </>
+                                                  )}
+                                                  {event.type === 'BUILDING_KILL' && (
+                                                    <>
+                                                      <span className="font-bold text-cyan-400">{participant.riotIdGameName}</span>
+                                                      <span className="text-orange-400 mx-2">destroyed</span>
+                                                      <span className="font-bold text-orange-300">{event.buildingType?.replace(/_/g, ' ').toLowerCase()}</span>
+                                                      {event.laneType && <span className="text-gray-500"> ({event.laneType.replace('_', ' ')})</span>}
+                                                    </>
+                                                  )}
+                                                  {event.type === 'WARD_PLACED' && (
+                                                    <>
+                                                      <span className="font-bold text-cyan-400">{participant.riotIdGameName}</span>
+                                                      <span className="text-green-400 mx-2">placed</span>
+                                                      <span className="font-bold text-green-300">{event.wardType?.replace('_', ' ')} Ward</span>
+                                                    </>
+                                                  )}
+                                                  {event.type === 'WARD_KILL' && (
+                                                    <>
+                                                      <span className="font-bold text-cyan-400">{participant.riotIdGameName}</span>
+                                                      <span className="text-red-400 mx-2">destroyed</span>
+                                                      <span className="font-bold text-gray-300">{event.wardType?.replace('_', ' ')} Ward</span>
+                                                    </>
+                                                  )}
+                                                  {event.type === 'TURRET_PLATE_DESTROYED' && (
+                                                    <>
+                                                      <span className="font-bold text-cyan-400">{participant.riotIdGameName}</span>
+                                                      <span className="text-orange-400 mx-2">destroyed</span>
+                                                      <span className="font-bold text-orange-300">Turret Plate</span>
+                                                    </>
+                                                  )}
+                                                </div>
+                                              </div>
+
+                                              {/* Victim Icon for Kills */}
+                                              {event.type === 'CHAMPION_KILL' && victim && (
+                                                <div className="w-10 h-10 flex-shrink-0">
+                                                  <div className="w-full h-full overflow-hidden border border-gray-600/30">
+                                                    <Image
+                                                      src={getChampionImageUrl(victim.championId)}
+                                                      alt={victim.championName}
+                                                      width={40}
+                                                      height={40}
+                                                      className="w-full h-full object-cover opacity-70"
+                                                    />
+                                                  </div>
+                                                </div>
+                                              )}
+                                            </div>
+                                          </div>
+                                        );
+                                      })}
+                                    </div>
+                                  ) : (
+                                    <div className="flex items-center justify-center py-20 text-gray-500">
+                                      <p>No timeline data available</p>
+                                    </div>
+                                  )}
+                                </div>
+                              )}
+
+                              {/* Item Build Tab Content */}
+                              {activeTab[match.metadata.matchId] === 'item-build' && (
+                                <div className="space-y-6">
+                                  {/* Runes Section */}
+                                  <div className="relative bg-gradient-to-br from-[#0a1628]/80 to-[#1a2f4a]/80 rounded-none p-6 border border-cyan-400/20 overflow-hidden shadow-[0_0_20px_rgba(83,131,232,0.15)]">
+                                    <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-cyan-400/50 to-transparent"></div>
+                                    <div className="absolute left-0 top-0 bottom-0 w-px bg-gradient-to-b from-transparent via-cyan-400/50 to-transparent"></div>
+                                    <div className="absolute top-0 left-0 w-6 h-6 border-t-2 border-l-2 border-cyan-400/40"></div>
+                                    <div className="absolute top-0 right-0 w-6 h-6 border-t-2 border-r-2 border-cyan-400/40"></div>
+                                    
+                                    <h3 className="text-lg font-bold text-white font-mono tracking-wider uppercase mb-6 relative z-10 border-l-4 border-cyan-400 pl-3 drop-shadow-[0_0_10px_rgba(0,255,255,0.3)]">
+                                      Runes
+                                    </h3>
+                                    
+                                    {!playerData.perks?.styles ? (
+                                      <div className="text-gray-500 relative z-10">No rune data available</div>
+                                    ) : (
+                                    <div className="flex space-x-8 relative z-10">
+                                      {/* Primary Runes */}
+                                      {(() => {
+                                        const primaryStyle = playerData.perks?.styles?.[0];
+                                        const primaryTreeId = primaryStyle?.style;
+                                        const primarySelections = primaryStyle?.selections || [];
+                                        
+                                        console.log('[Item Build] Primary Runes:', {
+                                          primaryTreeId,
+                                          primarySelections,
+                                          fullPerks: playerData.perks
+                                        });
+                                        
+                                        const runeTreeNames: any = {
+                                          8000: 'Precision',
+                                          8100: 'Domination',
+                                          8200: 'Sorcery',
+                                          8300: 'Inspiration',
+                                          8400: 'Resolve'
+                                        };
+                                        
+                                        const runeTreeIcons: any = {
+                                          8000: 'https://ddragon.leagueoflegends.com/cdn/img/perk-images/Styles/Precision/Precision.png',
+                                          8100: 'https://ddragon.leagueoflegends.com/cdn/img/perk-images/Styles/Domination/Domination.png',
+                                          8200: 'https://ddragon.leagueoflegends.com/cdn/img/perk-images/Styles/Sorcery/Sorcery.png',
+                                          8300: 'https://ddragon.leagueoflegends.com/cdn/img/perk-images/Styles/Inspiration/Inspiration.png',
+                                          8400: 'https://ddragon.leagueoflegends.com/cdn/img/perk-images/Styles/Resolve/Resolve.png'
+                                        };
+                                        
+                                        // Map rune IDs to their image paths
+                                        const getRuneImagePath = (runeId: number, treeId: number): string => {
+                                          const runePathMap: any = {
+                                            // Precision Keystones
+                                            8005: 'perk-images/Styles/Precision/PressTheAttack/PressTheAttack.png',
+                                            8008: 'perk-images/Styles/Precision/LethalTempo/LethalTempoTemp.png',
+                                            8021: 'perk-images/Styles/Precision/FleetFootwork/FleetFootwork.png',
+                                            8010: 'perk-images/Styles/Precision/Conqueror/Conqueror.png',
+                                            // Precision Slot 1
+                                            9101: 'perk-images/Styles/Precision/AbsorbLife/AbsorbLife.png',
+                                            9111: 'perk-images/Styles/Precision/Triumph.png',
+                                            8009: 'perk-images/Styles/Precision/PresenceOfMind/PresenceOfMind.png',
+                                            // Precision Slot 2
+                                            9104: 'perk-images/Styles/Precision/LegendAlacrity/LegendAlacrity.png',
+                                            9105: 'perk-images/Styles/Precision/LegendHaste/LegendHaste.png',
+                                            9103: 'perk-images/Styles/Precision/LegendBloodline/LegendBloodline.png',
+                                            // Precision Slot 3
+                                            8014: 'perk-images/Styles/Precision/CoupDeGrace/CoupDeGrace.png',
+                                            8017: 'perk-images/Styles/Precision/CutDown/CutDown.png',
+                                            8299: 'perk-images/Styles/Sorcery/LastStand/LastStand.png',
+                                            
+                                            // Domination Keystones
+                                            8112: 'perk-images/Styles/Domination/Electrocute/Electrocute.png',
+                                            8124: 'perk-images/Styles/Domination/Predator/Predator.png',
+                                            8128: 'perk-images/Styles/Domination/DarkHarvest/DarkHarvest.png',
+                                            9923: 'perk-images/Styles/Domination/HailOfBlades/HailOfBlades.png',
+                                            // Domination Slot 1
+                                            8126: 'perk-images/Styles/Domination/CheapShot/CheapShot.png',
+                                            8139: 'perk-images/Styles/Domination/TasteOfBlood/GreenTerror_TasteOfBlood.png',
+                                            8143: 'perk-images/Styles/Domination/SuddenImpact/SuddenImpact.png',
+                                            // Domination Slot 2
+                                            8137: 'perk-images/Styles/Domination/SixthSense/SixthSense.png',
+                                            8140: 'perk-images/Styles/Domination/GrislyMementos/GrislyMementos.png',
+                                            8141: 'perk-images/Styles/Domination/DeepWard/DeepWard.png',
+                                            // Domination Slot 3
+                                            8135: 'perk-images/Styles/Domination/TreasureHunter/TreasureHunter.png',
+                                            8105: 'perk-images/Styles/Domination/RelentlessHunter/RelentlessHunter.png',
+                                            8106: 'perk-images/Styles/Domination/UltimateHunter/UltimateHunter.png',
+                                            
+                                            // Sorcery Keystones
+                                            8214: 'perk-images/Styles/Sorcery/SummonAery/SummonAery.png',
+                                            8229: 'perk-images/Styles/Sorcery/ArcaneComet/ArcaneComet.png',
+                                            8230: 'perk-images/Styles/Sorcery/PhaseRush/PhaseRush.png',
+                                            // Sorcery Slot 1
+                                            8224: 'perk-images/Styles/Sorcery/NullifyingOrb/Axiom_Arcanist.png',
+                                            8226: 'perk-images/Styles/Sorcery/ManaflowBand/ManaflowBand.png',
+                                            8275: 'perk-images/Styles/Sorcery/NimbusCloak/6361.png',
+                                            // Sorcery Slot 2
+                                            8210: 'perk-images/Styles/Sorcery/Transcendence/Transcendence.png',
+                                            8234: 'perk-images/Styles/Sorcery/Celerity/CelerityTemp.png',
+                                            8233: 'perk-images/Styles/Sorcery/AbsoluteFocus/AbsoluteFocus.png',
+                                            // Sorcery Slot 3
+                                            8237: 'perk-images/Styles/Sorcery/Scorch/Scorch.png',
+                                            8232: 'perk-images/Styles/Sorcery/Waterwalking/Waterwalking.png',
+                                            8236: 'perk-images/Styles/Sorcery/GatheringStorm/GatheringStorm.png',
+                                            
+                                            // Resolve Keystones
+                                            8437: 'perk-images/Styles/Resolve/GraspOfTheUndying/GraspOfTheUndying.png',
+                                            8439: 'perk-images/Styles/Resolve/VeteranAftershock/VeteranAftershock.png',
+                                            8465: 'perk-images/Styles/Resolve/Guardian/Guardian.png',
+                                            // Resolve Slot 1
+                                            8446: 'perk-images/Styles/Resolve/Demolish/Demolish.png',
+                                            8463: 'perk-images/Styles/Resolve/FontOfLife/FontOfLife.png',
+                                            8401: 'perk-images/Styles/Resolve/MirrorShell/MirrorShell.png',
+                                            // Resolve Slot 2
+                                            8429: 'perk-images/Styles/Resolve/Conditioning/Conditioning.png',
+                                            8444: 'perk-images/Styles/Resolve/SecondWind/SecondWind.png',
+                                            8473: 'perk-images/Styles/Resolve/BonePlating/BonePlating.png',
+                                            // Resolve Slot 3
+                                            8451: 'perk-images/Styles/Resolve/Overgrowth/Overgrowth.png',
+                                            8453: 'perk-images/Styles/Resolve/Revitalize/Revitalize.png',
+                                            8242: 'perk-images/Styles/Sorcery/Unflinching/Unflinching.png',
+                                            
+                                            // Inspiration Keystones
+                                            8351: 'perk-images/Styles/Inspiration/GlacialAugment/GlacialAugment.png',
+                                            8360: 'perk-images/Styles/Inspiration/UnsealedSpellbook/UnsealedSpellbook.png',
+                                            8369: 'perk-images/Styles/Inspiration/FirstStrike/FirstStrike.png',
+                                            // Inspiration Slot 1
+                                            8306: 'perk-images/Styles/Inspiration/HextechFlashtraption/HextechFlashtraption.png',
+                                            8304: 'perk-images/Styles/Inspiration/MagicalFootwear/MagicalFootwear.png',
+                                            8321: 'perk-images/Styles/Inspiration/CashBack/CashBack2.png',
+                                            // Inspiration Slot 2
+                                            8313: 'perk-images/Styles/Inspiration/PerfectTiming/AlchemistCabinet.png',
+                                            8352: 'perk-images/Styles/Inspiration/TimeWarpTonic/TimeWarpTonic.png',
+                                            8345: 'perk-images/Styles/Inspiration/BiscuitDelivery/BiscuitDelivery.png',
+                                            // Inspiration Slot 3
+                                            8347: 'perk-images/Styles/Inspiration/CosmicInsight/CosmicInsight.png',
+                                            8410: 'perk-images/Styles/Resolve/ApproachVelocity/ApproachVelocity.png',
+                                            8316: 'perk-images/Styles/Inspiration/JackOfAllTrades/JackofAllTrades2.png',
+                                          };
+                                          
+                                          return `https://ddragon.leagueoflegends.com/cdn/img/${runePathMap[runeId] || 'perk-images/Styles/RunesIcon.png'}`;
+                                        };
+                                        
+                                        // Map rune IDs to their names
+                                        const getRuneName = (runeId: number): string => {
+                                          const runeNames: any = {
+                                            // Precision
+                                            8005: 'Press the Attack', 8008: 'Lethal Tempo', 8021: 'Fleet Footwork', 8010: 'Conqueror',
+                                            9101: 'Overheal', 9111: 'Triumph', 8009: 'Presence of Mind',
+                                            9104: 'Legend: Alacrity', 9105: 'Legend: Tenacity', 9103: 'Legend: Bloodline',
+                                            8014: 'Coup de Grace', 8017: 'Cut Down', 8299: 'Last Stand',
+                                            // Domination
+                                            8112: 'Electrocute', 8124: 'Predator', 8128: 'Dark Harvest', 9923: 'Hail of Blades',
+                                            8126: 'Cheap Shot', 8139: 'Taste of Blood', 8143: 'Sudden Impact',
+                                            8137: 'Sixth Sense', 8140: 'Grisly Mementos', 8141: 'Deep Ward',
+                                            8135: 'Treasure Hunter', 8105: 'Relentless Hunter', 8106: 'Ultimate Hunter',
+                                            // Sorcery
+                                            8214: 'Summon Aery', 8229: 'Arcane Comet', 8230: 'Phase Rush',
+                                            8224: 'Nullifying Orb', 8226: 'Manaflow Band', 8275: 'Nimbus Cloak',
+                                            8210: 'Transcendence', 8234: 'Celerity', 8233: 'Absolute Focus',
+                                            8237: 'Scorch', 8232: 'Waterwalking', 8236: 'Gathering Storm',
+                                            // Resolve
+                                            8437: 'Grasp of the Undying', 8439: 'Aftershock', 8465: 'Guardian',
+                                            8446: 'Demolish', 8463: 'Font of Life', 8401: 'Shield Bash',
+                                            8429: 'Conditioning', 8444: 'Second Wind', 8473: 'Bone Plating',
+                                            8451: 'Overgrowth', 8453: 'Revitalize', 8242: 'Unflinching',
+                                            // Inspiration
+                                            8351: 'Glacial Augment', 8360: 'Unsealed Spellbook', 8369: 'First Strike',
+                                            8306: 'Hextech Flashtraption', 8304: 'Magical Footwear', 8321: 'Futures Market',
+                                            8313: 'Perfect Timing', 8352: 'Time Warp Tonic', 8345: 'Biscuit Delivery',
+                                            8347: 'Cosmic Insight', 8410: 'Approach Velocity', 8316: 'Jack of All Trades',
+                                          };
+                                          return runeNames[runeId] || 'Unknown Rune';
+                                        };
+                                        
+                                        return (
+                                          <div className="flex-1">
+                                            <div className="flex items-center space-x-3 mb-4">
+                                              <span className="text-white font-bold text-sm font-mono uppercase tracking-wider">
+                                                {runeTreeNames[primaryTreeId] || 'Primary'}
+                                              </span>
+                                            </div>
+                                            
+                                            <div className="space-y-3">
+                                              {primarySelections.map((selection: any, idx: number) => (
+                                                <div key={idx} className="flex items-center space-x-3 group/rune">
+                                                  <div className={`relative ${idx === 0 ? 'w-12 h-12' : 'w-10 h-10'}`}>
+                                                    {idx === 0 && (
+                                                      <div className="absolute inset-0 bg-yellow-400/30 blur-lg"></div>
+                                                    )}
+                                                    <div className={`relative w-full h-full rounded-full overflow-hidden border-2 ${
+                                                      idx === 0 ? 'border-yellow-400 shadow-[0_0_15px_rgba(250,204,21,0.5)]' : 'border-cyan-400/40'
+                                                    } bg-[#0a1628] group-hover/rune:border-cyan-400 transition-all`}>
+                                                      <img
+                                                        src={getRuneImagePath(selection.perk, primaryTreeId)}
+                                                        alt="Rune"
+                                                        className="w-full h-full object-cover"
+                                                        onError={(e) => {
+                                                          (e.target as HTMLImageElement).src = getCDNUrl('img/profileicon/29.png');
+                                                        }}
+                                                      />
+                                                    </div>
+                                                  </div>
+                                                  <span className={`text-xs font-medium ${
+                                                    idx === 0 ? 'text-yellow-400' : 'text-cyan-400/80'
+                                                  } font-mono`}>
+                                                    {getRuneName(selection.perk)}
+                                                  </span>
+                                                  {idx === 0 && (
+                                                    <div className="flex items-center space-x-1 ml-auto">
+                                                      <div className="w-2 h-2 rounded-full bg-yellow-400 shadow-[0_0_8px_rgba(250,204,21,0.8)]"></div>
+                                                      <div className="w-1.5 h-1.5 rounded-full bg-yellow-400/60"></div>
+                                                      <div className="w-1 h-1 rounded-full bg-yellow-400/30"></div>
+                                                    </div>
+                                                  )}
+                                                </div>
+                                              ))}
+                                            </div>
+                                          </div>
+                                        );
+                                      })()}
+                                      
+                                      {/* Secondary Runes */}
+                                      {(() => {
+                                        const secondaryStyle = playerData.perks?.styles?.[1];
+                                        const secondaryTreeId = secondaryStyle?.style;
+                                        const secondarySelections = secondaryStyle?.selections || [];
+                                        
+                                        const runeTreeNames: any = {
+                                          8000: 'Precision',
+                                          8100: 'Domination',
+                                          8200: 'Sorcery',
+                                          8300: 'Inspiration',
+                                          8400: 'Resolve'
+                                        };
+                                        
+                                        const runeTreeIcons: any = {
+                                          8000: 'https://ddragon.leagueoflegends.com/cdn/img/perk-images/Styles/Precision/Precision.png',
+                                          8100: 'https://ddragon.leagueoflegends.com/cdn/img/perk-images/Styles/Domination/Domination.png',
+                                          8200: 'https://ddragon.leagueoflegends.com/cdn/img/perk-images/Styles/Sorcery/Sorcery.png',
+                                          8300: 'https://ddragon.leagueoflegends.com/cdn/img/perk-images/Styles/Inspiration/Inspiration.png',
+                                          8400: 'https://ddragon.leagueoflegends.com/cdn/img/perk-images/Styles/Resolve/Resolve.png'
+                                        };
+                                        
+                                        // Map rune IDs to their image paths using official Riot API paths
+                                        const getRuneImagePath = (runeId: number, treeId: number): string => {
+                                          const runePathMap: any = {
+                                            // Precision Tree (8000)
+                                            8005: 'Styles/Precision/PressTheAttack/PressTheAttack.png',
+                                            8008: 'Styles/Precision/LethalTempo/LethalTempoTemp.png',
+                                            8021: 'Styles/Precision/FleetFootwork/FleetFootwork.png',
+                                            8010: 'Styles/Precision/Conqueror/Conqueror.png',
+                                            9101: 'Styles/Precision/Overheal.png',
+                                            9111: 'Styles/Precision/Triumph.png',
+                                            8009: 'Styles/Precision/PresenceOfMind/PresenceOfMind.png',
+                                            9104: 'Styles/Precision/LegendAlacrity/LegendAlacrity.png',
+                                            9105: 'Styles/Precision/LegendTenacity/LegendTenacity.png',
+                                            9103: 'Styles/Precision/LegendBloodline/LegendBloodline.png',
+                                            8014: 'Styles/Precision/CoupDeGrace/CoupDeGrace.png',
+                                            8017: 'Styles/Precision/CutDown/CutDown.png',
+                                            8299: 'Styles/Precision/LastStand/LastStand.png',
+                                            // Domination Tree (8100)
+                                            8112: 'Styles/Domination/Electrocute/Electrocute.png',
+                                            8124: 'Styles/Domination/Predator/Predator.png',
+                                            8128: 'Styles/Domination/DarkHarvest/DarkHarvest.png',
+                                            9923: 'Styles/Domination/HailOfBlades/HailOfBlades.png',
+                                            8126: 'Styles/Domination/CheapShot/CheapShot.png',
+                                            8139: 'Styles/Domination/TasteOfBlood/GreenTerror_TasteOfBlood.png',
+                                            8143: 'Styles/Domination/SuddenImpact/SuddenImpact.png',
+                                            8136: 'Styles/Domination/ZombieWard/ZombieWard.png',
+                                            8120: 'Styles/Domination/GhostPoro/GhostPoro.png',
+                                            8138: 'Styles/Domination/EyeballCollection/EyeballCollection.png',
+                                            8135: 'Styles/Domination/RavenousHunter/RavenousHunter.png',
+                                            8134: 'Styles/Domination/IngeniousHunter/IngeniousHunter.png',
+                                            8105: 'Styles/Domination/RelentlessHunter/RelentlessHunter.png',
+                                            8106: 'Styles/Domination/UltimateHunter/UltimateHunter.png',
+                                           
+                                            // Sorcery Tree (8200)
+                                            8214: 'Styles/Sorcery/SummonAery/SummonAery.png',
+                                            8229: 'Styles/Sorcery/ArcaneComet/ArcaneComet.png',
+                                            8230: 'Styles/Sorcery/PhaseRush/PhaseRush.png',
+                                            8224: 'Styles/Sorcery/NullifyingOrb/Pokeshield.png',
+                                            8226: 'Styles/Sorcery/ManaflowBand/ManaflowBand.png',
+                                            8275: 'Styles/Sorcery/NimbusCloak/6361.png',
+                                            8210: 'Styles/Sorcery/Transcendence/Transcendence.png',
+                                            8234: 'Styles/Sorcery/Celerity/CelerityTemp.png',
+                                            8233: 'Styles/Sorcery/AbsoluteFocus/AbsoluteFocus.png',
+                                            8237: 'Styles/Sorcery/Scorch/Scorch.png',
+                                            8232: 'Styles/Sorcery/Waterwalking/Waterwalking.png',
+                                            8236: 'Styles/Sorcery/GatheringStorm/GatheringStorm.png',
+                                            // Resolve Tree (8400)
+                                            8437: 'Styles/Resolve/GraspOfTheUndying/GraspOfTheUndying.png',
+                                            8439: 'Styles/Resolve/VeteranAftershock/VeteranAftershock.png',
+                                            8465: 'Styles/Resolve/Guardian/Guardian.png',
+                                            8446: 'Styles/Resolve/Demolish/Demolish.png',
+                                            8463: 'Styles/Resolve/FontOfLife/FontOfLife.png',
+                                            8401: 'Styles/Resolve/MirrorShell/MirrorShell.png',
+                                            8429: 'Styles/Resolve/Conditioning/Conditioning.png',
+                                            8444: 'Styles/Resolve/SecondWind/SecondWind.png',
+                                            8473: 'Styles/Resolve/BonePlating/BonePlating.png',
+                                            8451: 'Styles/Resolve/Overgrowth/Overgrowth.png',
+                                            8453: 'Styles/Resolve/Revitalize/Revitalize.png',
+                                            8242: 'Styles/Resolve/Unflinching/Unflinching.png',
+                                            // Inspiration Tree (8300)
+                                            8351: 'Styles/Inspiration/GlacialAugment/GlacialAugment.png',
+                                            8360: 'Styles/Inspiration/UnsealedSpellbook/UnsealedSpellbook.png',
+                                            8369: 'Styles/Inspiration/FirstStrike/FirstStrike.png',
+                                            8306: 'Styles/Inspiration/HextechFlashtraption/HextechFlashtraption.png',
+                                            8304: 'Styles/Inspiration/MagicalFootwear/MagicalFootwear.png',
+                                            8313: 'Styles/Inspiration/PerfectTiming/PerfectTiming.png',
+                                            8321: 'Styles/Inspiration/FuturesMarket/FuturesMarket.png',
+                                            8316: 'Styles/Inspiration/MinionDematerializer/MinionDematerializer.png',
+                                            8345: 'Styles/Inspiration/BiscuitDelivery/BiscuitDelivery.png',
+                                            8347: 'Styles/Inspiration/CosmicInsight/CosmicInsight.png',
+                                            8410: 'Styles/Inspiration/ApproachVelocity/ApproachVelocity.png',
+                                            8352: 'Styles/Inspiration/TimeWarpTonic/TimeWarpTonic.png',
+                                          };
+                                          
+                                          return `https://ddragon.leagueoflegends.com/cdn/img/perk-images/${runePathMap[runeId] || 'Styles/RunesIcon.png'}`;
+                                        };
+                                        
+                                        // Map rune IDs to their names (same as primary)
+                                        const getRuneName = (runeId: number): string => {
+                                          const runeNames: any = {
+                                            // Precision
+                                            8005: 'Press the Attack', 8008: 'Lethal Tempo', 8021: 'Fleet Footwork', 8010: 'Conqueror',
+                                            9101: 'Overheal', 9111: 'Triumph', 8009: 'Presence of Mind',
+                                            9104: 'Legend: Alacrity', 9105: 'Legend: Tenacity', 9103: 'Legend: Bloodline',
+                                            8014: 'Coup de Grace', 8017: 'Cut Down', 8299: 'Last Stand',
+                                            // Domination
+                                            8112: 'Electrocute', 8124: 'Predator', 8128: 'Dark Harvest', 9923: 'Hail of Blades',
+                                            8126: 'Cheap Shot', 8139: 'Taste of Blood', 8143: 'Sudden Impact',
+                                            8137: 'Sixth Sense', 8140: 'Grisly Mementos', 8141: 'Deep Ward',
+                                            8135: 'Treasure Hunter', 8105: 'Relentless Hunter', 8106: 'Ultimate Hunter',
+                                            // Sorcery
+                                            8214: 'Summon Aery', 8229: 'Arcane Comet', 8230: 'Phase Rush',
+                                            8224: 'Nullifying Orb', 8226: 'Manaflow Band', 8275: 'Nimbus Cloak',
+                                            8210: 'Transcendence', 8234: 'Celerity', 8233: 'Absolute Focus',
+                                            8237: 'Scorch', 8232: 'Waterwalking', 8236: 'Gathering Storm',
+                                            // Resolve
+                                            8437: 'Grasp of the Undying', 8439: 'Aftershock', 8465: 'Guardian',
+                                            8446: 'Demolish', 8463: 'Font of Life', 8401: 'Shield Bash',
+                                            8429: 'Conditioning', 8444: 'Second Wind', 8473: 'Bone Plating',
+                                            8451: 'Overgrowth', 8453: 'Revitalize', 8242: 'Unflinching',
+                                            // Inspiration
+                                            8351: 'Glacial Augment', 8360: 'Unsealed Spellbook', 8369: 'First Strike',
+                                            8306: 'Hextech Flashtraption', 8304: 'Magical Footwear', 8321: 'Futures Market',
+                                            8313: 'Perfect Timing', 8352: 'Time Warp Tonic', 8345: 'Biscuit Delivery',
+                                            8347: 'Cosmic Insight', 8410: 'Approach Velocity', 8316: 'Jack of All Trades',
+                                          };
+                                          return runeNames[runeId] || 'Unknown Rune';
+                                        };
+                                        
+                                        return (
+                                          <div className="flex-1">
+                                            <div className="flex items-center space-x-3 mb-4">
+                                              <span className="text-white font-bold text-sm font-mono uppercase tracking-wider">
+                                                {runeTreeNames[secondaryTreeId] || 'Secondary'}
+                                              </span>
+                                            </div>
+                                            
+                                            <div className="space-y-3">
+                                              {secondarySelections.map((selection: any, idx: number) => (
+                                                <div key={idx} className="flex items-center space-x-3 group/rune">
+                                                  <div className="relative w-10 h-10">
+                                                    <div className="relative w-full h-full rounded-full overflow-hidden border-2 border-cyan-400/40 bg-[#0a1628] group-hover/rune:border-cyan-400 transition-all shadow-[0_0_10px_rgba(0,255,255,0.3)]">
+                                                      <img
+                                                        src={getRuneImagePath(selection.perk, secondaryTreeId)}
+                                                        alt="Rune"
+                                                        className="w-full h-full object-cover"
+                                                        onError={(e) => {
+                                                          (e.target as HTMLImageElement).src = getCDNUrl('img/profileicon/29.png');
+                                                        }}
+                                                      />
+                                                    </div>
+                                                  </div>
+                                                  <span className="text-xs font-medium text-cyan-400/80 font-mono">
+                                                    {getRuneName(selection.perk)}
+                                                  </span>
+                                                  <div className="flex items-center space-x-1 ml-auto">
+                                                    <div className="w-1.5 h-1.5 rounded-full bg-cyan-400 shadow-[0_0_6px_rgba(0,255,255,0.8)]"></div>
+                                                    <div className="w-1 h-1 rounded-full bg-cyan-400/60"></div>
+                                                  </div>
+                                                </div>
+                                              ))}
+                                            </div>
+                                          </div>
+                                        );
+                                      })()}
+                                    </div>
+                                    )}
+                                  </div>
+                                  
+                                  {/* Skill Order Section */}
+                                  <div className="relative bg-gradient-to-br from-[#0a1628]/80 to-[#1a2f4a]/80 rounded-none p-6 border border-cyan-400/20 overflow-hidden shadow-[0_0_20px_rgba(83,131,232,0.15)]">
+                                    <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-cyan-400/50 to-transparent"></div>
+                                    <div className="absolute left-0 top-0 bottom-0 w-px bg-gradient-to-b from-transparent via-cyan-400/50 to-transparent"></div>
+                                    <div className="absolute top-0 left-0 w-6 h-6 border-t-2 border-l-2 border-cyan-400/40"></div>
+                                    <div className="absolute top-0 right-0 w-6 h-6 border-t-2 border-r-2 border-cyan-400/40"></div>
+                                    
+                                    <h3 className="text-lg font-bold text-white font-mono tracking-wider uppercase mb-6 relative z-10 border-l-4 border-cyan-400 pl-3 drop-shadow-[0_0_10px_rgba(0,255,255,0.3)]">
+                                      Skill Order
+                                    </h3>
+                                    
+                                    {loadingTimeline[match.metadata.matchId] ? (
+                                      <div className="flex items-center justify-center py-10">
+                                        <Loader2 className="w-8 h-8 animate-spin text-cyan-400" />
+                                      </div>
+                                    ) : timelineData[match.metadata.matchId]?.events ? (
+                                      (() => {
+                                        const skillEvents = timelineData[match.metadata.matchId].events
+                                          .filter((event: any) => 
+                                            event.type === 'SKILL_LEVEL_UP' && 
+                                            event.participantId === playerData.participantId
+                                          )
+                                          .sort((a: any, b: any) => a.timestamp - b.timestamp);
+                                        
+                                        const skillSlotMap: any = { 1: 'Q', 2: 'W', 3: 'E', 4: 'R' };
+                                        
+                                        // Group skill ups by ability
+                                        const skillsByAbility: any = { Q: [], W: [], E: [], R: [] };
+                                        skillEvents.forEach((event: any, idx: number) => {
+                                          const ability = skillSlotMap[event.skillSlot];
+                                          skillsByAbility[ability].push(idx + 1); // Champion level (1-18)
+                                        });
+                                        
+                                        return (
+                                          <div className="relative z-10">
+                                            {/* Grid layout: rows for abilities, columns for levels 1-18 */}
+                                            <div className="space-y-2">
+                                              {['Q', 'W', 'E', 'R'].map((ability) => (
+                                                <div key={ability} className="flex items-center space-x-2">
+                                                  {/* Ability Icon and Label */}
+                                                  <div className="flex flex-col items-center w-16 flex-shrink-0">
+                                                    <div className="relative w-12 h-12 group/ability">
+                                                      <div className="absolute inset-0 bg-cyan-400/20 blur-md opacity-0 group-hover/ability:opacity-100 transition-opacity"></div>
+                                                      <div className="relative w-full h-full overflow-hidden border-2 border-cyan-400/40 bg-[#0a1628] group-hover/ability:border-cyan-400 transition-all shadow-[0_0_10px_rgba(0,255,255,0.2)]">
+                                                        <img
+                                                          src={getCDNUrl(`img/spell/${playerData.championName}${ability}.png`)}
+                                                          alt={ability}
+                                                          className="w-full h-full object-cover"
+                                                          onError={(e) => {
+                                                            (e.target as HTMLImageElement).src = getCDNUrl('img/profileicon/29.png');
+                                                          }}
+                                                        />
+                                                      </div>
+                                                    </div>
+                                                    <span className="text-white font-bold text-xs font-mono mt-1">{ability}</span>
+                                                  </div>
+                                                  
+                                                  {/* Level indicators (1-18) */}
+                                                  <div className="flex flex-wrap gap-2">
+                                                    {skillsByAbility[ability].map((level: number, idx: number) => (
+                                                      <div
+                                                        key={idx}
+                                                        className={`relative flex items-center justify-center w-10 h-10 font-bold font-mono text-sm transition-all group/level ${
+                                                          ability === 'R'
+                                                            ? 'bg-gradient-to-br from-yellow-500/20 to-orange-500/20 border-2 border-yellow-400/60 text-yellow-400 shadow-[0_0_10px_rgba(250,204,21,0.4)]'
+                                                            : 'bg-[#5383E8]/20 border-2 border-[#5383E8]/60 text-[#5383E8] shadow-[0_0_10px_rgba(83,131,232,0.3)]'
+                                                        } hover:scale-110`}
+                                                      >
+                                                        <span className="relative z-10">{level}</span>
+                                                        <div className="absolute top-0 left-0 w-2 h-2 border-t border-l border-current opacity-50"></div>
+                                                        <div className="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-current opacity-50"></div>
+                                                      </div>
+                                                    ))}
+                                                  </div>
+                                                </div>
+                                              ))}
+                                            </div>
+                                          </div>
+                                        );
+                                      })()
+                                    ) : (
+                                      <div className="flex items-center justify-center py-10 text-gray-500">
+                                        <p>No skill order data available</p>
+                                      </div>
+                                    )}
+                                  </div>
+                                  
+                                  {/* Items Section */}
+                                  <div className="relative bg-gradient-to-br from-[#0a1628]/80 to-[#1a2f4a]/80 rounded-none p-6 border border-cyan-400/20 overflow-hidden shadow-[0_0_20px_rgba(83,131,232,0.15)]">
+                                    <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-cyan-400/50 to-transparent"></div>
+                                    <div className="absolute left-0 top-0 bottom-0 w-px bg-gradient-to-b from-transparent via-cyan-400/50 to-transparent"></div>
+                                    <div className="absolute top-0 left-0 w-6 h-6 border-t-2 border-l-2 border-cyan-400/40"></div>
+                                    <div className="absolute top-0 right-0 w-6 h-6 border-t-2 border-r-2 border-cyan-400/40"></div>
+                                    
+                                    <h3 className="text-lg font-bold text-white font-mono tracking-wider uppercase mb-6 relative z-10 border-l-4 border-cyan-400 pl-3 drop-shadow-[0_0_10px_rgba(0,255,255,0.3)]">
+                                      Items
+                                    </h3>
+                                    
+                                    {loadingTimeline[match.metadata.matchId] ? (
+                                      <div className="flex items-center justify-center py-10">
+                                        <Loader2 className="w-8 h-8 animate-spin text-cyan-400" />
+                                      </div>
+                                    ) : timelineData[match.metadata.matchId]?.events ? (
+                                      (() => {
+                                        const itemEvents = timelineData[match.metadata.matchId].events
+                                          .filter((event: any) => 
+                                            event.type === 'ITEM_PURCHASED' && 
+                                            event.participantId === playerData.participantId
+                                          )
+                                          .sort((a: any, b: any) => a.timestamp - b.timestamp);
+                                        
+                                        const itemGroups: any[] = [];
+                                        let currentGroup: any = null;
+                                        const timeThreshold = 5000;
+                                        
+                                        itemEvents.forEach((event: any) => {
+                                          if (!currentGroup || event.timestamp - currentGroup.timestamp > timeThreshold) {
+                                            currentGroup = {
+                                              timestamp: event.timestamp,
+                                              formattedTime: event.formattedTime,
+                                              items: []
+                                            };
+                                            itemGroups.push(currentGroup);
+                                          }
+                                          currentGroup.items.push(event.itemId);
+                                        });
+                                        
+                                        return (
+                                          <div className="relative z-10 space-y-4">
+                                            {itemGroups.map((group, groupIdx) => (
+                                              <div key={groupIdx} className="flex items-center space-x-4 group/itemgroup">
+                                                <div className="w-16 flex-shrink-0 text-center">
+                                                  <div className="text-sm font-bold font-mono text-white drop-shadow-[0_0_5px_rgba(255,255,255,0.5)]">
+                                                    {group.formattedTime}
+                                                  </div>
+                                                </div>
+                                                
+                                                <div className="flex space-x-2">
+                                                  {group.items.map((itemId: number, itemIdx: number) => (
+                                                    <div key={itemIdx} className="relative group/item">
+                                                      <div className="absolute inset-0 bg-cyan-400/20 blur-md opacity-0 group-hover/item:opacity-100 transition-opacity"></div>
+                                                      <div className="relative w-12 h-12 overflow-hidden border-2 border-cyan-400/40 bg-[#0a1628] group-hover/item:border-cyan-400 transition-all shadow-[0_0_10px_rgba(0,255,255,0.2)]">
+                                                        <img
+                                                          src={getCDNUrl(`img/item/${itemId}.png`)}
+                                                          alt={`Item ${itemId}`}
+                                                          className="w-full h-full object-cover"
+                                                          onError={(e) => {
+                                                            (e.target as HTMLImageElement).style.display = 'none';
+                                                          }}
+                                                        />
+                                                      </div>
+                                                    </div>
+                                                  ))}
+                                                </div>
+                                              </div>
+                                            ))}
+                                          </div>
+                                        );
+                                      })()
+                                    ) : (
+                                      <div className="flex items-center justify-center py-10 text-gray-500">
+                                        <p>No item data available</p>
+                                      </div>
+                                    )}
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </motion.div>
+                  );
+                })}
+              </div>
+            )}
+
+            {/* Load More Button */}
+            {profile?.lolAccount && matches.length > 0 && hasMore && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="flex justify-center pt-4"
+              >
+                <button
+                  onClick={loadMoreMatches}
+                  disabled={loadingMore}
+                  className="relative bg-gradient-to-r from-[#0a1628] to-[#1a2f4a] hover:from-[#1a2f4a] hover:to-[#0a1628] border-2 border-cyan-400/30 hover:border-cyan-400/50 text-cyan-400 px-8 py-3 rounded-none font-bold font-mono uppercase tracking-wider transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-[0_0_20px_rgba(0,255,255,0.2)] hover:shadow-[0_0_30px_rgba(0,255,255,0.4)] overflow-hidden group"
+                >
+                  {/* Corner brackets */}
+                  <div className="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2 border-cyan-400 group-hover:w-4 group-hover:h-4 transition-all"></div>
+                  <div className="absolute top-0 right-0 w-3 h-3 border-t-2 border-r-2 border-cyan-400 group-hover:w-4 group-hover:h-4 transition-all"></div>
+                  <div className="absolute bottom-0 left-0 w-3 h-3 border-b-2 border-l-2 border-cyan-400 group-hover:w-4 group-hover:h-4 transition-all"></div>
+                  <div className="absolute bottom-0 right-0 w-3 h-3 border-b-2 border-r-2 border-cyan-400 group-hover:w-4 group-hover:h-4 transition-all"></div>
+                  
+                  {/* Scan line effect */}
+                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-cyan-400/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                  
+                  {loadingMore ? (
+                    <div className="flex items-center space-x-2 relative z-10">
+                      <Loader2 className="w-5 h-5 animate-spin" />
+                      <span>Loading...</span>
+                    </div>
+                  ) : (
+                    <span className="relative z-10">Load 5 More</span>
+                  )}
+                </button>
+              </motion.div>
+            )}
+          </div>
+        </div>
+      </div>
+      </div>
+    </div>
+  );
+}

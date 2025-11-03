@@ -215,4 +215,84 @@ export class RiotApiService {
       cluster: ['americas', 'europe', 'asia']
     };
   }
+
+  /**
+   * Get match history by PUUID
+   * Returns array of match IDs
+   */
+  getMatchHistory(
+    puuid: string,
+    region?: string,
+    start: number = 0,
+    count: number = 20
+  ): Observable<string[]> {
+    const clusterBaseUrl = this.getAccountRegionalUrl(region);
+    const url = `${clusterBaseUrl}/lol/match/v5/matches/by-puuid/${puuid}/ids?start=${start}&count=${count}`;
+
+    console.log(`[Match History] Fetching from: ${url}`);
+
+    return this.httpService.get<string[]>(url, {
+      headers: { 'X-Riot-Token': this.apiKey }
+    }).pipe(
+      map(response => {
+        console.log(`[Match History] Found ${response.data.length} matches`);
+        return response.data;
+      }),
+      catchError(error => {
+        console.error('[Match History] Error:', error.response?.data || error.message);
+        console.error('[Match History] Status:', error.response?.status);
+        return throwError(() => new NotFoundException(`Match history not found: ${error.response?.data?.status?.message || error.message}`));
+      })
+    );
+  }
+
+  /**
+   * Get match details by match ID
+   * Returns complete match object with all participant data
+   */
+  getMatchDetails(matchId: string, region?: string): Observable<any> {
+    const clusterBaseUrl = this.getAccountRegionalUrl(region);
+    const url = `${clusterBaseUrl}/lol/match/v5/matches/${matchId}`;
+
+    console.log(`[Match Details] Fetching match: ${matchId} from ${url}`);
+
+    return this.httpService.get(url, {
+      headers: { 'X-Riot-Token': this.apiKey }
+    }).pipe(
+      map(response => {
+        console.log(`[Match Details] Successfully fetched match: ${matchId}`);
+        return response.data;
+      }),
+      catchError(error => {
+        console.error(`[Match Details] Error for ${matchId}:`, error.response?.data || error.message);
+        console.error('[Match Details] Status:', error.response?.status);
+        return throwError(() => new NotFoundException(`Match details not found: ${error.response?.data?.status?.message || error.message}`));
+      })
+    );
+  }
+
+  /**
+   * Get match timeline by match ID
+   * Returns minute-by-minute game data with events
+   */
+  getMatchTimeline(matchId: string, region?: string): Observable<any> {
+    const clusterBaseUrl = this.getAccountRegionalUrl(region);
+    const url = `${clusterBaseUrl}/lol/match/v5/matches/${matchId}/timeline`;
+
+    console.log(`[Match Timeline] Fetching timeline: ${matchId} from ${url}`);
+
+    return this.httpService.get(url, {
+      headers: { 'X-Riot-Token': this.apiKey }
+    }).pipe(
+      map(response => {
+        console.log(`[Match Timeline] Successfully fetched timeline: ${matchId}`);
+        return response.data;
+      }),
+      catchError(error => {
+        console.error(`[Match Timeline] Error for ${matchId}:`, error.response?.data || error.message);
+        console.error('[Match Timeline] Status:', error.response?.status);
+        return throwError(() => new NotFoundException(`Match timeline not found: ${error.response?.data?.status?.message || error.message}`));
+      })
+    );
+  }
 }

@@ -20,6 +20,24 @@ const nextConfig: NextConfig = {
         hostname: 'static.lolesports.com',
         port: '',
         pathname: '/teams/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'ddragon.leagueoflegends.com',
+        port: '',
+        pathname: '/cdn/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'ddragon.canisback.com',
+        port: '',
+        pathname: '/img/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'raw.communitydragon.org',
+        port: '',
+        pathname: '/latest/**',
       }
     ],
   },

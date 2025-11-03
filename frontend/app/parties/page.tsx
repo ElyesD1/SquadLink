@@ -28,6 +28,7 @@ import NavigationDrawer from '@/components/ui/NavigationDrawer';
 import { useTheme } from 'next-themes';
 import { usePartySocket } from '@/lib/usePartySocket';
 import { useOffline } from '@/lib/useOffline';
+import { getCDNUrl } from '@/lib/constants';
 import { OfflineBanner, OfflineMessage, CachedDataIndicator } from '@/components/ui/OfflineComponents';
 import DiscordIntegration from '@/components/ui/DiscordIntegration';
 import JoinPartyModal from '@/components/ui/JoinPartyModal';
@@ -550,7 +551,7 @@ export default function PartiesPage() {
                                         <div className="relative w-12 h-12 rounded-lg bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center overflow-hidden flex-shrink-0">
                                           {requester.lolAccount?.profileIconId ? (
                                             <img
-                                              src={`https://ddragon.leagueoflegends.com/cdn/14.23.1/img/profileicon/${requester.lolAccount.profileIconId}.png`}
+                                              src={getCDNUrl(`img/profileicon/${requester.lolAccount.profileIconId}.png`)}
                                               alt="LoL Icon"
                                               className="w-full h-full object-cover"
                                             />
@@ -621,7 +622,7 @@ export default function PartiesPage() {
                                         <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-red-500 to-orange-500 flex items-center justify-center overflow-hidden flex-shrink-0">
                                           {notifData.member.lolAccount?.profileIconId ? (
                                             <img
-                                              src={`https://ddragon.leagueoflegends.com/cdn/14.23.1/img/profileicon/${notifData.member.lolAccount.profileIconId}.png`}
+                                              src={getCDNUrl(`img/profileicon/${notifData.member.lolAccount.profileIconId}.png`)}
                                               alt="LoL Icon"
                                               className="w-full h-full object-cover"
                                             />
@@ -1107,7 +1108,7 @@ export default function PartiesPage() {
                           <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center overflow-hidden flex-shrink-0">
                             {party.creator?.lolAccount?.profileIconId ? (
                               <img
-                                src={`https://ddragon.leagueoflegends.com/cdn/14.23.1/img/profileicon/${party.creator.lolAccount.profileIconId}.png`}
+                                src={getCDNUrl(`img/profileicon/${party.creator.lolAccount.profileIconId}.png`)}
                                 alt="LoL Icon"
                                 className="w-full h-full object-cover"
                               />
@@ -1294,7 +1295,7 @@ export default function PartiesPage() {
                             <div className="relative w-12 h-12 rounded-lg bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center flex-shrink-0 overflow-hidden">
                               {member.lolAccount?.profileIconId ? (
                                 <img
-                                  src={`https://ddragon.leagueoflegends.com/cdn/14.23.1/img/profileicon/${member.lolAccount.profileIconId}.png`}
+                                  src={getCDNUrl(`img/profileicon/${member.lolAccount.profileIconId}.png`)}
                                   alt="LoL Icon"
                                   className="w-full h-full object-cover"
                                 />

@@ -13,7 +13,8 @@ import {
   Settings,
   LogOut,
   Gamepad2,
-  TrendingUp
+  TrendingUp,
+  History
 } from 'lucide-react';
 import { signOut } from 'next-auth/react';
 import { AnimatedLogo } from '@/components/ui/AnimatedLogo';
@@ -41,6 +42,12 @@ export default function NavigationDrawer({ children }: NavigationDrawerProps) {
       label: 'Find Parties',
       icon: Gamepad2,
       description: 'Join or Create Squads'
+    },
+    {
+      href: '/match-history',
+      label: 'Match History',
+      icon: History,
+      description: 'Your Recent Games'
     },
     {
       href: '/esports',

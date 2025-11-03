@@ -23,6 +23,7 @@ import {
 import { AnimatedLogo } from '@/components/ui/AnimatedLogo';
 import NavigationDrawer from '@/components/ui/NavigationDrawer';
 import { useTheme } from 'next-themes';
+import { getCDNUrl } from '@/lib/constants';
 
 interface PartyFormData {
   name: string;
@@ -654,7 +655,7 @@ export default function EditPartyPage() {
                                 <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center flex-shrink-0 overflow-hidden">
                                   {member.lolAccount?.profileIconId ? (
                                     <img
-                                      src={`https://ddragon.leagueoflegends.com/cdn/14.23.1/img/profileicon/${member.lolAccount.profileIconId}.png`}
+                                      src={getCDNUrl(`img/profileicon/${member.lolAccount.profileIconId}.png`)}
                                       alt="LoL Icon"
                                       className="w-full h-full object-cover"
                                     />

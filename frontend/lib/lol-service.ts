@@ -1,3 +1,5 @@
+import { LOL_VERSION, getCDNUrl } from './constants';
+
 const API_BASE_URL = 'http://localhost:3001';
 
 export interface LolAccount {
@@ -139,7 +141,7 @@ class LoLService {
 
   // Get summoner icon URL (from Riot's CDN)
   getSummonerIconUrl(profileIconId: number): string {
-    return `https://ddragon.leagueoflegends.com/cdn/14.21.1/img/profileicon/${profileIconId}.png`;
+    return getCDNUrl(`img/profileicon/${profileIconId}.png`);
   }
 
   // Format queue type for display
