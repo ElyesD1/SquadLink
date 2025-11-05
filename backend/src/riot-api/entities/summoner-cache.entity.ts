@@ -9,6 +9,12 @@ export class SummonerCache extends Document {
   @Prop({ required: true, index: true })
   region: string;
 
+  @Prop({ index: true })
+  gameName: string;
+
+  @Prop({ index: true })
+  tagLine: string;
+
   @Prop({ type: Object, required: true })
   summonerData: any; // Full summoner data from Riot API
 
@@ -17,14 +23,10 @@ export class SummonerCache extends Document {
 
   @Prop({ default: Date.now })
   lastAccessed: Date;
-
-  // Cache expiration (24 hours by default)
-  @Prop({ default: () => new Date(Date.now() + 24 * 60 * 60 * 1000) })
-  expiresAt: Date;
 }
 
 export const SummonerCacheSchema = SchemaFactory.createForClass(SummonerCache);
 
 // Create compound index for efficient queries
 SummonerCacheSchema.index({ puuid: 1, region: 1 });
-SummonerCacheSchema.index({ expiresAt: 1 }); // For automatic cleanup of expired entries
+SummonerCacheSchema.index({ gameName: 1, tagLine: 1 }); // For searching by Riot ID

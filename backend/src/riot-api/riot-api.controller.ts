@@ -32,6 +32,48 @@ export class RiotApiController {
   ) {}
 
   /**
+   * Helper method to extract and cache participant data from matches
+   * This builds the social network automatically by caching all players from matches
+   */
+  private async cacheParticipantsFromMatches(matches: any[], region: string): Promise<void> {
+    const participantsToCache: Array<{
+      puuid: string;
+      region: string;
+      data: any;
+      gameName: string;
+      tagLine: string;
+    }> = [];
+
+    for (const match of matches) {
+      if (!match?.info?.participants) continue;
+
+      for (const participant of match.info.participants) {
+        if (participant.puuid && participant.riotIdGameName && participant.riotIdTagline) {
+          participantsToCache.push({
+            puuid: participant.puuid,
+            region,
+            data: {
+              id: participant.summonerId || '',
+              accountId: participant.summonerId || '',
+              puuid: participant.puuid,
+              name: participant.summonerName || participant.riotIdGameName,
+              profileIconId: participant.profileIcon || 0,
+              summonerLevel: participant.summonerLevel || 0,
+            },
+            gameName: participant.riotIdGameName,
+            tagLine: participant.riotIdTagline,
+          });
+        }
+      }
+    }
+
+    if (participantsToCache.length > 0) {
+      console.log(`[Social Network] Caching ${participantsToCache.length} participants from ${matches.length} matches`);
+      await this.summonerCacheService.cacheSummonersBatch(participantsToCache);
+    }
+  }
+
+  /**
    * Main endpoint for summoner search
    * POST /api/v1/riot/summoner/search
    */
@@ -45,7 +87,59 @@ export class RiotApiController {
       throw new BadRequestException('Game name and tagline are required');
     }
 
-    return this.riotApiService.searchSummoner(gameName, tagline, region);
+    return this.riotApiService.searchSummoner(gameName, tagline, region).pipe(
+      switchMap(profile => {
+        // Cache the summoner with gameName and tagLine for social network
+        return from(
+          this.summonerCacheService.cacheSummoner(
+            profile.account.puuid,
+            profile.region,
+            profile.summoner,
+            gameName,
+            tagline
+          )
+        ).pipe(
+          map(() => profile)
+        );
+      })
+    );
+  }
+
+  /**
+   * Autocomplete search for summoners (fuzzy search by gameName)
+   * GET /api/v1/riot/summoner/autocomplete?q={query}&region={region}&limit={limit}
+   */
+  @Get('summoner/autocomplete')
+  async autocompleteSummoners(
+    @Query('q') query: string,
+    @Query('region') region?: string,
+    @Query('limit') limit?: number
+  ) {
+    if (!query || query.trim().length === 0) {
+      return { suggestions: [] };
+    }
+
+    const maxLimit = Math.min(limit || 10, 25); // Max 25 suggestions
+    const summoners = await this.summonerCacheService.searchSummonersByName(
+      query.trim(),
+      maxLimit,
+      region // Optional region filter
+    );
+
+    console.log(`[Autocomplete] Query: "${query}", Region: ${region}, Found: ${summoners.length} summoners`);
+
+    // Format for frontend autocomplete
+    const suggestions = summoners.map(s => ({
+      puuid: s.puuid,
+      gameName: s.gameName,
+      tagLine: s.tagLine,
+      region: s.region,
+      summonerLevel: s.summonerData?.summonerLevel || 0,
+      profileIconId: s.summonerData?.profileIconId || 0,
+      lastAccessed: s.lastAccessed,
+    }));
+
+    return { suggestions, count: suggestions.length };
   }
 
   /**
@@ -227,7 +321,22 @@ export class RiotApiController {
       throw new BadRequestException('Game name and tagline are required');
     }
 
-    return this.riotApiService.searchSummoner(gameName, tagline, region);
+    return this.riotApiService.searchSummoner(gameName, tagline, region).pipe(
+      switchMap(profile => {
+        // Cache the summoner with gameName and tagLine for social network
+        return from(
+          this.summonerCacheService.cacheSummoner(
+            profile.account.puuid,
+            profile.region,
+            profile.summoner,
+            gameName,
+            tagline
+          )
+        ).pipe(
+          map(() => profile)
+        );
+      })
+    );
   }
 
   /**
@@ -360,10 +469,14 @@ export class RiotApiController {
               switchMap(matches => {
                 const validMatches = matches.filter(m => m !== null);
                 
-                // Cache the new matches
+                // Cache the new matches AND participants
                 return from(
                   this.matchCacheService.cacheMatches(puuid, region, validMatches)
                 ).pipe(
+                  switchMap(() => 
+                    // Cache all participants from these matches for social network
+                    from(this.cacheParticipantsFromMatches(validMatches, region))
+                  ),
                   switchMap(() => 
                     from(this.matchCacheService.cleanupOldMatches(puuid, region))
                   ),
@@ -465,10 +578,14 @@ export class RiotApiController {
                   return of({ matches: orderedMatches });
                 }
 
-                // Cache the new matches
+                // Cache the new matches AND participants
                 return from(
                   this.matchCacheService.cacheMatches(puuid, region, validMatches)
                 ).pipe(
+                  switchMap(() => 
+                    // Cache all participants from these matches for social network
+                    from(this.cacheParticipantsFromMatches(validMatches, region))
+                  ),
                   switchMap(() => {
                     console.log(`[Load More Backend] ✅ Cached ${validMatches.length} new matches`);
                     

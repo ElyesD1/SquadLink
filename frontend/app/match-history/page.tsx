@@ -67,7 +67,7 @@ interface Match {
   };
 }
 
-// Comprehensive queue mapping based on Riot API
+// Comprehensive queue mapping based on official Riot API
 const QUEUE_NAMES: { [key: number]: string } = {
   0: 'Custom',
   2: 'Normal 5v5 Blind',
@@ -77,22 +77,22 @@ const QUEUE_NAMES: { [key: number]: string } = {
   8: 'Normal 3v3',
   9: 'Ranked 3v3',
   14: 'Normal 5v5 Draft',
-  16: 'Dominion 5v5',
+  16: 'Dominion Blind',
   17: 'Dominion Draft',
-  25: 'Dominion Co-op',
+  25: 'Dominion Co-op vs AI',
   31: 'Co-op vs AI Intro',
   32: 'Co-op vs AI Beginner',
   33: 'Co-op vs AI Intermediate',
-  41: 'Ranked 3v3',
-  42: 'Ranked 5v5',
+  41: 'Ranked Team 3v3',
+  42: 'Ranked Team 5v5',
   52: 'Co-op vs AI 3v3',
   61: 'Team Builder',
   65: 'ARAM',
-  67: 'ARAM Co-op',
+  67: 'ARAM Co-op vs AI',
   70: 'One for All',
   72: '1v1 Snowdown',
   73: '2v2 Snowdown',
-  75: 'Hexakill SR',
+  75: 'Hexakill',
   76: 'URF',
   78: 'One For All Mirror',
   83: 'Co-op vs AI URF',
@@ -100,26 +100,27 @@ const QUEUE_NAMES: { [key: number]: string } = {
   92: 'Doom Bots Rank 2',
   93: 'Doom Bots Rank 5',
   96: 'Ascension',
-  98: 'Hexakill TT',
-  100: 'Butcher\'s Bridge',
+  98: 'Hexakill 3v3',
+  100: 'Butcher\'s Bridge ARAM',
   300: 'Legend of Poro King',
   310: 'Nemesis',
-  313: 'Black Market',
+  313: 'Black Market Brawlers',
   315: 'Nexus Siege',
   317: 'Definitely Not Dominion',
   318: 'ARURF',
   325: 'All Random',
   400: 'Normal Draft',
-  410: 'Ranked Dynamic',
+  410: 'Ranked Dynamic (Deprecated)',
   420: 'Ranked Solo/Duo',
   430: 'Normal Blind',
   440: 'Ranked Flex',
   450: 'ARAM',
   460: 'Normal 3v3',
   470: 'Ranked 3v3 Flex',
+  480: 'Swiftplay',
   490: 'Quickplay',
-  600: 'Blood Hunt',
-  610: 'Dark Star',
+  600: 'Blood Hunt Assassin',
+  610: 'Dark Star: Singularity',
   700: 'Clash',
   720: 'ARAM Clash',
   800: 'Co-op vs AI 3v3 Intermediate',
@@ -132,28 +133,28 @@ const QUEUE_NAMES: { [key: number]: string } = {
   910: 'Ascension',
   920: 'Legend of Poro King',
   940: 'Nexus Siege',
-  950: 'Doom Bots',
-  960: 'Doom Bots',
-  980: 'Star Guardian Normal',
-  990: 'Star Guardian Onslaught',
+  950: 'Doom Bots Voting',
+  960: 'Doom Bots Standard',
+  980: 'Star Guardian Invasion: Normal',
+  990: 'Star Guardian Invasion: Onslaught',
   1000: 'PROJECT: Hunters',
   1010: 'Snow ARURF',
   1020: 'One for All',
-  1030: 'Odyssey Intro',
-  1040: 'Odyssey Cadet',
-  1050: 'Odyssey Crewmember',
-  1060: 'Odyssey Captain',
-  1070: 'Odyssey Onslaught',
+  1030: 'Odyssey Extraction: Intro',
+  1040: 'Odyssey Extraction: Cadet',
+  1050: 'Odyssey Extraction: Crewmember',
+  1060: 'Odyssey Extraction: Captain',
+  1070: 'Odyssey Extraction: Onslaught',
   1090: 'Teamfight Tactics',
-  1100: 'Ranked TFT',
-  1110: 'TFT Tutorial',
-  1111: 'TFT Test',
-  1200: 'Nexus Blitz',
+  1100: 'Ranked Teamfight Tactics',
+  1110: 'Teamfight Tactics Tutorial',
+  1111: 'Teamfight Tactics Test',
+  1200: 'Nexus Blitz (Deprecated)',
   1300: 'Nexus Blitz',
   1400: 'Ultimate Spellbook',
   1700: 'Arena',
-  1710: 'Arena',
-  1900: 'URF',
+  1710: 'Arena (16 players)',
+  1900: 'Pick URF',
   2000: 'Tutorial 1',
   2010: 'Tutorial 2',
   2020: 'Tutorial 3',
@@ -206,14 +207,17 @@ export default function MatchHistoryPage() {
   
   // Search summoner state
   const [searchedSummoner, setSearchedSummoner] = useState<LolAccount | null>(null);
-  const [searchForm, setSearchForm] = useState({
-    gameName: '',
-    tagline: '',
-    region: 'euw1'
-  });
+  const [searchQuery, setSearchQuery] = useState(''); // Single unified search input
+  const [selectedRegion, setSelectedRegion] = useState('euw1');
   const [isSearching, setIsSearching] = useState(false);
   const [searchError, setSearchError] = useState('');
   const [showRegionDropdown, setShowRegionDropdown] = useState(false);
+
+  // Autocomplete state
+  const [autocompleteSuggestions, setAutocompleteSuggestions] = useState<any[]>([]);
+  const [showAutocomplete, setShowAutocomplete] = useState(false);
+  const [autocompleteLoading, setAutocompleteLoading] = useState(false);
+  const autocompleteTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Use ref to track next offset to prevent race conditions with rapid clicks
   const nextOffsetRef = useRef(0);
@@ -668,23 +672,111 @@ export default function MatchHistoryPage() {
     return searchedSummoner || profile?.lolAccount;
   };
 
-  // Search for a summoner
-  const handleSearchSummoner = async () => {
-    if (!searchForm.gameName.trim() || !searchForm.tagline.trim()) {
-      setSearchError('Please enter both game name and tagline');
+  // Fetch autocomplete suggestions
+  const fetchAutocompleteSuggestions = async (query: string) => {
+    // Extract just the gameName part (before #) for searching
+    const searchTerm = query.split('#')[0].trim();
+    
+    if (searchTerm.length === 0) {
+      setAutocompleteSuggestions([]);
+      setShowAutocomplete(false);
       return;
+    }
+
+    setAutocompleteLoading(true);
+    try {
+      const response = await fetch(
+        `http://localhost:3001/api/v1/riot/summoner/autocomplete?q=${encodeURIComponent(searchTerm)}&region=${selectedRegion}&limit=10`
+      );
+      
+      if (response.ok) {
+        const data = await response.json();
+        console.log('[Autocomplete] Received suggestions:', data.suggestions?.length);
+        setAutocompleteSuggestions(data.suggestions || []);
+        setShowAutocomplete(data.suggestions?.length > 0);
+      } else {
+        console.error('[Autocomplete] Response not ok:', response.status);
+      }
+    } catch (error) {
+      console.error('[Autocomplete] Error:', error);
+    } finally {
+      setAutocompleteLoading(false);
+    }
+  };
+
+  // Handle search input change with debounce
+  const handleSearchQueryChange = (value: string) => {
+    setSearchQuery(value);
+    
+    // Clear previous timeout
+    if (autocompleteTimeoutRef.current) {
+      clearTimeout(autocompleteTimeoutRef.current);
+    }
+
+    // Set new timeout for autocomplete
+    autocompleteTimeoutRef.current = setTimeout(() => {
+      fetchAutocompleteSuggestions(value);
+    }, 300); // 300ms debounce
+  };
+
+  // Handle selecting an autocomplete suggestion
+  const handleSelectSuggestion = (suggestion: any) => {
+    setSearchQuery(`${suggestion.gameName}#${suggestion.tagLine}`);
+    setSelectedRegion(suggestion.region);
+    setShowAutocomplete(false);
+    setAutocompleteSuggestions([]);
+    // Auto-trigger search
+    setTimeout(() => handleSearchSummoner(suggestion.gameName, suggestion.tagLine, suggestion.region), 100);
+  };
+
+  // Parse search query (GameName#TAG format)
+  const parseSearchQuery = (query: string): { gameName: string; tagline: string } | null => {
+    const trimmed = query.trim();
+    if (!trimmed) return null;
+
+    // Check if it contains #
+    if (trimmed.includes('#')) {
+      const [gameName, tagline] = trimmed.split('#').map(s => s.trim());
+      if (gameName && tagline) {
+        return { gameName, tagline };
+      }
+    }
+    
+    return null;
+  };
+
+  // Search for a summoner
+  const handleSearchSummoner = async (forceName?: string, forceTag?: string, forceRegion?: string) => {
+    let gameName: string;
+    let tagline: string;
+    let region = forceRegion || selectedRegion;
+
+    // Use forced values if provided (from autocomplete)
+    if (forceName && forceTag) {
+      gameName = forceName;
+      tagline = forceTag;
+    } else {
+      // Parse the search query
+      const parsed = parseSearchQuery(searchQuery);
+      if (!parsed) {
+        setSearchError('Please enter summoner name in format: GameName#TAG');
+        return;
+      }
+      gameName = parsed.gameName;
+      tagline = parsed.tagline;
     }
 
     setIsSearching(true);
     setSearchError('');
     setLoading(true);
+    setShowAutocomplete(false); // Hide autocomplete when searching
 
     try {
       // Search for summoner
       const result = await lolService.searchSummoner({
-        gameName: searchForm.gameName.trim(),
-        tagline: searchForm.tagline.trim(),
-        region: searchForm.region
+        gameName: gameName.trim(),
+        tagline: tagline.trim(),
+        region: region
       });
 
       // Convert to LolAccount format
@@ -694,7 +786,7 @@ export default function MatchHistoryPage() {
         tagLine: result.account.tagLine,
         summonerLevel: result.summoner.summonerLevel,
         profileIconId: result.summoner.profileIconId,
-        region: searchForm.region,
+        region: region,
         rankedData: result.rankedData,
         lastUpdated: new Date().toISOString()
       };
@@ -800,7 +892,8 @@ export default function MatchHistoryPage() {
   // Return to logged-in user's profile
   const handleReturnToMyProfile = () => {
     setSearchedSummoner(null);
-    setSearchForm({ gameName: '', tagline: '', region: 'euw1' });
+    setSearchQuery('');
+    setSelectedRegion('euw1');
     setSearchError('');
     setSelectedFilter('all');
     setMatches([]); // Clear matches before reloading
@@ -1086,11 +1179,11 @@ export default function MatchHistoryPage() {
       </header>
 
       {/* Search Section */}
-      <div className="container mx-auto px-4 pb-6 max-w-[1400px]">
+      <div className="container mx-auto px-4 pb-6 max-w-[1400px] relative z-50">
         <motion.div
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="relative bg-gradient-to-br from-[#0a1628] via-[#0f1f3a] to-[#0a1628] rounded-none p-5 border-2 border-cyan-400/20 shadow-[0_0_30px_rgba(83,131,232,0.2)] overflow-hidden mb-4"
+          className="relative bg-gradient-to-br from-[#0a1628] via-[#0f1f3a] to-[#0a1628] rounded-none p-5 border-2 border-cyan-400/20 shadow-[0_0_30px_rgba(83,131,232,0.2)] overflow-visible mb-4"
         >
           {/* Tech lines */}
           <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-cyan-400/50 to-transparent"></div>
@@ -1107,18 +1200,18 @@ export default function MatchHistoryPage() {
             
             <div className="flex items-end space-x-3">
               {/* Region Dropdown */}
-              <div className="flex-shrink-0 w-48">
+              <div className="flex-shrink-0 w-32">
                 <label className="block text-xs text-gray-400 font-mono uppercase tracking-wider mb-2">Region</label>
                 <div className="relative">
                   <button
                     onClick={() => setShowRegionDropdown(!showRegionDropdown)}
-                    className="w-full bg-[#0a1628] border border-cyan-400/30 px-4 py-2.5 text-left text-white font-mono text-sm hover:border-cyan-400/50 transition-colors relative group"
+                    className="w-full bg-[#0a1628] border border-cyan-400/30 px-3 py-2.5 text-left text-white font-mono text-sm hover:border-cyan-400/50 transition-colors relative group"
                   >
                     <div className="absolute -top-[1px] -left-[1px] w-2 h-2 border-t border-l border-cyan-400/40"></div>
                     <div className="absolute -bottom-[1px] -right-[1px] w-2 h-2 border-b border-r border-cyan-400/40"></div>
                     <div className="flex items-center justify-between">
-                      <span className="text-cyan-400">
-                        {lolService.getAvailableRegions().find(r => r.value === searchForm.region)?.label || 'Select Region'}
+                      <span className="text-cyan-400 text-xs font-bold">
+                        {selectedRegion.toUpperCase()}
                       </span>
                       <ChevronDown className="w-4 h-4 text-gray-500" />
                     </div>
@@ -1134,11 +1227,11 @@ export default function MatchHistoryPage() {
                         <button
                           key={region.value}
                           onClick={() => {
-                            setSearchForm({ ...searchForm, region: region.value });
+                            setSelectedRegion(region.value);
                             setShowRegionDropdown(false);
                           }}
                           className={`w-full px-4 py-2 text-left font-mono text-sm transition-colors ${
-                            searchForm.region === region.value
+                            selectedRegion === region.value
                               ? 'bg-gradient-to-r from-[#5383E8] to-cyan-400 text-white'
                               : 'text-gray-400 hover:bg-cyan-400/10 hover:text-cyan-400'
                           }`}
@@ -1151,43 +1244,91 @@ export default function MatchHistoryPage() {
                 </div>
               </div>
               
-              {/* Game Name Input */}
-              <div className="flex-1">
-                <label className="block text-xs text-gray-400 font-mono uppercase tracking-wider mb-2">Game Name</label>
+              {/* Unified Search Input (GameName#TAG) */}
+              <div className="flex-1 relative">
+                <label className="block text-xs text-gray-400 font-mono uppercase tracking-wider mb-2">
+                  Summoner Name 
+                  <span className="ml-2 text-gray-500 text-[10px]">(Format: GameName#TAG)</span>
+                </label>
                 <div className="relative">
                   <input
                     type="text"
-                    value={searchForm.gameName}
-                    onChange={(e) => setSearchForm({ ...searchForm, gameName: e.target.value })}
-                    onKeyDown={(e) => e.key === 'Enter' && handleSearchSummoner()}
-                    placeholder="Enter game name"
+                    value={searchQuery}
+                    onChange={(e) => handleSearchQueryChange(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        handleSearchSummoner();
+                      } else if (e.key === 'Escape') {
+                        setShowAutocomplete(false);
+                      }
+                    }}
+                    onFocus={() => searchQuery.length > 0 && autocompleteSuggestions.length > 0 && setShowAutocomplete(true)}
+                    onBlur={() => setTimeout(() => setShowAutocomplete(false), 200)} // Delay to allow click
+                    placeholder="e.g., Faker#KR1 or just type 's' to search..."
                     className="w-full bg-[#0a1628] border border-cyan-400/30 px-4 py-2.5 text-white font-mono text-sm placeholder-gray-600 focus:border-cyan-400/50 focus:outline-none transition-colors"
+                    autoComplete="off"
                   />
                   <div className="absolute -top-[1px] -left-[1px] w-2 h-2 border-t border-l border-cyan-400/40"></div>
                   <div className="absolute -bottom-[1px] -right-[1px] w-2 h-2 border-b border-r border-cyan-400/40"></div>
+                  
+                  {/* Loading indicator */}
+                  {autocompleteLoading && (
+                    <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                      <Loader2 className="w-4 h-4 animate-spin text-cyan-400" />
+                    </div>
+                  )}
                 </div>
-              </div>
-              
-              {/* Tagline Input */}
-              <div className="flex-1">
-                <label className="block text-xs text-gray-400 font-mono uppercase tracking-wider mb-2">Tagline</label>
-                <div className="relative">
-                  <input
-                    type="text"
-                    value={searchForm.tagline}
-                    onChange={(e) => setSearchForm({ ...searchForm, tagline: e.target.value })}
-                    onKeyDown={(e) => e.key === 'Enter' && handleSearchSummoner()}
-                    placeholder="Enter tagline"
-                    className="w-full bg-[#0a1628] border border-cyan-400/30 px-4 py-2.5 text-white font-mono text-sm placeholder-gray-600 focus:border-cyan-400/50 focus:outline-none transition-colors"
-                  />
-                  <div className="absolute -top-[1px] -left-[1px] w-2 h-2 border-t border-l border-cyan-400/40"></div>
-                  <div className="absolute -bottom-[1px] -right-[1px] w-2 h-2 border-b border-r border-cyan-400/40"></div>
-                </div>
+
+                {/* Autocomplete Dropdown */}
+                <AnimatePresence>
+                  {showAutocomplete && autocompleteSuggestions.length > 0 && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -10 }}
+                      className="absolute left-0 right-0 mt-1 bg-[#0a1628] border-2 border-cyan-400/40 shadow-[0_0_30px_rgba(0,255,255,0.4)] max-h-80 overflow-y-auto"
+                      style={{ zIndex: 99999, position: 'absolute' }}
+                    >
+                      {autocompleteSuggestions.map((suggestion, idx) => (
+                        <button
+                          key={`${suggestion.puuid}-${idx}`}
+                          onClick={() => handleSelectSuggestion(suggestion)}
+                          className="w-full px-4 py-3 flex items-center space-x-3 hover:bg-cyan-400/10 transition-colors border-b border-cyan-400/10 last:border-b-0"
+                        >
+                          {/* Profile Icon */}
+                          <div className="relative w-10 h-10 flex-shrink-0">
+                            <Image
+                              src={getProfileIconUrl(suggestion.profileIconId)}
+                              alt={suggestion.gameName}
+                              width={40}
+                              height={40}
+                              className="rounded-full border-2 border-cyan-400/50"
+                            />
+                            <div className="absolute -bottom-1 -right-1 bg-[#0a1628] rounded-full px-1.5 py-0.5 border border-cyan-400/50">
+                              <span className="text-[10px] font-bold text-cyan-400">{suggestion.summonerLevel}</span>
+                            </div>
+                          </div>
+
+                          {/* Name and Region */}
+                          <div className="flex-1 text-left">
+                            <div className="font-mono text-sm text-white">
+                              {suggestion.gameName}<span className="text-gray-500">#{suggestion.tagLine}</span>
+                            </div>
+                            <div className="text-xs text-gray-400 font-mono">{suggestion.region.toUpperCase()}</div>
+                          </div>
+
+                          {/* Arrow */}
+                          <ChevronDown className="w-4 h-4 text-cyan-400 rotate-[-90deg]" />
+                        </button>
+                      ))}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </div>
               
               {/* Search Button */}
               <button
-                onClick={handleSearchSummoner}
+                onClick={() => handleSearchSummoner()}
                 disabled={isSearching}
                 className="relative bg-gradient-to-r from-[#5383E8] to-cyan-400 hover:from-cyan-400 hover:to-[#5383E8] text-white px-6 py-2.5 font-bold font-mono transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2 border border-cyan-400/50 shadow-[0_0_15px_rgba(0,255,255,0.3)] hover:shadow-[0_0_25px_rgba(0,255,255,0.5)]"
               >

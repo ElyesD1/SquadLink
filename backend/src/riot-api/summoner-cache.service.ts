@@ -25,7 +25,6 @@ export class SummonerCacheService {
         .findOne({ 
           puuid, 
           region,
-          expiresAt: { $gt: new Date() } // Only return non-expired entries
         })
         .exec();
 
@@ -62,7 +61,6 @@ export class SummonerCacheService {
         .find({
           puuid: { $in: puuids },
           region: { $in: regions },
-          expiresAt: { $gt: new Date() }
         })
         .exec();
 
@@ -91,31 +89,35 @@ export class SummonerCacheService {
   }
 
   /**
-   * Cache summoner data
+   * Cache summoner data with optional gameName and tagLine
    */
   async cacheSummoner(
     puuid: string,
     region: string,
     summonerData: Summoner,
-    ttlHours: number = 24,
+    gameName?: string,
+    tagLine?: string,
   ): Promise<void> {
     try {
-      const expiresAt = new Date(Date.now() + ttlHours * 60 * 60 * 1000);
+      const updateData: any = {
+        puuid,
+        region,
+        summonerData,
+        cachedAt: new Date(),
+        lastAccessed: new Date(),
+      };
+
+      // Add gameName and tagLine if provided
+      if (gameName) updateData.gameName = gameName;
+      if (tagLine) updateData.tagLine = tagLine;
       
       await this.summonerCacheModel.findOneAndUpdate(
         { puuid, region },
-        {
-          puuid,
-          region,
-          summonerData,
-          cachedAt: new Date(),
-          lastAccessed: new Date(),
-          expiresAt,
-        },
+        updateData,
         { upsert: true, new: true }
       );
 
-      this.logger.log(`Cached summoner ${puuid} in ${region}`);
+      this.logger.log(`Cached summoner ${gameName}#${tagLine} (${puuid}) in ${region}`);
     } catch (error) {
       this.logger.error(`Error caching summoner ${puuid}: ${error.message}`);
     }
@@ -125,28 +127,30 @@ export class SummonerCacheService {
    * Cache multiple summoners in batch
    */
   async cacheSummonersBatch(
-    summoners: Array<{ puuid: string; region: string; data: Summoner }>,
-    ttlHours: number = 24,
+    summoners: Array<{ puuid: string; region: string; data: Summoner; gameName?: string; tagLine?: string }>,
   ): Promise<void> {
     try {
-      const expiresAt = new Date(Date.now() + ttlHours * 60 * 60 * 1000);
-      
-      const operations = summoners.map(({ puuid, region, data }) => ({
-        updateOne: {
-          filter: { puuid, region },
-          update: {
-            $set: {
-              puuid,
-              region,
-              summonerData: data,
-              cachedAt: new Date(),
-              lastAccessed: new Date(),
-              expiresAt,
-            }
-          },
-          upsert: true,
-        }
-      }));
+      const operations = summoners.map(({ puuid, region, data, gameName, tagLine }) => {
+        const updateData: any = {
+          puuid,
+          region,
+          summonerData: data,
+          cachedAt: new Date(),
+          lastAccessed: new Date(),
+        };
+
+        // Add gameName and tagLine if provided
+        if (gameName) updateData.gameName = gameName;
+        if (tagLine) updateData.tagLine = tagLine;
+
+        return {
+          updateOne: {
+            filter: { puuid, region },
+            update: { $set: updateData },
+            upsert: true,
+          }
+        };
+      });
 
       if (operations.length > 0) {
         await this.summonerCacheModel.bulkWrite(operations);
@@ -170,17 +174,86 @@ export class SummonerCacheService {
   }
 
   /**
-   * Clean up expired cache entries
+   * Get all cached summoners (for social network building)
    */
-  async cleanupExpired(): Promise<void> {
+  async getAllCachedSummoners(limit?: number): Promise<SummonerCache[]> {
     try {
-      const result = await this.summonerCacheModel.deleteMany({
-        expiresAt: { $lt: new Date() }
-      });
+      const query = this.summonerCacheModel.find().sort({ lastAccessed: -1 });
       
-      this.logger.log(`Cleaned up ${result.deletedCount} expired summoner cache entries`);
+      if (limit) {
+        query.limit(limit);
+      }
+      
+      const summoners = await query.exec();
+      this.logger.log(`Retrieved ${summoners.length} cached summoners`);
+      return summoners;
     } catch (error) {
-      this.logger.error(`Error cleaning up expired cache: ${error.message}`);
+      this.logger.error(`Error getting all cached summoners: ${error.message}`);
+      return [];
+    }
+  }
+
+  /**
+   * Search summoners by gameName and tagLine with smart prioritization
+   * Prioritizes: 1) Exact match, 2) Starts with, 3) Contains
+   */
+  async searchSummonersByName(
+    searchQuery: string, 
+    limit: number = 10,
+    region?: string
+  ): Promise<SummonerCache[]> {
+    try {
+      // Use anchored regex for "starts with" - much more efficient
+      const startsWithRegex = new RegExp(`^${searchQuery}`, 'i');
+      const containsRegex = new RegExp(searchQuery, 'i');
+
+      const baseQuery: any = region ? { region } : {};
+
+      // First: Try to find summoners that START WITH the query (most relevant)
+      const startsWithQuery = {
+        ...baseQuery,
+        $or: [
+          { gameName: startsWithRegex },
+          { tagLine: startsWithRegex },
+        ]
+      };
+
+      let summoners = await this.summonerCacheModel
+        .find(startsWithQuery)
+        .limit(limit)
+        .sort({ lastAccessed: -1 })
+        .exec();
+
+      // If we got enough results, return them
+      if (summoners.length >= limit) {
+        this.logger.log(`Found ${summoners.length} summoners starting with "${searchQuery}"${region ? ` in ${region}` : ''}`);
+        return summoners.slice(0, limit);
+      }
+
+      // If not enough, supplement with "contains" matches
+      const existingPuuids = summoners.map(s => s.puuid);
+      const containsQuery = {
+        ...baseQuery,
+        puuid: { $nin: existingPuuids }, // Exclude already found summoners
+        $or: [
+          { gameName: containsRegex },
+          { tagLine: containsRegex },
+        ]
+      };
+
+      const additionalSummoners = await this.summonerCacheModel
+        .find(containsQuery)
+        .limit(limit - summoners.length)
+        .sort({ lastAccessed: -1 })
+        .exec();
+
+      summoners = [...summoners, ...additionalSummoners];
+      
+      this.logger.log(`Found ${summoners.length} summoners matching "${searchQuery}"${region ? ` in ${region}` : ''}`);
+      return summoners.slice(0, limit);
+    } catch (error) {
+      this.logger.error(`Error searching summoners: ${error.message}`);
+      return [];
     }
   }
 }
