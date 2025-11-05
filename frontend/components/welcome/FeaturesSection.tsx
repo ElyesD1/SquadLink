@@ -17,46 +17,46 @@ export function FeaturesSection() {
       icon: Users,
       title: "Squad Formation",
       description: "Create or join gaming squads based on your favorite games and skill level.",
-      gradient: "from-blue-500 via-blue-600 to-cyan-600",
-      hoverGradient: "from-blue-400 via-blue-500 to-cyan-500",
-      bgGradient: "from-blue-500/10 to-cyan-500/10",
-      shadowColor: "shadow-blue-500/25"
+      gradient: "from-cyan-400 to-blue-500",
+      bgGradient: "from-cyan-400/20 to-blue-500/20",
+      shadowColor: "shadow-cyan-400/30",
+      textColor: "text-cyan-400"
     },
     {
       icon: Search,
       title: "Player Matching",
       description: "Find players with similar gaming preferences, skill levels, and availability.",
-      gradient: "from-emerald-500 via-green-600 to-teal-600",
-      hoverGradient: "from-emerald-400 via-green-500 to-teal-500",
-      bgGradient: "from-emerald-500/10 to-teal-500/10",
-      shadowColor: "shadow-emerald-500/25"
+      gradient: "from-blue-500 to-cyan-400",
+      bgGradient: "from-blue-500/20 to-cyan-400/20",
+      shadowColor: "shadow-blue-500/30",
+      textColor: "text-blue-400"
     },
     {
       icon: MessageSquare,
       title: "Communication",
       description: "Chat with your squad members and coordinate your gaming sessions effectively.",
-      gradient: "from-yellow-500 via-orange-600 to-red-600",
-      hoverGradient: "from-yellow-400 via-orange-500 to-red-500",
-      bgGradient: "from-yellow-500/10 to-red-500/10",
-      shadowColor: "shadow-yellow-500/25"
+      gradient: "from-cyan-400 to-blue-400",
+      bgGradient: "from-cyan-400/20 to-blue-400/20",
+      shadowColor: "shadow-cyan-400/30",
+      textColor: "text-cyan-400"
     },
     {
       icon: Gamepad2,
       title: "Multi-Game Support",
       description: "Connect across multiple gaming platforms and discover new games with friends.",
-      gradient: "from-purple-500 via-violet-600 to-indigo-600",
-      hoverGradient: "from-purple-400 via-violet-500 to-indigo-500",
-      bgGradient: "from-purple-500/10 to-indigo-500/10",
-      shadowColor: "shadow-purple-500/25"
+      gradient: "from-blue-400 to-cyan-500",
+      bgGradient: "from-blue-400/20 to-cyan-500/20",
+      shadowColor: "shadow-blue-400/30",
+      textColor: "text-blue-400"
     },
     {
       icon: UserPlus,
       title: "Friend Network",
       description: "Build lasting gaming friendships and expand your gaming network.",
-      gradient: "from-pink-500 via-rose-600 to-red-600",
-      hoverGradient: "from-pink-400 via-rose-500 to-red-500",
-      bgGradient: "from-pink-500/10 to-red-500/10",
-      shadowColor: "shadow-pink-500/25"
+      gradient: "from-cyan-500 to-blue-500",
+      bgGradient: "from-cyan-500/20 to-blue-500/20",
+      shadowColor: "shadow-cyan-500/30",
+      textColor: "text-cyan-400"
     }
   ];
 
@@ -78,15 +78,17 @@ export function FeaturesSection() {
             viewport={{ once: true }}
             className="inline-flex items-center space-x-2 mb-6"
           >
-            <div className="bg-gradient-to-r from-violet-600/10 via-purple-600/10 to-blue-600/10 backdrop-blur-sm border border-white/10 rounded-full px-6 py-2">
+            <div className="relative bg-gradient-to-r from-cyan-400/10 via-blue-500/10 to-cyan-400/10 backdrop-blur-sm border border-cyan-400/30 px-6 py-2"
+              style={{ clipPath: 'polygon(6px 0, 100% 0, 100% calc(100% - 6px), calc(100% - 6px) 100%, 0 100%, 0 6px)' }}
+            >
               <div className="flex items-center space-x-2">
                 <motion.div
                   animate={{ rotate: 360 }}
                   transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
                 >
-                  <Sparkles className="w-4 h-4 text-violet-400" />
+                  <Sparkles className="w-4 h-4 text-cyan-400" />
                 </motion.div>
-                <span className="text-sm font-medium bg-gradient-to-r from-violet-400 to-purple-400 bg-clip-text text-transparent">
+                <span className="text-sm font-mono uppercase tracking-wider bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">
                   Gaming Community Features
                 </span>
               </div>
@@ -94,23 +96,22 @@ export function FeaturesSection() {
           </motion.div>
 
           <motion.h2
-            className="text-5xl md:text-7xl font-black mb-6 leading-tight"
+            className="text-5xl md:text-7xl font-black font-mono mb-6 leading-tight uppercase tracking-wider"
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.3 }}
             viewport={{ once: true }}
           >
-            <span className="bg-gradient-to-r from-violet-600 via-purple-600 to-blue-600 bg-clip-text text-transparent">
+            <span className="block bg-gradient-to-r from-cyan-400 via-blue-500 to-cyan-400 bg-clip-text text-transparent drop-shadow-[0_0_30px_rgba(0,255,255,0.3)]">
               Built for
             </span>
-            <br />
-            <span className="bg-gradient-to-r from-blue-600 via-cyan-500 to-teal-500 bg-clip-text text-transparent">
+            <span className="block bg-gradient-to-r from-blue-500 via-cyan-400 to-blue-500 bg-clip-text text-transparent drop-shadow-[0_0_30px_rgba(83,131,232,0.3)]">
               Gamers
             </span>
           </motion.h2>
           
           <motion.p
-            className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed"
+            className="text-xl text-gray-400 max-w-3xl mx-auto leading-relaxed"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.4 }}
@@ -134,53 +135,54 @@ export function FeaturesSection() {
             >
               <motion.div
                 whileHover={{ 
-                  y: -10, 
-                  rotateY: 5,
-                  scale: 1.02,
+                  y: -10,
                   transition: { duration: 0.3 }
                 }}
                 className="h-full"
               >
-                <Card className={`h-full bg-gradient-to-br ${feature.bgGradient} backdrop-blur-sm border border-white/10 overflow-hidden group-hover:border-white/20 transition-all duration-500 ${feature.shadowColor} group-hover:shadow-xl`}>
-                  <CardContent className="p-8 relative">
+                <div className={`relative h-full bg-gradient-to-br ${feature.bgGradient} p-[2px] hover:shadow-[0_0_30px_rgba(0,255,255,0.3)] transition-all duration-300`}
+                  style={{ clipPath: 'polygon(6px 0, 100% 0, 100% calc(100% - 6px), calc(100% - 6px) 100%, 0 100%, 0 6px)' }}
+                >
+                  <div className="h-full bg-gradient-to-br from-[#0a1628]/90 to-[#0f1f3a]/90 backdrop-blur-xl p-8 relative"
+                    style={{ clipPath: 'polygon(5px 0, 100% 0, 100% calc(100% - 5px), calc(100% - 5px) 100%, 0 100%, 0 5px)' }}
+                  >
+                    {/* Corner brackets */}
+                    <div className="absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-cyan-400/60"></div>
+                    <div className="absolute top-0 right-0 w-4 h-4 border-t-2 border-r-2 border-cyan-400/60"></div>
+                    <div className="absolute bottom-0 left-0 w-4 h-4 border-b-2 border-l-2 border-cyan-400/60"></div>
+                    <div className="absolute bottom-0 right-0 w-4 h-4 border-b-2 border-r-2 border-cyan-400/60"></div>
+
                     {/* Icon */}
                     <motion.div
-                      className={`w-16 h-16 bg-gradient-to-br ${feature.gradient} rounded-2xl flex items-center justify-center mb-6 ${feature.shadowColor} group-hover:shadow-lg`}
+                      className={`w-16 h-16 bg-gradient-to-br ${feature.gradient} flex items-center justify-center mb-6 ${feature.shadowColor} group-hover:shadow-lg`}
+                      style={{ clipPath: 'polygon(3px 0, 100% 0, 100% calc(100% - 3px), calc(100% - 3px) 100%, 0 100%, 0 3px)' }}
                       whileHover={{ 
                         rotate: 360,
-                        scale: 1.1,
-                        background: `linear-gradient(135deg, ${feature.hoverGradient})`
+                        scale: 1.1
                       }}
                       transition={{ duration: 0.6 }}
                     >
-                      <feature.icon className="w-8 h-8 text-white" />
+                      <feature.icon className="w-8 h-8 text-black" />
                     </motion.div>
 
                     {/* Content */}
-                    <h3 className="text-2xl font-bold mb-4 text-foreground group-hover:text-white transition-colors duration-300">
+                    <h3 className={`text-2xl font-mono font-bold mb-4 uppercase tracking-wider ${feature.textColor} transition-colors duration-300`}>
                       {feature.title}
                     </h3>
-                    <p className="text-muted-foreground group-hover:text-white/80 transition-colors duration-300 leading-relaxed">
+                    <p className="text-gray-400 group-hover:text-gray-300 transition-colors duration-300 leading-relaxed">
                       {feature.description}
                     </p>
-
-                    {/* Hover Effect */}
-                    <motion.div
-                      className={`absolute inset-0 bg-gradient-to-br ${feature.gradient} opacity-0 group-hover:opacity-10 transition-opacity duration-500`}
-                      initial={{ opacity: 0 }}
-                      whileHover={{ opacity: 0.1 }}
-                    />
-                  </CardContent>
-                </Card>
+                  </div>
+                </div>
               </motion.div>
             </motion.div>
           ))}
         </div>
       </motion.div>
 
-      {/* Background Elements */}
+      {/* Background Elements - Glowing orbs */}
       <motion.div
-        className="absolute top-1/4 left-1/4 w-64 h-64 bg-violet-500/5 rounded-full blur-3xl"
+        className="absolute top-1/4 left-1/4 w-64 h-64 bg-cyan-400/5 rounded-full blur-[100px]"
         animate={{
           scale: [1, 1.2, 1],
           opacity: [0.3, 0.6, 0.3],
@@ -192,7 +194,7 @@ export function FeaturesSection() {
         }}
       />
       <motion.div
-        className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-blue-500/5 rounded-full blur-3xl"
+        className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-blue-500/5 rounded-full blur-[120px]"
         animate={{
           scale: [1.2, 1, 1.2],
           opacity: [0.3, 0.6, 0.3],

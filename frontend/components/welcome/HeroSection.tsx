@@ -2,7 +2,7 @@
 
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, Users, Gamepad2, Shield, Sparkles } from 'lucide-react';
+import { ArrowRight, Users, Gamepad2, Shield, Sparkles, Zap } from 'lucide-react';
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
 
@@ -23,16 +23,18 @@ export function HeroSection() {
           transition={{ duration: 0.8, delay: 0.2 }}
           className="inline-flex items-center space-x-2 mb-8"
         >
-          <div className="bg-gradient-to-r from-violet-600/10 via-purple-600/10 to-blue-600/10 backdrop-blur-sm border border-white/10 rounded-full px-6 py-2">
+          <div className="relative bg-gradient-to-r from-cyan-400/10 via-blue-500/10 to-cyan-400/10 backdrop-blur-sm border border-cyan-400/30 px-6 py-2"
+            style={{ clipPath: 'polygon(6px 0, 100% 0, 100% calc(100% - 6px), calc(100% - 6px) 100%, 0 100%, 0 6px)' }}
+          >
             <div className="flex items-center space-x-2">
               <motion.div
                 animate={{ rotate: 360 }}
                 transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
               >
-                <Sparkles className="w-4 h-4 text-violet-400" />
+                <Sparkles className="w-4 h-4 text-cyan-400" />
               </motion.div>
-              <span className="text-sm font-medium bg-gradient-to-r from-violet-400 to-purple-400 bg-clip-text text-transparent">
-                ✨ Connect with gamers worldwide
+              <span className="text-sm font-mono uppercase tracking-wider bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">
+                Connect with gamers worldwide
               </span>
             </div>
           </div>
@@ -45,14 +47,14 @@ export function HeroSection() {
           transition={{ duration: 1, delay: 0.3 }}
           className="mb-8"
         >
-          <h1 className="text-6xl md:text-8xl font-black leading-tight mb-6">
-            <span className="block bg-gradient-to-r from-violet-600 via-purple-600 to-blue-600 bg-clip-text text-transparent">
+          <h1 className="text-6xl md:text-8xl font-black font-mono leading-tight mb-6 uppercase tracking-wider">
+            <span className="block bg-gradient-to-r from-cyan-400 via-blue-500 to-cyan-400 bg-clip-text text-transparent drop-shadow-[0_0_30px_rgba(0,255,255,0.3)]">
               Find Your
             </span>
-            <span className="block bg-gradient-to-r from-blue-600 via-cyan-500 to-teal-500 bg-clip-text text-transparent">
+            <span className="block bg-gradient-to-r from-blue-500 via-cyan-400 to-blue-500 bg-clip-text text-transparent drop-shadow-[0_0_30px_rgba(83,131,232,0.3)]">
               Gaming
             </span>
-            <span className="block bg-gradient-to-r from-emerald-500 via-green-500 to-lime-500 bg-clip-text text-transparent">
+            <span className="block bg-gradient-to-r from-cyan-400 via-blue-400 to-cyan-500 bg-clip-text text-transparent drop-shadow-[0_0_30px_rgba(0,255,255,0.3)]">
               Squad
             </span>
           </h1>
@@ -62,10 +64,10 @@ export function HeroSection() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.5 }}
-          className="text-xl md:text-2xl text-muted-foreground mb-12 max-w-3xl mx-auto leading-relaxed"
+          className="text-xl md:text-2xl text-gray-400 mb-12 max-w-3xl mx-auto leading-relaxed"
         >
           Connect with like-minded gamers, form squads, and dominate your favorite games together. 
-          <span className="text-violet-400 font-semibold"> Build lasting gaming friendships.</span>
+          <span className="text-cyan-400 font-semibold"> Build lasting gaming friendships.</span>
         </motion.p>
         
         {/* CTA Buttons */}
@@ -81,21 +83,24 @@ export function HeroSection() {
               whileTap={{ scale: 0.95 }}
               className="relative group"
             >
-              <Button 
-                size="lg" 
-                className="relative overflow-hidden bg-gradient-to-r from-violet-600 via-purple-600 to-blue-600 hover:from-violet-700 hover:via-purple-700 hover:to-blue-700 text-white border-0 shadow-2xl shadow-purple-500/25 px-8 py-6 text-lg font-semibold rounded-2xl"
+              <div className="relative overflow-hidden bg-gradient-to-r from-cyan-400 via-blue-500 to-cyan-400 p-[2px] hover:shadow-[0_0_30px_rgba(0,255,255,0.5)] transition-all duration-300"
+                style={{ clipPath: 'polygon(6px 0, 100% 0, 100% calc(100% - 6px), calc(100% - 6px) 100%, 0 100%, 0 6px)' }}
               >
-                <span className="relative z-10 flex items-center">
-                  <Users className="w-6 h-6 mr-3" />
-                  Join the Community
-                  <ArrowRight className="w-6 h-6 ml-3" />
-                </span>
-                <motion.div
-                  className="absolute inset-0 bg-gradient-to-r from-white/20 to-white/5"
-                  animate={{ x: [-200, 200] }}
-                  transition={{ duration: 3, repeat: Infinity }}
-                />
-              </Button>
+                <div className="bg-[#0a1628] px-8 py-4 relative overflow-hidden group"
+                  style={{ clipPath: 'polygon(5px 0, 100% 0, 100% calc(100% - 5px), calc(100% - 5px) 100%, 0 100%, 0 5px)' }}
+                >
+                  <span className="relative z-10 flex items-center text-lg font-mono uppercase tracking-wider text-cyan-400">
+                    <Users className="w-6 h-6 mr-3" />
+                    Join Community
+                    <ArrowRight className="w-6 h-6 ml-3" />
+                  </span>
+                  <motion.div
+                    className="absolute inset-0 bg-gradient-to-r from-cyan-400/20 to-blue-500/20"
+                    animate={{ x: [-200, 200] }}
+                    transition={{ duration: 3, repeat: Infinity }}
+                  />
+                </div>
+              </div>
             </motion.div>
           </Link>
           
@@ -104,14 +109,18 @@ export function HeroSection() {
               whileHover={{ scale: 1.05, y: -2 }}
               whileTap={{ scale: 0.95 }}
             >
-              <Button 
-                variant="outline" 
-                size="lg" 
-                className="bg-white/5 backdrop-blur-sm border-2 border-white/20 hover:bg-white/10 px-8 py-6 text-lg font-semibold rounded-2xl transition-all duration-300"
+              <div className="relative bg-gradient-to-r from-cyan-400/20 via-blue-500/20 to-cyan-400/20 p-[2px] hover:shadow-[0_0_20px_rgba(0,255,255,0.3)] transition-all duration-300"
+                style={{ clipPath: 'polygon(6px 0, 100% 0, 100% calc(100% - 6px), calc(100% - 6px) 100%, 0 100%, 0 6px)' }}
               >
-                <Gamepad2 className="w-6 h-6 mr-3" />
-                Sign In
-              </Button>
+                <div className="bg-[#0a1628]/80 backdrop-blur-sm px-8 py-4"
+                  style={{ clipPath: 'polygon(5px 0, 100% 0, 100% calc(100% - 5px), calc(100% - 5px) 100%, 0 100%, 0 5px)' }}
+                >
+                  <span className="flex items-center text-lg font-mono uppercase tracking-wider text-gray-300">
+                    <Gamepad2 className="w-6 h-6 mr-3" />
+                    Sign In
+                  </span>
+                </div>
+              </div>
             </motion.div>
           </Link>
         </motion.div>
@@ -123,26 +132,35 @@ export function HeroSection() {
             animate={{ opacity: 1, y: 0, rotateX: 0 }}
             transition={{ duration: 0.8, delay: 0.9 }}
             whileHover={{ 
-              y: -10, 
-              rotateY: 5,
-              scale: 1.05,
+              y: -10,
               transition: { duration: 0.3 }
             }}
             className="relative group"
           >
-            <div className="bg-gradient-to-br from-blue-500 to-cyan-500 p-[1px] rounded-2xl">
-              <div className="bg-background/80 backdrop-blur-xl rounded-2xl p-6 h-full">
+            <div className="relative bg-gradient-to-br from-cyan-400/20 to-blue-500/20 p-[2px] hover:shadow-[0_0_30px_rgba(0,255,255,0.3)] transition-all duration-300"
+              style={{ clipPath: 'polygon(6px 0, 100% 0, 100% calc(100% - 6px), calc(100% - 6px) 100%, 0 100%, 0 6px)' }}
+            >
+              <div className="bg-gradient-to-br from-[#0a1628]/90 to-[#0f1f3a]/90 backdrop-blur-xl p-6 h-full"
+                style={{ clipPath: 'polygon(5px 0, 100% 0, 100% calc(100% - 5px), calc(100% - 5px) 100%, 0 100%, 0 5px)' }}
+              >
+                {/* Corner brackets */}
+                <div className="absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-cyan-400/60"></div>
+                <div className="absolute top-0 right-0 w-4 h-4 border-t-2 border-r-2 border-cyan-400/60"></div>
+                <div className="absolute bottom-0 left-0 w-4 h-4 border-b-2 border-l-2 border-cyan-400/60"></div>
+                <div className="absolute bottom-0 right-0 w-4 h-4 border-b-2 border-r-2 border-cyan-400/60"></div>
+                
                 <div className="flex items-center justify-center mb-4">
                   <motion.div
-                    className="w-12 h-12 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-xl flex items-center justify-center shadow-lg"
+                    className="w-12 h-12 bg-gradient-to-br from-cyan-400 to-blue-500 flex items-center justify-center shadow-lg shadow-cyan-400/50"
+                    style={{ clipPath: 'polygon(3px 0, 100% 0, 100% calc(100% - 3px), calc(100% - 3px) 100%, 0 100%, 0 3px)' }}
                     whileHover={{ rotate: 360 }}
                     transition={{ duration: 0.6 }}
                   >
-                    <Users className="w-6 h-6 text-white" />
+                    <Users className="w-6 h-6 text-black" />
                   </motion.div>
                 </div>
-                <p className="text-lg font-bold text-center">Find Your Team</p>
-                <p className="text-sm text-muted-foreground text-center mt-2">
+                <p className="text-lg font-mono font-bold text-center uppercase tracking-wider text-cyan-400">Find Your Team</p>
+                <p className="text-sm text-gray-400 text-center mt-2">
                   Connect with players who share your gaming style
                 </p>
               </div>
@@ -154,26 +172,35 @@ export function HeroSection() {
             animate={{ opacity: 1, y: 0, rotateX: 0 }}
             transition={{ duration: 0.8, delay: 1.1 }}
             whileHover={{ 
-              y: -10, 
-              rotateY: 5,
-              scale: 1.05,
+              y: -10,
               transition: { duration: 0.3 }
             }}
             className="relative group"
           >
-            <div className="bg-gradient-to-br from-purple-500 to-pink-500 p-[1px] rounded-2xl">
-              <div className="bg-background/80 backdrop-blur-xl rounded-2xl p-6 h-full">
+            <div className="relative bg-gradient-to-br from-blue-500/20 to-cyan-400/20 p-[2px] hover:shadow-[0_0_30px_rgba(83,131,232,0.3)] transition-all duration-300"
+              style={{ clipPath: 'polygon(6px 0, 100% 0, 100% calc(100% - 6px), calc(100% - 6px) 100%, 0 100%, 0 6px)' }}
+            >
+              <div className="bg-gradient-to-br from-[#0a1628]/90 to-[#0f1f3a]/90 backdrop-blur-xl p-6 h-full"
+                style={{ clipPath: 'polygon(5px 0, 100% 0, 100% calc(100% - 5px), calc(100% - 5px) 100%, 0 100%, 0 5px)' }}
+              >
+                {/* Corner brackets */}
+                <div className="absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-blue-500/60"></div>
+                <div className="absolute top-0 right-0 w-4 h-4 border-t-2 border-r-2 border-blue-500/60"></div>
+                <div className="absolute bottom-0 left-0 w-4 h-4 border-b-2 border-l-2 border-blue-500/60"></div>
+                <div className="absolute bottom-0 right-0 w-4 h-4 border-b-2 border-r-2 border-blue-500/60"></div>
+                
                 <div className="flex items-center justify-center mb-4">
                   <motion.div
-                    className="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl flex items-center justify-center shadow-lg"
+                    className="w-12 h-12 bg-gradient-to-br from-blue-500 to-cyan-400 flex items-center justify-center shadow-lg shadow-blue-500/50"
+                    style={{ clipPath: 'polygon(3px 0, 100% 0, 100% calc(100% - 3px), calc(100% - 3px) 100%, 0 100%, 0 3px)' }}
                     whileHover={{ rotate: 360 }}
                     transition={{ duration: 0.6 }}
                   >
-                    <Gamepad2 className="w-6 h-6 text-white" />
+                    <Gamepad2 className="w-6 h-6 text-black" />
                   </motion.div>
                 </div>
-                <p className="text-lg font-bold text-center">Play Together</p>
-                <p className="text-sm text-muted-foreground text-center mt-2">
+                <p className="text-lg font-mono font-bold text-center uppercase tracking-wider text-blue-400">Play Together</p>
+                <p className="text-sm text-gray-400 text-center mt-2">
                   Form squads and dominate your favorite games
                 </p>
               </div>
@@ -185,26 +212,35 @@ export function HeroSection() {
             animate={{ opacity: 1, y: 0, rotateX: 0 }}
             transition={{ duration: 0.8, delay: 1.3 }}
             whileHover={{ 
-              y: -10, 
-              rotateY: 5,
-              scale: 1.05,
+              y: -10,
               transition: { duration: 0.3 }
             }}
             className="relative group"
           >
-            <div className="bg-gradient-to-br from-green-500 to-emerald-500 p-[1px] rounded-2xl">
-              <div className="bg-background/80 backdrop-blur-xl rounded-2xl p-6 h-full">
+            <div className="relative bg-gradient-to-br from-cyan-400/20 to-blue-400/20 p-[2px] hover:shadow-[0_0_30px_rgba(0,255,255,0.3)] transition-all duration-300"
+              style={{ clipPath: 'polygon(6px 0, 100% 0, 100% calc(100% - 6px), calc(100% - 6px) 100%, 0 100%, 0 6px)' }}
+            >
+              <div className="bg-gradient-to-br from-[#0a1628]/90 to-[#0f1f3a]/90 backdrop-blur-xl p-6 h-full"
+                style={{ clipPath: 'polygon(5px 0, 100% 0, 100% calc(100% - 5px), calc(100% - 5px) 100%, 0 100%, 0 5px)' }}
+              >
+                {/* Corner brackets */}
+                <div className="absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-cyan-400/60"></div>
+                <div className="absolute top-0 right-0 w-4 h-4 border-t-2 border-r-2 border-cyan-400/60"></div>
+                <div className="absolute bottom-0 left-0 w-4 h-4 border-b-2 border-l-2 border-cyan-400/60"></div>
+                <div className="absolute bottom-0 right-0 w-4 h-4 border-b-2 border-r-2 border-cyan-400/60"></div>
+                
                 <div className="flex items-center justify-center mb-4">
                   <motion.div
-                    className="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl flex items-center justify-center shadow-lg"
+                    className="w-12 h-12 bg-gradient-to-br from-cyan-400 to-blue-400 flex items-center justify-center shadow-lg shadow-cyan-400/50"
+                    style={{ clipPath: 'polygon(3px 0, 100% 0, 100% calc(100% - 3px), calc(100% - 3px) 100%, 0 100%, 0 3px)' }}
                     whileHover={{ rotate: 360 }}
                     transition={{ duration: 0.6 }}
                   >
-                    <Shield className="w-6 h-6 text-white" />
+                    <Shield className="w-6 h-6 text-black" />
                   </motion.div>
                 </div>
-                <p className="text-lg font-bold text-center">Safe Environment</p>
-                <p className="text-sm text-muted-foreground text-center mt-2">
+                <p className="text-lg font-mono font-bold text-center uppercase tracking-wider text-cyan-400">Safe Environment</p>
+                <p className="text-sm text-gray-400 text-center mt-2">
                   Secure platform with community guidelines
                 </p>
               </div>
@@ -213,9 +249,10 @@ export function HeroSection() {
         </div>
       </motion.div>
 
-      {/* Animated Elements */}
+      {/* Animated Elements - Floating particles */}
       <motion.div
-        className="absolute top-1/4 left-1/4 w-2 h-2 bg-violet-400 rounded-full"
+        className="absolute top-1/4 left-1/4 w-2 h-2 bg-cyan-400"
+        style={{ clipPath: 'polygon(1px 0, 100% 0, 100% calc(100% - 1px), calc(100% - 1px) 100%, 0 100%, 0 1px)' }}
         animate={{
           scale: [1, 2, 1],
           opacity: [0.5, 1, 0.5],
@@ -227,7 +264,8 @@ export function HeroSection() {
         }}
       />
       <motion.div
-        className="absolute top-1/3 right-1/4 w-3 h-3 bg-blue-400 rounded-full"
+        className="absolute top-1/3 right-1/4 w-3 h-3 bg-blue-500"
+        style={{ clipPath: 'polygon(1px 0, 100% 0, 100% calc(100% - 1px), calc(100% - 1px) 100%, 0 100%, 0 1px)' }}
         animate={{
           scale: [1, 2, 1],
           opacity: [0.5, 1, 0.5],
@@ -239,7 +277,8 @@ export function HeroSection() {
         }}
       />
       <motion.div
-        className="absolute bottom-1/4 left-1/3 w-2 h-2 bg-purple-400 rounded-full"
+        className="absolute bottom-1/4 left-1/3 w-2 h-2 bg-cyan-400"
+        style={{ clipPath: 'polygon(1px 0, 100% 0, 100% calc(100% - 1px), calc(100% - 1px) 100%, 0 100%, 0 1px)' }}
         animate={{
           scale: [1, 2, 1],
           opacity: [0.5, 1, 0.5],
@@ -248,6 +287,32 @@ export function HeroSection() {
           duration: 3,
           repeat: Infinity,
           delay: 2,
+        }}
+      />
+      <motion.div
+        className="absolute top-1/2 left-1/5 w-2 h-2 bg-blue-400"
+        style={{ clipPath: 'polygon(1px 0, 100% 0, 100% calc(100% - 1px), calc(100% - 1px) 100%, 0 100%, 0 1px)' }}
+        animate={{
+          scale: [1, 1.5, 1],
+          opacity: [0.3, 0.8, 0.3],
+        }}
+        transition={{
+          duration: 4,
+          repeat: Infinity,
+          delay: 0.5,
+        }}
+      />
+      <motion.div
+        className="absolute bottom-1/3 right-1/5 w-2 h-2 bg-cyan-500"
+        style={{ clipPath: 'polygon(1px 0, 100% 0, 100% calc(100% - 1px), calc(100% - 1px) 100%, 0 100%, 0 1px)' }}
+        animate={{
+          scale: [1, 1.8, 1],
+          opacity: [0.4, 1, 0.4],
+        }}
+        transition={{
+          duration: 3.5,
+          repeat: Infinity,
+          delay: 1.5,
         }}
       />
     </section>

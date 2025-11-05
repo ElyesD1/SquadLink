@@ -27,11 +27,11 @@ export function Footer() {
   ];
 
   return (
-    <footer className="relative border-t border-white/10 bg-background/80 backdrop-blur-xl overflow-hidden">
+    <footer className="relative border-t border-cyan-400/20 bg-[#050a15]/95 backdrop-blur-xl overflow-hidden">
       {/* Background Effects */}
-      <div className="absolute inset-0 bg-gradient-to-br from-violet-900/5 via-purple-900/5 to-blue-900/5" />
+      <div className="absolute inset-0 bg-gradient-to-br from-cyan-400/5 via-blue-500/5 to-cyan-400/5" />
       <motion.div
-        className="absolute top-0 left-1/4 w-96 h-32 bg-gradient-to-r from-violet-500/5 to-purple-500/5 blur-3xl"
+        className="absolute top-0 left-1/4 w-96 h-32 bg-gradient-to-r from-cyan-400/5 to-blue-500/5 blur-3xl"
         animate={{
           x: [0, 100, 0],
           opacity: [0.3, 0.6, 0.3],
@@ -57,7 +57,8 @@ export function Footer() {
             <div className="flex items-center space-x-3 mb-6">
               <div className="relative">
                 <motion.div 
-                  className="w-12 h-12 bg-gradient-to-br from-violet-600 via-purple-600 to-blue-600 rounded-xl shadow-lg shadow-purple-500/25"
+                  className="w-12 h-12 bg-gradient-to-br from-cyan-400 via-blue-500 to-cyan-400 shadow-lg shadow-cyan-400/25"
+                  style={{ clipPath: 'polygon(3px 0, 100% 0, 100% calc(100% - 3px), calc(100% - 3px) 100%, 0 100%, 0 3px)' }}
                   animate={{ 
                     rotate: [0, 360],
                     scale: [1, 1.05, 1],
@@ -66,20 +67,16 @@ export function Footer() {
                     rotate: { duration: 20, repeat: Infinity, ease: "linear" },
                     scale: { duration: 3, repeat: Infinity }
                   }}
-                />
-                <motion.div
-                  className="absolute inset-0 w-12 h-12 bg-gradient-to-br from-white/20 to-white/5 rounded-xl"
-                  animate={{ opacity: [0.5, 1, 0.5] }}
-                  transition={{ duration: 2, repeat: Infinity }}
-                />
-                <Sparkles className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-6 h-6 text-white" />
+                >
+                  <Sparkles className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-6 h-6 text-black" />
+                </motion.div>
               </div>
-              <span className="text-2xl font-black bg-gradient-to-r from-violet-600 via-purple-600 to-blue-600 bg-clip-text text-transparent">
+              <span className="text-2xl font-black font-mono uppercase tracking-wider bg-gradient-to-r from-cyan-400 via-blue-500 to-cyan-400 bg-clip-text text-transparent">
                 SquadLink
               </span>
             </div>
-            <p className="text-muted-foreground leading-relaxed mb-6">
-              The next-generation team collaboration platform that transforms how you work together.
+            <p className="text-gray-400 leading-relaxed mb-6">
+              The next-generation gaming community platform that transforms how you connect and play together.
             </p>
             
             {/* Social Links */}
@@ -88,7 +85,8 @@ export function Footer() {
                 <motion.a
                   key={social.label}
                   href={social.href}
-                  className="w-10 h-10 bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl flex items-center justify-center hover:bg-white/10 transition-all duration-300 group"
+                  className="relative w-10 h-10 bg-cyan-400/10 backdrop-blur-sm border border-cyan-400/20 flex items-center justify-center hover:bg-cyan-400/20 hover:border-cyan-400/40 transition-all duration-300 group"
+                  style={{ clipPath: 'polygon(2px 0, 100% 0, 100% calc(100% - 2px), calc(100% - 2px) 100%, 0 100%, 0 2px)' }}
                   whileHover={{ scale: 1.1, y: -2 }}
                   whileTap={{ scale: 0.95 }}
                   initial={{ opacity: 0, y: 20 }}
@@ -96,7 +94,7 @@ export function Footer() {
                   transition={{ duration: 0.8, delay: index * 0.1 }}
                   viewport={{ once: true }}
                 >
-                  <social.icon className="w-5 h-5 text-muted-foreground group-hover:text-violet-400 transition-colors duration-300" />
+                  <social.icon className="w-5 h-5 text-gray-400 group-hover:text-cyan-400 transition-colors duration-300" />
                 </motion.a>
               ))}
             </div>
@@ -111,7 +109,7 @@ export function Footer() {
               transition={{ duration: 0.8, delay: sectionIndex * 0.1 }}
               viewport={{ once: true }}
             >
-              <h3 className="text-lg font-bold mb-6 bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text text-transparent">
+              <h3 className="text-lg font-mono font-bold mb-6 uppercase tracking-wider text-cyan-400">
                 {section.title}
               </h3>
               <ul className="space-y-4">
@@ -125,13 +123,13 @@ export function Footer() {
                   >
                     <motion.a
                       href="#"
-                      className="text-muted-foreground hover:text-violet-400 transition-colors duration-300 relative group"
+                      className="text-gray-400 hover:text-cyan-400 transition-colors duration-300 relative group"
                       whileHover={{ x: 5 }}
                       transition={{ duration: 0.2 }}
                     >
                       {link}
                       <motion.div
-                        className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-violet-400 to-purple-400 group-hover:w-full transition-all duration-300"
+                        className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-cyan-400 to-blue-400 group-hover:w-full transition-all duration-300"
                       />
                     </motion.a>
                   </motion.li>
@@ -143,43 +141,43 @@ export function Footer() {
 
         {/* Bottom Section */}
         <motion.div
-          className="pt-8 border-t border-white/10"
+          className="pt-8 border-t border-cyan-400/20"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.4 }}
           viewport={{ once: true }}
         >
           <div className="flex flex-col md:flex-row items-center justify-between space-y-4 md:space-y-0">
-            <div className="flex items-center space-x-2 text-sm text-muted-foreground">
+            <div className="flex items-center space-x-2 text-sm text-gray-400">
               <span>© 2025 SquadLink.</span>
               <span>Built with</span>
               <motion.div
                 animate={{ scale: [1, 1.2, 1] }}
                 transition={{ duration: 2, repeat: Infinity }}
               >
-                <Heart className="w-4 h-4 text-red-400 fill-current" />
+                <Heart className="w-4 h-4 text-cyan-400 fill-current" />
               </motion.div>
-              <span>for better collaboration.</span>
+              <span>for better gaming.</span>
             </div>
             
             <div className="flex items-center space-x-6 text-sm">
               <motion.a
                 href="#"
-                className="text-muted-foreground hover:text-violet-400 transition-colors duration-300"
+                className="text-gray-400 hover:text-cyan-400 transition-colors duration-300"
                 whileHover={{ scale: 1.05 }}
               >
                 Privacy Policy
               </motion.a>
               <motion.a
                 href="#"
-                className="text-muted-foreground hover:text-violet-400 transition-colors duration-300"
+                className="text-gray-400 hover:text-cyan-400 transition-colors duration-300"
                 whileHover={{ scale: 1.05 }}
               >
                 Terms of Service
               </motion.a>
               <motion.a
                 href="#"
-                className="text-muted-foreground hover:text-violet-400 transition-colors duration-300"
+                className="text-gray-400 hover:text-cyan-400 transition-colors duration-300"
                 whileHover={{ scale: 1.05 }}
               >
                 Cookie Policy
@@ -190,7 +188,8 @@ export function Footer() {
 
         {/* Floating Elements */}
         <motion.div
-          className="absolute top-4 right-4 w-2 h-2 bg-violet-400 rounded-full"
+          className="absolute top-4 right-4 w-2 h-2 bg-cyan-400"
+          style={{ clipPath: 'polygon(1px 0, 100% 0, 100% calc(100% - 1px), calc(100% - 1px) 100%, 0 100%, 0 1px)' }}
           animate={{
             scale: [1, 1.5, 1],
             opacity: [0.5, 1, 0.5],
@@ -202,7 +201,8 @@ export function Footer() {
           }}
         />
         <motion.div
-          className="absolute bottom-4 left-8 w-1 h-1 bg-purple-400 rounded-full"
+          className="absolute bottom-4 left-8 w-1 h-1 bg-blue-400"
+          style={{ clipPath: 'polygon(1px 0, 100% 0, 100% calc(100% - 1px), calc(100% - 1px) 100%, 0 100%, 0 1px)' }}
           animate={{
             scale: [1, 2, 1],
             opacity: [0.3, 0.8, 0.3],
