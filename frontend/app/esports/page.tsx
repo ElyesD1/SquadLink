@@ -229,11 +229,34 @@ export default function EsportsNewsPage() {
   if (!mounted || status === 'loading' || isLoading) {
     return (
       <NavigationDrawer>
-        <div className="min-h-screen bg-background flex items-center justify-center">
-          <div className="text-center space-y-4">
-            <AnimatedLogo size="lg" />
-            <div className={`${getTextClass(currentTheme)} text-2xl`}>
-              {status === 'loading' ? 'Authenticating...' : 'Loading eSports data...'}
+        <div className="min-h-screen bg-[#050a15] relative overflow-hidden flex items-center justify-center">
+          {/* Tech background */}
+          <div className="fixed inset-0 -z-10">
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(0,255,255,0.03),transparent_50%)]"></div>
+            <div className="absolute inset-0 bg-[linear-gradient(rgba(0,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(0,255,255,0.03)_1px,transparent_1px)] bg-[size:100px_100px]"></div>
+          </div>
+          
+          <div className="text-center space-y-4 relative z-10">
+            <AnimatedLogo size="lg" variant="futuristic" />
+            <div className="text-cyan-400 text-2xl font-mono font-bold tracking-wider uppercase drop-shadow-[0_0_10px_rgba(0,255,255,0.4)]">
+              {status === 'loading' ? 'AUTHENTICATING...' : 'LOADING ESPORTS DATA...'}
+            </div>
+            <div className="flex justify-center gap-2 mt-4">
+              {[...Array(3)].map((_, i) => (
+                <motion.div
+                  key={i}
+                  animate={{
+                    scale: [1, 1.5, 1],
+                    opacity: [0.3, 1, 0.3]
+                  }}
+                  transition={{
+                    duration: 1.5,
+                    repeat: Infinity,
+                    delay: i * 0.2
+                  }}
+                  className="w-2 h-2 bg-cyan-400 rounded-full shadow-[0_0_8px_rgba(0,255,255,0.8)]"
+                />
+              ))}
             </div>
           </div>
         </div>
@@ -244,16 +267,49 @@ export default function EsportsNewsPage() {
   if (!userProfile) {
     return (
       <NavigationDrawer>
-        <div className="min-h-screen bg-background flex items-center justify-center">
-          <div className="text-center space-y-4">
-            <AnimatedLogo size="lg" />
-            <div className={`${getTextClass(currentTheme)} text-2xl`}>Setting up your profile...</div>
-            <Button 
+        <div className="min-h-screen bg-[#050a15] relative overflow-hidden flex items-center justify-center">
+          {/* Futuristic Background Layers */}
+          
+          {/* Animated grid pattern */}
+          <div className="fixed inset-0 bg-[linear-gradient(rgba(0,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(0,255,255,0.03)_1px,transparent_1px)] bg-[size:50px_50px] [mask-image:radial-gradient(ellipse_80%_50%_at_50%_0%,black,transparent)]"></div>
+          
+          {/* Large glowing orbs */}
+          <div className="fixed top-0 left-1/4 w-[600px] h-[600px] bg-[#5383E8]/10 rounded-full blur-[120px] animate-pulse"></div>
+          <div className="fixed bottom-0 right-1/4 w-[600px] h-[600px] bg-cyan-400/10 rounded-full blur-[120px] animate-pulse" style={{ animationDelay: '2s' }}></div>
+          
+          {/* Scan lines effect */}
+          <div className="fixed inset-0 bg-[linear-gradient(transparent_50%,rgba(0,255,255,0.02)_50%)] bg-[length:100%_4px] pointer-events-none"></div>
+          
+          {/* Diagonal tech lines */}
+          <div className="fixed inset-0 opacity-10">
+            <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-cyan-400/50 to-transparent"></div>
+            <div className="absolute top-20 left-0 w-full h-px bg-gradient-to-r from-transparent via-[#5383E8]/30 to-transparent"></div>
+            <div className="absolute bottom-20 left-0 w-full h-px bg-gradient-to-r from-transparent via-cyan-400/30 to-transparent"></div>
+          </div>
+          
+          {/* Circuit pattern overlay */}
+          <div className="fixed inset-0 opacity-5">
+            <div className="absolute top-10 left-10 w-20 h-20 border-l-2 border-t-2 border-cyan-400"></div>
+            <div className="absolute top-10 right-10 w-20 h-20 border-r-2 border-t-2 border-cyan-400"></div>
+            <div className="absolute bottom-10 left-10 w-20 h-20 border-l-2 border-b-2 border-cyan-400"></div>
+            <div className="absolute bottom-10 right-10 w-20 h-20 border-r-2 border-b-2 border-cyan-400"></div>
+          </div>
+          
+          <div className="text-center space-y-4 relative z-10">
+            <AnimatedLogo size="lg" variant="futuristic" />
+            <div className="text-cyan-400 text-2xl font-mono font-bold tracking-wider uppercase drop-shadow-[0_0_10px_rgba(0,255,255,0.4)]">
+              SETTING UP YOUR PROFILE...
+            </div>
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
               onClick={() => router.push('/profile')}
-              className="bg-purple-600 hover:bg-purple-700 text-white"
+              className="bg-gradient-to-r from-[#5383E8] to-cyan-400 hover:from-cyan-400 hover:to-[#5383E8] text-white px-6 py-3 border border-cyan-400/50 shadow-[0_0_15px_rgba(0,255,255,0.3)] hover:shadow-[0_0_25px_rgba(0,255,255,0.5)] transition-all duration-300 relative overflow-hidden group"
             >
-              Go to Profile
-            </Button>
+              <div className="absolute top-0 left-0 w-2 h-2 border-t border-l border-white/50"></div>
+              <div className="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-white/50"></div>
+              <span className="text-sm font-bold font-mono tracking-wider uppercase relative z-10">GO TO PROFILE</span>
+            </motion.button>
           </div>
         </div>
       </NavigationDrawer>
@@ -268,32 +324,68 @@ export default function EsportsNewsPage() {
   if (!hasLoLPreference && userProfile?.gamePreferences?.length > 0) {
     return (
       <NavigationDrawer>
-        <div className="min-h-screen bg-background relative overflow-hidden">
-          {/* Animated Background */}
-          <div className="fixed inset-0 -z-10 overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 via-transparent to-blue-500/10 dark:from-purple-900/20 dark:to-blue-900/20" />
+        <div className="min-h-screen bg-[#050a15] relative overflow-hidden">
+          {/* Futuristic Background Layers */}
+          
+          {/* Animated grid pattern */}
+          <div className="fixed inset-0 bg-[linear-gradient(rgba(0,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(0,255,255,0.03)_1px,transparent_1px)] bg-[size:50px_50px] [mask-image:radial-gradient(ellipse_80%_50%_at_50%_0%,black,transparent)]"></div>
+          
+          {/* Large glowing orbs */}
+          <div className="fixed top-0 left-1/4 w-[600px] h-[600px] bg-[#5383E8]/10 rounded-full blur-[120px] animate-pulse"></div>
+          <div className="fixed bottom-0 right-1/4 w-[600px] h-[600px] bg-cyan-400/10 rounded-full blur-[120px] animate-pulse" style={{ animationDelay: '2s' }}></div>
+          
+          {/* Scan lines effect */}
+          <div className="fixed inset-0 bg-[linear-gradient(transparent_50%,rgba(0,255,255,0.02)_50%)] bg-[length:100%_4px] pointer-events-none"></div>
+          
+          {/* Diagonal tech lines */}
+          <div className="fixed inset-0 opacity-10">
+            <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-cyan-400/50 to-transparent"></div>
+            <div className="absolute top-20 left-0 w-full h-px bg-gradient-to-r from-transparent via-[#5383E8]/30 to-transparent"></div>
+            <div className="absolute bottom-20 left-0 w-full h-px bg-gradient-to-r from-transparent via-cyan-400/30 to-transparent"></div>
+          </div>
+          
+          {/* Circuit pattern overlay */}
+          <div className="fixed inset-0 opacity-5">
+            <div className="absolute top-10 left-10 w-20 h-20 border-l-2 border-t-2 border-cyan-400"></div>
+            <div className="absolute top-10 right-10 w-20 h-20 border-r-2 border-t-2 border-cyan-400"></div>
+            <div className="absolute bottom-10 left-10 w-20 h-20 border-l-2 border-b-2 border-cyan-400"></div>
+            <div className="absolute bottom-10 right-10 w-20 h-20 border-r-2 border-b-2 border-cyan-400"></div>
           </div>
 
           <div className="relative z-10 min-h-screen p-6 flex items-center justify-center">
-            <Card className="border-2 border-border shadow-2xl shadow-purple-500/10 backdrop-blur-sm bg-card/95 max-w-md">
-              <CardHeader className="text-center">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="bg-gradient-to-br from-[#0a1628] via-[#0f1f3a] to-[#0a1628] rounded-none p-8 border-2 border-cyan-400/30 shadow-[0_0_40px_rgba(0,255,255,0.3)] max-w-md w-full relative overflow-hidden"
+            >
+              {/* Corner brackets */}
+              <div className="absolute top-0 left-0 w-8 h-8 border-t-2 border-l-2 border-cyan-400/50"></div>
+              <div className="absolute top-0 right-0 w-8 h-8 border-t-2 border-r-2 border-cyan-400/50"></div>
+              <div className="absolute bottom-0 left-0 w-8 h-8 border-b-2 border-l-2 border-cyan-400/50"></div>
+              <div className="absolute bottom-0 right-0 w-8 h-8 border-b-2 border-r-2 border-cyan-400/50"></div>
+              
+              <div className="text-center space-y-6 relative z-10">
                 <div className="mx-auto mb-4">
-                  <GamepadIcon className="w-16 h-16 text-purple-500" />
+                  <GamepadIcon className="w-16 h-16 text-cyan-400 mx-auto drop-shadow-[0_0_15px_rgba(0,255,255,0.6)]" />
                 </div>
-                <CardTitle className={getTextClass(currentTheme)}>eSports News Unavailable</CardTitle>
-              </CardHeader>
-              <CardContent className="text-center space-y-4">
-                <p className={getSecondaryTextClass(currentTheme)}>
+                <h2 className="text-cyan-400 text-xl font-bold font-mono tracking-wider uppercase drop-shadow-[0_0_10px_rgba(0,255,255,0.4)]">
+                  ESPORTS NEWS UNAVAILABLE
+                </h2>
+                <p className="text-gray-400 font-mono text-sm">
                   You need to have League of Legends in your game preferences to access eSports news.
                 </p>
-                <Button 
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
                   onClick={() => router.push('/profile')}
-                  className="bg-purple-600 hover:bg-purple-700 text-white"
+                  className="bg-gradient-to-r from-[#5383E8] to-cyan-400 hover:from-cyan-400 hover:to-[#5383E8] text-white px-6 py-3 border border-cyan-400/50 shadow-[0_0_15px_rgba(0,255,255,0.3)] hover:shadow-[0_0_25px_rgba(0,255,255,0.5)] transition-all duration-300 relative overflow-hidden group w-full"
                 >
-                  Update Game Preferences
-                </Button>
-              </CardContent>
-            </Card>
+                  <div className="absolute top-0 left-0 w-2 h-2 border-t border-l border-white/50"></div>
+                  <div className="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-white/50"></div>
+                  <span className="text-sm font-bold font-mono tracking-wider uppercase relative z-10">UPDATE GAME PREFERENCES</span>
+                </motion.button>
+              </div>
+            </motion.div>
           </div>
         </div>
       </NavigationDrawer>
@@ -303,39 +395,32 @@ export default function EsportsNewsPage() {
   return (
     <NavigationDrawer>
       <OfflineBanner />
-      <div className="min-h-screen bg-background relative overflow-hidden">
-      {/* Animated Background */}
-      <div className="fixed inset-0 -z-10 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 via-transparent to-blue-500/10 dark:from-purple-900/20 dark:to-blue-900/20" />
-        
-        {/* Floating Orbs */}
-        <motion.div 
-          className="absolute top-20 -left-20 w-96 h-96 bg-purple-500/20 rounded-full blur-3xl"
-          animate={{
-            scale: [1, 1.2, 1],
-            x: [0, 50, 0],
-            y: [0, 30, 0],
-          }}
-          transition={{
-            duration: 12,
-            repeat: Infinity,
-            ease: "easeInOut",
-          }}
-        />
-        
-        <motion.div 
-          className="absolute bottom-20 -right-20 w-80 h-80 bg-blue-500/20 rounded-full blur-3xl"
-          animate={{
-            scale: [1.2, 1, 1.2],
-            x: [0, -30, 0],
-            y: [0, -50, 0],
-          }}
-          transition={{
-            duration: 10,
-            repeat: Infinity,
-            ease: "easeInOut",
-          }}
-        />
+      <div className="min-h-screen bg-[#050a15] relative overflow-hidden">
+      {/* Futuristic Background Layers */}
+      
+      {/* Animated grid pattern */}
+      <div className="fixed inset-0 bg-[linear-gradient(rgba(0,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(0,255,255,0.03)_1px,transparent_1px)] bg-[size:50px_50px] [mask-image:radial-gradient(ellipse_80%_50%_at_50%_0%,black,transparent)]"></div>
+      
+      {/* Large glowing orbs */}
+      <div className="fixed top-0 left-1/4 w-[600px] h-[600px] bg-[#5383E8]/10 rounded-full blur-[120px] animate-pulse"></div>
+      <div className="fixed bottom-0 right-1/4 w-[600px] h-[600px] bg-cyan-400/10 rounded-full blur-[120px] animate-pulse" style={{ animationDelay: '2s' }}></div>
+      
+      {/* Scan lines effect */}
+      <div className="fixed inset-0 bg-[linear-gradient(transparent_50%,rgba(0,255,255,0.02)_50%)] bg-[length:100%_4px] pointer-events-none"></div>
+      
+      {/* Diagonal tech lines */}
+      <div className="fixed inset-0 opacity-10">
+        <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-cyan-400/50 to-transparent"></div>
+        <div className="absolute top-20 left-0 w-full h-px bg-gradient-to-r from-transparent via-[#5383E8]/30 to-transparent"></div>
+        <div className="absolute bottom-20 left-0 w-full h-px bg-gradient-to-r from-transparent via-cyan-400/30 to-transparent"></div>
+      </div>
+      
+      {/* Circuit pattern overlay */}
+      <div className="fixed inset-0 opacity-5">
+        <div className="absolute top-10 left-10 w-20 h-20 border-l-2 border-t-2 border-cyan-400"></div>
+        <div className="absolute top-10 right-10 w-20 h-20 border-r-2 border-t-2 border-cyan-400"></div>
+        <div className="absolute bottom-10 left-10 w-20 h-20 border-l-2 border-b-2 border-cyan-400"></div>
+        <div className="absolute bottom-10 right-10 w-20 h-20 border-r-2 border-b-2 border-cyan-400"></div>
       </div>
 
       {/* Content */}
@@ -343,10 +428,10 @@ export default function EsportsNewsPage() {
         {/* Header */}
         <header className="max-w-7xl mx-auto flex items-center justify-between mb-8">
           <div className="flex items-center gap-6">
-            <AnimatedLogo size="md" />
+            <AnimatedLogo size="md" variant="futuristic" />
             <div>
-              <h1 className={`${getTextClass(currentTheme)} text-2xl font-bold`}>eSports Central</h1>
-              <p className={`${getSecondaryTextClass(currentTheme)} text-sm`}>League of Legends Hub</p>
+              <h1 className="text-cyan-400 text-2xl font-bold font-mono tracking-wider uppercase drop-shadow-[0_0_15px_rgba(0,255,255,0.4)]">ESPORTS CENTRAL</h1>
+              <p className="text-gray-400 text-sm font-mono tracking-wide">LEAGUE OF LEGENDS HUB</p>
             </div>
           </div>
         </header>
@@ -356,25 +441,38 @@ export default function EsportsNewsPage() {
         {/* Main Content */}
         {/* Navigation Tabs */}
         <div className="max-w-7xl mx-auto mb-8">
-          <div className="flex space-x-1 bg-card/50 backdrop-blur-sm rounded-xl p-1 border border-border/50">
+          <div className="flex space-x-2 bg-gradient-to-r from-[#0a1628]/60 to-[#0f1f3a]/60 backdrop-blur-sm p-2 border border-cyan-400/20 relative overflow-hidden">
+            <div className="absolute top-0 left-0 w-4 h-4 border-t border-l border-cyan-400/40"></div>
+            <div className="absolute top-0 right-0 w-4 h-4 border-t border-r border-cyan-400/40"></div>
+            <div className="absolute bottom-0 left-0 w-4 h-4 border-b border-l border-cyan-400/40"></div>
+            <div className="absolute bottom-0 right-0 w-4 h-4 border-b border-r border-cyan-400/40"></div>
+            
             {[
               { key: 'matches', label: 'Matches', icon: Play },
               { key: 'tournaments', label: 'Tournaments', icon: Trophy },
               { key: 'standings', label: 'Standings', icon: Crown },
               { key: 'teams', label: 'Teams', icon: Users }
             ].map(({ key, label, icon: Icon }) => (
-              <button
+              <motion.button
                 key={key}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
                 onClick={() => setActiveTab(key as any)}
-                className={`flex items-center gap-2 px-6 py-3 rounded-lg transition-all duration-200 ${
+                className={`flex items-center gap-2 px-6 py-3 transition-all duration-200 relative overflow-hidden flex-1 ${
                   activeTab === key
-                    ? 'bg-purple-600 text-white shadow-lg'
-                    : `${getTextClass(currentTheme)} hover:bg-white/10`
+                    ? 'bg-gradient-to-r from-[#5383E8] to-cyan-400 text-white shadow-[0_0_20px_rgba(0,255,255,0.4)]'
+                    : 'text-gray-400 hover:text-cyan-400 hover:bg-cyan-400/10'
                 }`}
               >
-                <Icon className="w-4 h-4" />
-                {label}
-              </button>
+                {activeTab === key && (
+                  <>
+                    <div className="absolute top-0 left-0 w-2 h-2 border-t border-l border-white/50"></div>
+                    <div className="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-white/50"></div>
+                  </>
+                )}
+                <Icon className="w-4 h-4 relative z-10" />
+                <span className="font-mono font-bold tracking-wider uppercase text-sm relative z-10">{label}</span>
+              </motion.button>
             ))}
           </div>
 
@@ -382,8 +480,10 @@ export default function EsportsNewsPage() {
           {leagues.length > 0 && (
             <div className="mt-4 flex flex-wrap gap-2">
               {leagues.map((league) => (
-                <button
+                <motion.button
                   key={league.id}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
                   onClick={async () => {
                     setSelectedLeague(league.id);
                     setIsLoading(true);
@@ -405,14 +505,20 @@ export default function EsportsNewsPage() {
                       setIsLoading(false);
                     }
                   }}
-                  className={`px-4 py-2 rounded-lg text-sm transition-all duration-200 ${
+                  className={`px-4 py-2 text-sm font-mono font-semibold tracking-wide transition-all duration-200 relative overflow-hidden ${
                     selectedLeague === league.id
-                      ? 'bg-purple-600 text-white'
-                      : `${getSecondaryTextClass(currentTheme)} bg-card/30 hover:bg-card/50`
+                      ? 'bg-gradient-to-r from-[#5383E8] to-cyan-400 text-white shadow-[0_0_15px_rgba(0,255,255,0.4)] border border-cyan-400/50'
+                      : 'text-gray-400 bg-[#0f1f3a]/40 border border-cyan-400/20 hover:border-cyan-400/40 hover:text-cyan-400'
                   }`}
                 >
-                  {league.name}
-                </button>
+                  {selectedLeague === league.id && (
+                    <>
+                      <div className="absolute top-0 left-0 w-1.5 h-1.5 border-t border-l border-white/50"></div>
+                      <div className="absolute bottom-0 right-0 w-1.5 h-1.5 border-b border-r border-white/50"></div>
+                    </>
+                  )}
+                  <span className="relative z-10">{league.name}</span>
+                </motion.button>
               ))}
             </div>
           )}
@@ -503,9 +609,9 @@ function MatchesSection({ matches, currentTheme }: { matches: Match[], currentTh
       {/* Live Matches */}
       {liveMatches.length > 0 && (
         <div>
-          <h2 className={`${getTextClass(currentTheme)} text-2xl font-bold mb-6 flex items-center gap-2`}>
-            <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
-            Live Matches
+          <h2 className="text-cyan-400 text-2xl font-bold mb-6 flex items-center gap-3 font-mono tracking-wider uppercase drop-shadow-[0_0_10px_rgba(0,255,255,0.4)]">
+            <div className="w-3 h-3 bg-red-400 rounded-full animate-pulse shadow-[0_0_10px_rgba(239,68,68,0.8)]"></div>
+            LIVE MATCHES
           </h2>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             {liveMatches.map((match) => (
@@ -518,9 +624,9 @@ function MatchesSection({ matches, currentTheme }: { matches: Match[], currentTh
       {/* Upcoming Matches */}
       {upcomingMatches.length > 0 && (
         <div>
-          <h2 className={`${getTextClass(currentTheme)} text-2xl font-bold mb-6 flex items-center gap-2`}>
-            <Clock className="w-5 h-5" />
-            Upcoming Matches
+          <h2 className="text-cyan-400 text-2xl font-bold mb-6 flex items-center gap-3 font-mono tracking-wider uppercase drop-shadow-[0_0_10px_rgba(0,255,255,0.4)]">
+            <Clock className="w-5 h-5 drop-shadow-[0_0_8px_rgba(0,255,255,0.6)]" />
+            UPCOMING MATCHES
           </h2>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             {upcomingMatches.map((match) => (
@@ -533,14 +639,14 @@ function MatchesSection({ matches, currentTheme }: { matches: Match[], currentTh
       {/* All Matches by Split */}
       {Object.keys(groupedMatches).length > 0 && (
         <div>
-          <h2 className={`${getTextClass(currentTheme)} text-2xl font-bold mb-6 flex items-center gap-2`}>
-            <TrendingUp className="w-5 h-5" />
-            Tournament Results
+          <h2 className="text-cyan-400 text-2xl font-bold mb-6 flex items-center gap-3 font-mono tracking-wider uppercase drop-shadow-[0_0_10px_rgba(0,255,255,0.4)]">
+            <TrendingUp className="w-5 h-5 drop-shadow-[0_0_8px_rgba(0,255,255,0.6)]" />
+            TOURNAMENT RESULTS
           </h2>
           {Object.entries(groupedMatches).map(([split, splitMatches]) => (
             <div key={split} className="mb-8">
-              <h3 className={`${getTextClass(currentTheme)} text-xl font-semibold mb-4`}>
-                {split} ({splitMatches.length} matches)
+              <h3 className="text-white text-xl font-semibold mb-4 font-mono tracking-wide">
+                {split} <span className="text-cyan-400">({splitMatches.length} matches)</span>
               </h3>
               <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4">
                 {splitMatches.map((match) => (
@@ -555,11 +661,11 @@ function MatchesSection({ matches, currentTheme }: { matches: Match[], currentTh
       {/* No matches message */}
       {matches.length === 0 && (
         <div className="text-center py-12">
-          <Loader2 className="w-12 h-12 mx-auto mb-4 text-purple-500 animate-spin" />
-          <h3 className={`${getTextClass(currentTheme)} text-xl font-semibold mb-2`}>
-            Loading matches...
+          <Loader2 className="w-12 h-12 mx-auto mb-4 text-cyan-400 animate-spin drop-shadow-[0_0_15px_rgba(0,255,255,0.6)]" />
+          <h3 className="text-white text-xl font-semibold mb-2 font-mono tracking-wide">
+            LOADING MATCHES...
           </h3>
-          <p className={`${getSecondaryTextClass(currentTheme)}`}>
+          <p className="text-gray-400 font-mono text-sm">
             Fetching the latest match data from Riot API
           </p>
         </div>
@@ -576,20 +682,41 @@ function MatchCard({ match, currentTheme }: { match: Match, currentTheme: string
   const getMatchStatus = (match: Match) => {
     switch (match.state) {
       case 'inProgress':
-        return <Badge className="bg-red-500 text-white animate-pulse">LIVE</Badge>;
+        return <div className="bg-gradient-to-r from-red-500 to-red-400 text-white px-3 py-1 text-xs font-bold font-mono tracking-wider uppercase animate-pulse shadow-[0_0_15px_rgba(239,68,68,0.6)] border border-red-300/50 relative overflow-hidden">
+          <div className="absolute top-0 left-0 w-1 h-1 border-t border-l border-white/50"></div>
+          <div className="absolute bottom-0 right-0 w-1 h-1 border-b border-r border-white/50"></div>
+          LIVE
+        </div>;
       case 'completed':
-        return <Badge className="bg-green-500 text-white">FINISHED</Badge>;
+        return <div className="bg-gradient-to-r from-green-500 to-green-400 text-white px-3 py-1 text-xs font-bold font-mono tracking-wider uppercase shadow-[0_0_15px_rgba(34,197,94,0.4)] border border-green-300/50 relative overflow-hidden">
+          <div className="absolute top-0 left-0 w-1 h-1 border-t border-l border-white/50"></div>
+          <div className="absolute bottom-0 right-0 w-1 h-1 border-b border-r border-white/50"></div>
+          FINISHED
+        </div>;
       default:
-        return <Badge className="bg-blue-500 text-white">SCHEDULED</Badge>;
+        return <div className="bg-gradient-to-r from-[#5383E8] to-cyan-400 text-white px-3 py-1 text-xs font-bold font-mono tracking-wider uppercase shadow-[0_0_15px_rgba(0,255,255,0.4)] border border-cyan-300/50 relative overflow-hidden">
+          <div className="absolute top-0 left-0 w-1 h-1 border-t border-l border-white/50"></div>
+          <div className="absolute bottom-0 right-0 w-1 h-1 border-b border-r border-white/50"></div>
+          SCHEDULED
+        </div>;
     }
   };
 
   return (
-    <Card className="border border-border/50 shadow-lg shadow-purple-500/5 backdrop-blur-sm bg-card/80 hover:shadow-purple-500/10 transition-all duration-300">
-      <CardContent className="p-6">
+    <motion.div
+      whileHover={{ scale: 1.02, y: -2 }}
+      className="bg-gradient-to-br from-[#0a1628] via-[#0f1f3a] to-[#0a1628] rounded-none p-6 border-2 border-cyan-400/20 shadow-[0_0_30px_rgba(83,131,232,0.2)] hover:border-cyan-400/40 hover:shadow-[0_0_40px_rgba(0,255,255,0.3)] transition-all duration-300 relative overflow-hidden"
+    >
+      {/* Corner brackets */}
+      <div className="absolute top-0 left-0 w-6 h-6 border-t-2 border-l-2 border-cyan-400/40"></div>
+      <div className="absolute top-0 right-0 w-6 h-6 border-t-2 border-r-2 border-cyan-400/40"></div>
+      <div className="absolute bottom-0 left-0 w-6 h-6 border-b-2 border-l-2 border-cyan-400/40"></div>
+      <div className="absolute bottom-0 right-0 w-6 h-6 border-b-2 border-r-2 border-cyan-400/40"></div>
+
+      <div className="relative z-10">
         <div className="flex items-center justify-between mb-4">
           {getMatchStatus(match)}
-          <span className={`${getSecondaryTextClass(currentTheme)} text-sm`}>
+          <span className="text-gray-400 text-sm font-mono">
             {new Date(match.startTime || match.date).toLocaleDateString('en-US', {
               month: 'short',
               day: 'numeric',
@@ -600,11 +727,11 @@ function MatchCard({ match, currentTheme }: { match: Match, currentTheme: string
         </div>
 
         <div className="mb-4">
-          <h3 className={`${getTextClass(currentTheme)} font-bold mb-2`}>
+          <h3 className="text-white font-bold mb-2 font-mono tracking-wide drop-shadow-[0_0_5px_rgba(255,255,255,0.2)]">
             {match.league?.name || 'Unknown League'}
           </h3>
           {match.blockName && (
-            <p className={`${getSecondaryTextClass(currentTheme)} text-sm`}>
+            <p className="text-cyan-400 text-sm font-mono">
               {match.blockName}
             </p>
           )}
@@ -613,30 +740,31 @@ function MatchCard({ match, currentTheme }: { match: Match, currentTheme: string
         <div className="flex items-center justify-between">
           {match.teams.slice(0, 2).map((team: any, index: number) => (
             <div key={team.id} className="flex items-center gap-3">
-              <div className="w-8 h-8 bg-white/90 rounded-lg flex items-center justify-center border border-gray-200/60 overflow-hidden shadow-sm">
+              <div className="w-8 h-8 bg-gradient-to-br from-cyan-400/20 to-[#5383E8]/20 border border-cyan-400/40 flex items-center justify-center overflow-hidden shadow-[0_0_10px_rgba(0,255,255,0.2)] relative">
+                <div className="absolute top-0 left-0 w-1 h-1 border-t border-l border-cyan-400/50"></div>
+                <div className="absolute bottom-0 right-0 w-1 h-1 border-b border-r border-cyan-400/50"></div>
                 <Image
                   src={getTeamLogoUrl(team.id || team.name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, ''), team.code)}
                   alt={`${team.name} logo`}
                   width={32}
                   height={32}
-                  className="w-full h-full object-contain"
+                  className="w-full h-full object-contain relative z-10"
                   onError={(e) => {
-                    // Fallback to team code if image fails to load
                     const target = e.target as HTMLImageElement;
                     target.style.display = 'none';
                     const parent = target.parentElement;
                     if (parent) {
-                      parent.innerHTML = `<span class="${getTextClass(currentTheme)} text-sm font-bold">${team.code}</span>`;
+                      parent.innerHTML = `<span class="text-cyan-400 text-sm font-bold font-mono">${team.code}</span>`;
                     }
                   }}
                 />
               </div>
               <div>
-                <span className={`${getTextClass(currentTheme)} font-medium`}>
+                <span className="text-white font-medium font-mono tracking-wide drop-shadow-[0_0_5px_rgba(255,255,255,0.2)]">
                   {team.name}
                 </span>
                 {team.record && (
-                  <p className={`${getSecondaryTextClass(currentTheme)} text-xs`}>
+                  <p className="text-gray-400 text-xs font-mono">
                     {team.record.wins}W - {team.record.losses}L
                   </p>
                 )}
@@ -646,30 +774,30 @@ function MatchCard({ match, currentTheme }: { match: Match, currentTheme: string
         </div>
 
         {match.teams[0]?.result && match.teams[1]?.result && (
-          <div className="mt-4 pt-4 border-t border-border/50">
+          <div className="mt-4 pt-4 border-t border-cyan-400/20">
             <div className="flex items-center justify-center gap-4">
               <div className="text-center">
-                <span className={`${getTextClass(currentTheme)} text-2xl font-bold`}>
+                <span className="text-cyan-400 text-2xl font-bold font-mono drop-shadow-[0_0_10px_rgba(0,255,255,0.4)]">
                   {match.teams[0].result.gameWins}
                 </span>
-                <p className={`${getSecondaryTextClass(currentTheme)} text-xs`}>
+                <p className={`text-xs font-mono font-semibold tracking-wider ${match.teams[0].result.outcome === 'win' ? 'text-green-400' : 'text-red-400'}`}>
                   {match.teams[0].result.outcome === 'win' ? 'WIN' : 'LOSS'}
                 </p>
               </div>
-              <span className={`${getSecondaryTextClass(currentTheme)} text-lg`}>-</span>
+              <span className="text-gray-500 text-lg font-mono">-</span>
               <div className="text-center">
-                <span className={`${getTextClass(currentTheme)} text-2xl font-bold`}>
+                <span className="text-cyan-400 text-2xl font-bold font-mono drop-shadow-[0_0_10px_rgba(0,255,255,0.4)]">
                   {match.teams[1].result.gameWins}
                 </span>
-                <p className={`${getSecondaryTextClass(currentTheme)} text-xs`}>
+                <p className={`text-xs font-mono font-semibold tracking-wider ${match.teams[1].result.outcome === 'win' ? 'text-green-400' : 'text-red-400'}`}>
                   {match.teams[1].result.outcome === 'win' ? 'WIN' : 'LOSS'}
                 </p>
               </div>
             </div>
           </div>
         )}
-      </CardContent>
-    </Card>
+      </div>
+    </motion.div>
   );
 }
 
@@ -683,43 +811,51 @@ function TournamentsSection({ tournaments, currentTheme }: { tournaments: Tourna
       {tournaments.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {tournaments.map((tournament) => (
-            <Card key={tournament.id} className="border border-border/50 shadow-lg shadow-purple-500/5 backdrop-blur-sm bg-card/80 hover:shadow-purple-500/10 transition-all duration-300">
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <Trophy className="w-6 h-6 text-yellow-500" />
-                  <Badge variant="outline" className="text-xs">
+            <motion.div
+              key={tournament.id}
+              whileHover={{ scale: 1.02, y: -2 }}
+              className="bg-gradient-to-br from-[#0a1628] via-[#0f1f3a] to-[#0a1628] rounded-none p-6 border-2 border-cyan-400/20 shadow-[0_0_30px_rgba(83,131,232,0.2)] hover:border-cyan-400/40 hover:shadow-[0_0_40px_rgba(0,255,255,0.3)] transition-all duration-300 relative overflow-hidden"
+            >
+              {/* Corner brackets */}
+              <div className="absolute top-0 left-0 w-6 h-6 border-t-2 border-l-2 border-cyan-400/40"></div>
+              <div className="absolute top-0 right-0 w-6 h-6 border-t-2 border-r-2 border-cyan-400/40"></div>
+              <div className="absolute bottom-0 left-0 w-6 h-6 border-b-2 border-l-2 border-cyan-400/40"></div>
+              <div className="absolute bottom-0 right-0 w-6 h-6 border-b-2 border-r-2 border-cyan-400/40"></div>
+
+              <div className="relative z-10">
+                <div className="flex items-center justify-between mb-4">
+                  <Trophy className="w-6 h-6 text-yellow-400 drop-shadow-[0_0_10px_rgba(250,204,21,0.6)]" />
+                  <div className="bg-gradient-to-r from-[#5383E8]/20 to-cyan-400/20 border border-cyan-400/30 px-2 py-0.5 text-cyan-400 font-mono text-xs font-semibold tracking-wider">
                     {tournament.leagueId.toUpperCase()}
-                  </Badge>
+                  </div>
                 </div>
-                <CardTitle className={`${getTextClass(currentTheme)} line-clamp-2`}>
+                <h3 className="text-white font-bold mb-4 line-clamp-2 font-mono tracking-wide drop-shadow-[0_0_5px_rgba(255,255,255,0.2)]">
                   {tournament.title}
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
+                </h3>
                 <div className="space-y-3">
                   <div className="flex items-center gap-2">
-                    <Calendar className="w-4 h-4 text-purple-500" />
-                    <span className={`${getSecondaryTextClass(currentTheme)} text-sm`}>
+                    <Calendar className="w-4 h-4 text-cyan-400" />
+                    <span className="text-gray-400 text-sm font-mono">
                       {new Date(tournament.startDate).toLocaleDateString()} - {new Date(tournament.endDate).toLocaleDateString()}
                     </span>
                   </div>
                   {tournament.description && (
-                    <p className={`${getSecondaryTextClass(currentTheme)} text-sm line-clamp-2`}>
+                    <p className="text-gray-400 text-sm line-clamp-2 font-mono">
                       {tournament.description}
                     </p>
                   )}
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </motion.div>
           ))}
         </div>
       ) : (
         <div className="text-center py-12">
-          <Loader2 className="w-12 h-12 mx-auto mb-4 text-purple-500 animate-spin" />
-          <h3 className={`${getTextClass(currentTheme)} text-xl font-semibold mb-2`}>
-            Loading tournaments...
+          <Loader2 className="w-12 h-12 mx-auto mb-4 text-cyan-400 animate-spin drop-shadow-[0_0_15px_rgba(0,255,255,0.6)]" />
+          <h3 className="text-white text-xl font-semibold mb-2 font-mono tracking-wide">
+            LOADING TOURNAMENTS...
           </h3>
-          <p className={`${getSecondaryTextClass(currentTheme)}`}>
+          <p className="text-gray-400 font-mono text-sm">
             Fetching tournament data from Riot API
           </p>
         </div>
@@ -963,70 +1099,79 @@ function StandingsSection({ standings, currentTheme, selectedLeague }: { standin
     
     return (
       <div key={year} className="mb-8">
-        <h3 className={`${getTextClass(currentTheme)} text-2xl font-bold mb-6 flex items-center gap-2`}>
-          🏆 {year} {currentLeague?.name} Season Standings
+        <h3 className="text-cyan-400 text-2xl font-bold mb-6 flex items-center gap-3 font-mono tracking-wider uppercase drop-shadow-[0_0_10px_rgba(0,255,255,0.4)]">
+          🏆 {year} {currentLeague?.name} SEASON STANDINGS
         </h3>
         
         <div className="space-y-8">
           {Object.entries(yearData).map(([split, splitData], index) => (
             <div key={split}>
-              <Card className={`border-2 border-border shadow-xl shadow-purple-500/10 backdrop-blur-sm ${getCardClass(currentTheme)}`}>
-                <CardHeader className="pb-4">
-                  <div className="flex items-center gap-2 mb-2">
-                    <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                    <h4 className={`${getTextClass(currentTheme)} text-lg font-bold`}>
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.1 }}
+                className="bg-gradient-to-br from-[#0a1628] via-[#0f1f3a] to-[#0a1628] rounded-none p-6 border-2 border-cyan-400/20 shadow-[0_0_30px_rgba(83,131,232,0.2)] relative overflow-hidden"
+              >
+                {/* Corner brackets */}
+                <div className="absolute top-0 left-0 w-8 h-8 border-t-2 border-l-2 border-cyan-400/40"></div>
+                <div className="absolute top-0 right-0 w-8 h-8 border-t-2 border-r-2 border-cyan-400/40"></div>
+                <div className="absolute bottom-0 left-0 w-8 h-8 border-b-2 border-l-2 border-cyan-400/40"></div>
+                <div className="absolute bottom-0 right-0 w-8 h-8 border-b-2 border-r-2 border-cyan-400/40"></div>
+
+                <div className="relative z-10">
+                  <div className="flex items-center gap-2 mb-4">
+                    <div className="w-2 h-2 bg-cyan-400 rounded-full shadow-[0_0_8px_rgba(0,255,255,0.8)]"></div>
+                    <h4 className="text-white text-lg font-bold font-mono tracking-wide drop-shadow-[0_0_5px_rgba(255,255,255,0.2)]">
                       {getSplitDisplayName(selectedLeague, split)} ({getSplitDates(selectedLeague, year, split)})
                     </h4>
                   </div>
-                </CardHeader>
                 
-                <CardContent>
                   {/* Special handling for LCK Round 3-5 */}
                   {selectedLeague === 'lol-champions-korea' && split === 'round3-5' && (splitData as any).legend ? (
                     renderLCKSpecialFormat(splitData)
                   ) : (
                     <div className="space-y-2 mb-4">
                       {Array.isArray(splitData) && splitData.map((standing: any, index: number) => (
-                        <div key={`${standing.team}-${standing.position}-${index}`} className="flex items-center gap-3">
-                          <div className="w-8 h-8 bg-white/90 rounded-lg flex items-center justify-center border border-gray-200/60 overflow-hidden shadow-sm flex-shrink-0">
+                        <div key={`${standing.team}-${standing.position}-${index}`} className="flex items-center gap-3 p-2 bg-gradient-to-r from-[#0f1f3a]/40 to-transparent hover:from-[#0f1f3a]/60 transition-colors border-l-2 border-cyan-400/30">
+                          <div className="w-8 h-8 bg-gradient-to-br from-cyan-400/20 to-[#5383E8]/20 border border-cyan-400/40 flex items-center justify-center overflow-hidden shadow-[0_0_10px_rgba(0,255,255,0.2)] flex-shrink-0 relative">
+                            <div className="absolute top-0 left-0 w-1 h-1 border-t border-l border-cyan-400/50"></div>
+                            <div className="absolute bottom-0 right-0 w-1 h-1 border-b border-r border-cyan-400/50"></div>
                             <Image
                               src={getTeamLogoUrl('', standing.team)}
                               alt={`${standing.team} logo`}
                               width={32}
                               height={32}
-                              className="w-full h-full object-contain"
+                              className="w-full h-full object-contain relative z-10"
                               onError={(e) => {
-                                // Fallback to team code if image fails to load
                                 const target = e.target as HTMLImageElement;
                                 target.style.display = 'none';
                                 const parent = target.parentElement;
                                 if (parent) {
-                                  parent.innerHTML = `<span class="${getTextClass(currentTheme)} font-bold text-xs">${standing.team.substring(0, 3).toUpperCase()}</span>`;
+                                  parent.innerHTML = `<span class="text-cyan-400 font-bold text-xs font-mono">${standing.team.substring(0, 3).toUpperCase()}</span>`;
                                 }
                               }}
                             />
                           </div>
-                          <span className={`${getTextClass(currentTheme)}`}>
-                            {standing.position}
-                            {standing.position === 1 ? 'st' : standing.position === 2 ? 'nd' : standing.position === 3 ? 'rd' : 'th'}: {standing.team}
+                          <span className="text-white font-mono font-medium">
+                            <span className="text-cyan-400">{standing.position}{standing.position === 1 ? 'st' : standing.position === 2 ? 'nd' : standing.position === 3 ? 'rd' : 'th'}:</span> {standing.team}
                           </span>
                         </div>
                       ))}
                     </div>
                   )}
                   
-                  <div className={`${getSecondaryTextClass(currentTheme)} italic mt-4 p-3 rounded-lg bg-card/50 border border-border/30`}>
+                  <div className="text-cyan-400/80 italic mt-4 p-3 bg-[#0f1f3a]/40 border border-cyan-400/20 font-mono text-sm">
                     {getChampionText(selectedLeague, year, split)}
                   </div>
-                </CardContent>
-              </Card>
+                </div>
+              </motion.div>
               
               {/* Divider between splits */}
               {index < Object.entries(yearData).length - 1 && (
                 <div className="flex items-center my-6">
-                  <div className="flex-1 h-px bg-gradient-to-r from-transparent via-border to-transparent"></div>
-                  <div className={`${getSecondaryTextClass(currentTheme)} px-4 text-sm`}>⸻</div>
-                  <div className="flex-1 h-px bg-gradient-to-r from-border via-transparent to-transparent"></div>
+                  <div className="flex-1 h-px bg-gradient-to-r from-transparent via-cyan-400/30 to-transparent"></div>
+                  <div className="text-cyan-400/50 px-4 text-sm font-mono">⸻</div>
+                  <div className="flex-1 h-px bg-gradient-to-r from-cyan-400/30 via-transparent to-transparent"></div>
                 </div>
               )}
             </div>
@@ -1041,8 +1186,8 @@ function StandingsSection({ standings, currentTheme, selectedLeague }: { standin
       {/* Standings Display */}
       {loading ? (
         <div className="flex items-center justify-center py-12">
-          <Loader2 className="w-8 h-8 animate-spin" />
-          <span className={`${getTextClass(currentTheme)} ml-2`}>Loading standings...</span>
+          <Loader2 className="w-8 h-8 animate-spin text-cyan-400" />
+          <span className="ml-2 text-cyan-400 font-mono">LOADING STANDINGS...</span>
         </div>
       ) : allStandings ? (
         <div className="space-y-8">
@@ -1051,8 +1196,10 @@ function StandingsSection({ standings, currentTheme, selectedLeague }: { standin
           {allStandings['2024'] && renderSplitStandings('2024', allStandings['2024'])}
         </div>
       ) : (
-        <div className={`${getSecondaryTextClass(currentTheme)} text-center py-8`}>
-          No standings available for this league.
+        <div className="text-center py-12">
+          <p className="text-white/40 font-mono uppercase tracking-wider text-sm">
+            NO STANDINGS AVAILABLE
+          </p>
         </div>
       )}
     </div>
@@ -1110,61 +1257,87 @@ function TeamsSection({ teams, currentTheme, selectedLeague }: { teams: Team[], 
     <div className="space-y-6">
       {loading ? (
         <div className="flex items-center justify-center py-12">
-          <Loader2 className="w-8 h-8 animate-spin" />
-          <span className={`${getTextClass(currentTheme)} ml-2`}>Loading teams...</span>
+          <Loader2 className="w-8 h-8 animate-spin text-cyan-400" />
+          <span className="ml-2 text-cyan-400 font-mono">LOADING TEAMS...</span>
         </div>
       ) : leagueTeams.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
           {leagueTeams.map((team) => (
-            <Card key={team.id} className={`border-2 border-border shadow-xl shadow-purple-500/10 backdrop-blur-sm ${getCardClass(currentTheme)} transition-all duration-300 h-fit`}>
-              <CardHeader 
-                className="cursor-pointer hover:bg-purple-500/5 transition-colors duration-200"
-                onClick={() => toggleTeamExpansion(team.id)}
-              >
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 bg-white/90 rounded-lg flex items-center justify-center border border-gray-200/60 overflow-hidden shadow-sm">
-                      <Image
-                        src={getTeamLogoUrl(team.id, team.code)}
-                        alt={`${team.name} logo`}
-                        width={48}
-                        height={48}
-                        className="w-full h-full object-contain"
-                        onError={(e) => {
-                          // Fallback to team code if image fails to load
-                          const target = e.target as HTMLImageElement;
-                          target.style.display = 'none';
-                          const parent = target.parentElement;
-                          if (parent) {
-                            parent.innerHTML = `<span class="${getTextClass(currentTheme)} font-bold text-lg">${team.code}</span>`;
-                          }
-                        }}
-                      />
+            <motion.div
+              key={team.id}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="relative group"
+            >
+              {/* Corner Brackets */}
+              <div className="absolute top-0 left-0 w-4 h-4 border-l-2 border-t-2 border-cyan-400"></div>
+              <div className="absolute top-0 right-0 w-4 h-4 border-r-2 border-t-2 border-cyan-400"></div>
+              <div className="absolute bottom-0 left-0 w-4 h-4 border-l-2 border-b-2 border-cyan-400"></div>
+              <div className="absolute bottom-0 right-0 w-4 h-4 border-r-2 border-b-2 border-cyan-400"></div>
+
+              {/* Team Card */}
+              <div className="border border-cyan-400/30 bg-gradient-to-br from-[#0a1628]/90 to-[#0f1f3a]/90 backdrop-blur-sm">
+                {/* Team Header */}
+                <div 
+                  className="cursor-pointer hover:bg-cyan-400/5 transition-all duration-300 p-6 border-b border-cyan-400/20"
+                  onClick={() => toggleTeamExpansion(team.id)}
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-4">
+                      {/* Team Logo */}
+                      <div className="relative w-12 h-12">
+                        <div className="absolute inset-0 bg-gradient-to-br from-cyan-400/20 to-blue-500/20 blur-md"></div>
+                        <div className="relative w-full h-full bg-[#0f1f3a] border border-cyan-400/40 flex items-center justify-center overflow-hidden">
+                          <Image
+                            src={getTeamLogoUrl(team.id, team.code)}
+                            alt={`${team.name} logo`}
+                            width={48}
+                            height={48}
+                            className="w-full h-full object-contain"
+                            onError={(e) => {
+                              const target = e.target as HTMLImageElement;
+                              target.style.display = 'none';
+                              const parent = target.parentElement;
+                              if (parent) {
+                                parent.innerHTML = `<span class="text-cyan-400 font-bold text-lg font-mono">${team.code}</span>`;
+                              }
+                            }}
+                          />
+                        </div>
+                      </div>
+                      
+                      {/* Team Info */}
+                      <div>
+                        <h3 className="text-white font-bold text-lg tracking-wide">
+                          {team.name}
+                        </h3>
+                        <p className="text-white/60 text-sm font-mono uppercase tracking-wider">
+                          {team.code} • {expandedTeams.has(team.id) ? 'COLLAPSE' : 'EXPAND'} ROSTER
+                        </p>
+                      </div>
                     </div>
-                    <div>
-                      <CardTitle className={`${getTextClass(currentTheme)} text-lg`}>
-                        {team.name}
-                      </CardTitle>
-                      <p className={`${getSecondaryTextClass(currentTheme)} text-sm`}>
-                        {team.code} • Click to {expandedTeams.has(team.id) ? 'collapse' : 'expand'} roster
-                      </p>
+                    
+                    {/* Expand Icon */}
+                    <div className={`text-cyan-400 transition-transform duration-300 ${expandedTeams.has(team.id) ? 'rotate-180' : ''}`}>
+                      <ChevronDown className="w-5 h-5" />
                     </div>
-                  </div>
-                  <div className={`${getTextClass(currentTheme)} transition-transform duration-200 ${expandedTeams.has(team.id) ? 'rotate-180' : ''}`}>
-                    <ChevronDown className="w-5 h-5" />
                   </div>
                 </div>
-              </CardHeader>
-              
-              {expandedTeams.has(team.id) && team.roster && (
-                <CardContent className="pt-0">
-                  <div className="border-t border-border/30 pt-4">
-                    <div className="space-y-4">
+                
+                {/* Roster Details */}
+                {expandedTeams.has(team.id) && team.roster && (
+                  <motion.div
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: "auto", opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    className="overflow-hidden"
+                  >
+                    <div className="p-6 space-y-6">
                       {/* Starting Lineup */}
                       <div>
-                        <h4 className={`${getTextClass(currentTheme)} font-semibold mb-3 flex items-center gap-2`}>
-                          <Users className="w-4 h-4" />
-                          Starting Lineup
+                        <h4 className="text-white font-bold mb-4 flex items-center gap-2 font-mono uppercase tracking-wider text-sm">
+                          <Users className="w-4 h-4 text-cyan-400" />
+                          <span className="text-cyan-400">STARTING LINEUP</span>
                         </h4>
                         <div className="grid grid-cols-1 gap-2">
                           {[
@@ -1174,15 +1347,20 @@ function TeamsSection({ teams, currentTheme, selectedLeague }: { teams: Team[], 
                             { role: 'adc', player: team.roster.adc },
                             { role: 'support', player: team.roster.support }
                           ].map((position) => (
-                            <div key={position.role} className="flex items-center gap-3 p-2 rounded-lg bg-card/50 border border-border/30">
-                              <span className="text-lg">{getRoleIcon(position.role)}</span>
-                              <div className="flex-1">
-                                <span className={`${getTextClass(currentTheme)} font-medium capitalize`}>
-                                  {position.role}:
-                                </span>
-                                <span className={`${getTextClass(currentTheme)} ml-2`}>
-                                  {position.player}
-                                </span>
+                            <div key={position.role} className="relative group/player">
+                              {/* Player Card */}
+                              <div className="flex items-center gap-3 p-3 bg-[#0a1628]/50 border border-cyan-400/20 hover:border-cyan-400/40 transition-all duration-300">
+                                <span className="text-lg">{getRoleIcon(position.role)}</span>
+                                <div className="flex-1">
+                                  <span className="text-cyan-400 font-medium capitalize font-mono text-sm tracking-wider">
+                                    {position.role}:
+                                  </span>
+                                  <span className="text-white ml-2 font-bold">
+                                    {position.player}
+                                  </span>
+                                </div>
+                                {/* Accent Line */}
+                                <div className="w-1 h-6 bg-gradient-to-b from-cyan-400/0 via-cyan-400/60 to-cyan-400/0"></div>
                               </div>
                             </div>
                           ))}
@@ -1192,63 +1370,68 @@ function TeamsSection({ teams, currentTheme, selectedLeague }: { teams: Team[], 
                       {/* Coaching Staff */}
                       {(team.roster.headCoach || team.roster.assistantCoach || team.roster.strategicCoach) && (
                         <div>
-                          <h4 className={`${getTextClass(currentTheme)} font-semibold mb-3 flex items-center gap-2`}>
-                            <Crown className="w-4 h-4" />
-                            Coaching Staff
+                          <h4 className="text-white font-bold mb-4 flex items-center gap-2 font-mono uppercase tracking-wider text-sm">
+                            <Crown className="w-4 h-4 text-cyan-400" />
+                            <span className="text-cyan-400">COACHING STAFF</span>
                           </h4>
                           <div className="space-y-2">
                             {team.roster.headCoach && (
-                              <div className="flex items-center gap-3 p-2 rounded-lg bg-card/50 border border-border/30">
+                              <div className="flex items-center gap-3 p-3 bg-[#0a1628]/50 border border-cyan-400/20 hover:border-cyan-400/40 transition-all duration-300">
                                 <span className="text-lg">🎯</span>
-                                <div>
-                                  <span className={`${getTextClass(currentTheme)} font-medium`}>
-                                    Head Coach:
+                                <div className="flex-1">
+                                  <span className="text-cyan-400 font-medium font-mono text-sm tracking-wider">
+                                    HEAD COACH:
                                   </span>
-                                  <span className={`${getTextClass(currentTheme)} ml-2`}>
+                                  <span className="text-white ml-2 font-bold">
                                     {team.roster.headCoach}
                                   </span>
                                 </div>
+                                <div className="w-1 h-6 bg-gradient-to-b from-cyan-400/0 via-cyan-400/60 to-cyan-400/0"></div>
                               </div>
                             )}
                             {team.roster.assistantCoach && (
-                              <div className="flex items-center gap-3 p-2 rounded-lg bg-card/50 border border-border/30">
+                              <div className="flex items-center gap-3 p-3 bg-[#0a1628]/50 border border-cyan-400/20 hover:border-cyan-400/40 transition-all duration-300">
                                 <span className="text-lg">📋</span>
-                                <div>
-                                  <span className={`${getTextClass(currentTheme)} font-medium`}>
-                                    Assistant Coach:
+                                <div className="flex-1">
+                                  <span className="text-cyan-400 font-medium font-mono text-sm tracking-wider">
+                                    ASSISTANT COACH:
                                   </span>
-                                  <span className={`${getTextClass(currentTheme)} ml-2`}>
+                                  <span className="text-white ml-2 font-bold">
                                     {team.roster.assistantCoach}
                                   </span>
                                 </div>
+                                <div className="w-1 h-6 bg-gradient-to-b from-cyan-400/0 via-cyan-400/60 to-cyan-400/0"></div>
                               </div>
                             )}
                             {team.roster.strategicCoach && (
-                              <div className="flex items-center gap-3 p-2 rounded-lg bg-card/50 border border-border/30">
+                              <div className="flex items-center gap-3 p-3 bg-[#0a1628]/50 border border-cyan-400/20 hover:border-cyan-400/40 transition-all duration-300">
                                 <span className="text-lg">🧠</span>
-                                <div>
-                                  <span className={`${getTextClass(currentTheme)} font-medium`}>
-                                    Strategic Coach:
+                                <div className="flex-1">
+                                  <span className="text-cyan-400 font-medium font-mono text-sm tracking-wider">
+                                    STRATEGIC COACH:
                                   </span>
-                                  <span className={`${getTextClass(currentTheme)} ml-2`}>
+                                  <span className="text-white ml-2 font-bold">
                                     {team.roster.strategicCoach}
                                   </span>
                                 </div>
+                                <div className="w-1 h-6 bg-gradient-to-b from-cyan-400/0 via-cyan-400/60 to-cyan-400/0"></div>
                               </div>
                             )}
                           </div>
                         </div>
                       )}
                     </div>
-                  </div>
-                </CardContent>
-              )}
-            </Card>
+                  </motion.div>
+                )}
+              </div>
+            </motion.div>
           ))}
         </div>
       ) : (
-        <div className={`${getSecondaryTextClass(currentTheme)} text-center py-8`}>
-          No teams available for this league.
+        <div className="text-center py-12">
+          <p className="text-white/40 font-mono uppercase tracking-wider text-sm">
+            NO TEAMS AVAILABLE
+          </p>
         </div>
       )}
     </div>
