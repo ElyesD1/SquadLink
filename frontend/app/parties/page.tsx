@@ -441,43 +441,61 @@ export default function PartiesPage() {
 
   if (!mounted || status === 'loading') {
     return (
-      <div className={`min-h-screen ${getBackgroundClass(currentTheme)} flex items-center justify-center`}>
-        <div className={`${getTextClass(currentTheme)} text-2xl`}>Loading...</div>
-      </div>
+      <NavigationDrawer>
+        <div className="min-h-screen bg-[#050a15] relative overflow-hidden flex items-center justify-center">
+          {/* Futuristic Background Layers */}
+          
+          {/* Animated grid pattern */}
+          <div className="fixed inset-0 bg-[linear-gradient(rgba(0,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(0,255,255,0.03)_1px,transparent_1px)] bg-[size:50px_50px] [mask-image:radial-gradient(ellipse_80%_50%_at_50%_0%,black,transparent)]"></div>
+          
+          {/* Large glowing orbs */}
+          <div className="fixed top-0 left-1/4 w-[600px] h-[600px] bg-[#5383E8]/10 rounded-full blur-[120px] animate-pulse"></div>
+          <div className="fixed bottom-0 right-1/4 w-[600px] h-[600px] bg-cyan-400/10 rounded-full blur-[120px] animate-pulse" style={{ animationDelay: '2s' }}></div>
+          
+          {/* Scan lines effect */}
+          <div className="fixed inset-0 bg-[linear-gradient(transparent_50%,rgba(0,255,255,0.02)_50%)] bg-[length:100%_4px] pointer-events-none"></div>
+          
+          {/* Loading text */}
+          <div className="relative z-10 text-center">
+            <div className="text-cyan-400 text-2xl font-mono tracking-widest uppercase animate-pulse">
+              LOADING...
+            </div>
+          </div>
+        </div>
+      </NavigationDrawer>
     );
   }
 
   return (
     <NavigationDrawer>
-      <div className={`min-h-screen relative overflow-hidden ${getBackgroundClass(currentTheme)}`}>
+      <div className="min-h-screen bg-[#050a15] relative overflow-hidden">
         <OfflineBanner />
 
-        {/* Animated Background */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <motion.div 
-            className="absolute w-[500px] h-[500px] bg-purple-600/30 rounded-full blur-[100px] -top-48 -left-48"
-            animate={{
-              scale: [1, 1.2, 1],
-              opacity: [0.3, 0.6, 0.3],
-            }}
-            transition={{
-              duration: 8,
-              repeat: Infinity,
-              ease: "easeInOut",
-            }}
-          />
-          <motion.div 
-            className="absolute w-[500px] h-[500px] bg-indigo-600/30 rounded-full blur-[100px] -bottom-48 -right-48"
-            animate={{
-              scale: [1.2, 1, 1.2],
-              opacity: [0.3, 0.6, 0.3],
-            }}
-            transition={{
-              duration: 10,
-              repeat: Infinity,
-              ease: "easeInOut",
-            }}
-          />
+        {/* Futuristic Background Layers */}
+        
+        {/* Animated grid pattern */}
+        <div className="fixed inset-0 bg-[linear-gradient(rgba(0,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(0,255,255,0.03)_1px,transparent_1px)] bg-[size:50px_50px] [mask-image:radial-gradient(ellipse_80%_50%_at_50%_0%,black,transparent)]"></div>
+        
+        {/* Large glowing orbs */}
+        <div className="fixed top-0 left-1/4 w-[600px] h-[600px] bg-[#5383E8]/10 rounded-full blur-[120px] animate-pulse"></div>
+        <div className="fixed bottom-0 right-1/4 w-[600px] h-[600px] bg-cyan-400/10 rounded-full blur-[120px] animate-pulse" style={{ animationDelay: '2s' }}></div>
+        
+        {/* Scan lines effect */}
+        <div className="fixed inset-0 bg-[linear-gradient(transparent_50%,rgba(0,255,255,0.02)_50%)] bg-[length:100%_4px] pointer-events-none"></div>
+        
+        {/* Diagonal tech lines */}
+        <div className="fixed inset-0 opacity-10">
+          <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-cyan-400/50 to-transparent"></div>
+          <div className="absolute top-20 left-0 w-full h-px bg-gradient-to-r from-transparent via-[#5383E8]/30 to-transparent"></div>
+          <div className="absolute bottom-20 left-0 w-full h-px bg-gradient-to-r from-transparent via-cyan-400/30 to-transparent"></div>
+        </div>
+        
+        {/* Circuit pattern overlay */}
+        <div className="fixed inset-0 opacity-5">
+          <div className="absolute top-10 left-10 w-20 h-20 border-l-2 border-t-2 border-cyan-400"></div>
+          <div className="absolute top-10 right-10 w-20 h-20 border-r-2 border-t-2 border-cyan-400"></div>
+          <div className="absolute bottom-10 left-10 w-20 h-20 border-l-2 border-b-2 border-cyan-400"></div>
+          <div className="absolute bottom-10 right-10 w-20 h-20 border-r-2 border-b-2 border-cyan-400"></div>
         </div>
 
         {/* Content */}
@@ -485,21 +503,23 @@ export default function PartiesPage() {
           {/* Header */}
           <header className="max-w-7xl mx-auto mb-8">
             <div className="flex items-center justify-between">
-              <AnimatedLogo size="md" />
+              <AnimatedLogo size="md" variant="futuristic" />
               <div className="flex items-center gap-3 mr-16">
                 {/* Notification Bell */}
-                <div className="relative">
-                  <Button
+                <div className="relative z-50">
+                  <button
                     onClick={() => setShowNotifications(!showNotifications)}
-                    className="bg-white/5 hover:bg-white/10 border border-white/10 p-2.5 relative"
+                    className="bg-gradient-to-r from-[#5383E8]/20 to-cyan-400/20 hover:from-[#5383E8]/30 hover:to-cyan-400/30 border border-cyan-400/40 p-2.5 relative transition-all duration-300 group"
                   >
-                    <Bell className="w-4 h-4" />
+                    <div className="absolute top-0 left-0 w-2 h-2 border-t border-l border-cyan-400/60"></div>
+                    <div className="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-cyan-400/60"></div>
+                    <Bell className="w-4 h-4 text-cyan-400" />
                     {notifications.length > 0 && (
-                      <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full text-[10px] text-white flex items-center justify-center">
+                      <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full text-[10px] text-white flex items-center justify-center font-bold">
                         {notifications.length}
                       </span>
                     )}
-                  </Button>
+                  </button>
                   
                   {/* Notifications Dropdown */}
                   <AnimatePresence>
@@ -508,23 +528,29 @@ export default function PartiesPage() {
                         initial={{ opacity: 0, y: -10 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -10 }}
-                        className="absolute right-0 mt-2 w-80 bg-card/95 backdrop-blur-xl border border-border/50 rounded-xl shadow-2xl z-50 max-h-96 overflow-y-auto"
+                        className="absolute right-0 top-full mt-2 w-80 bg-gradient-to-br from-[#0a1628]/95 to-[#0f1f3a]/95 backdrop-blur-xl border-2 border-cyan-400/30 shadow-[0_0_30px_rgba(0,255,255,0.3)] z-50 max-h-96 overflow-y-auto"
                       >
+                        {/* Corner Brackets for Panel */}
+                        <div className="absolute top-0 left-0 w-4 h-4 border-l-2 border-t-2 border-cyan-400 pointer-events-none"></div>
+                        <div className="absolute top-0 right-0 w-4 h-4 border-r-2 border-t-2 border-cyan-400 pointer-events-none"></div>
+                        <div className="absolute bottom-0 left-0 w-4 h-4 border-l-2 border-b-2 border-cyan-400 pointer-events-none"></div>
+                        <div className="absolute bottom-0 right-0 w-4 h-4 border-r-2 border-b-2 border-cyan-400 pointer-events-none"></div>
+                        
                         <div className="p-4">
                           <div className="flex items-center justify-between mb-3">
-                            <h3 className={`font-bold ${getTextClass(currentTheme)}`}>
-                              Notifications
+                            <h3 className="font-bold text-cyan-400 font-mono uppercase tracking-wider text-sm">
+                              NOTIFICATIONS
                             </h3>
                             <Button
                               onClick={clearNotifications}
-                              className="text-xs px-2 py-1 bg-white/5 hover:bg-white/10"
+                              className="text-xs px-2 py-1 bg-red-600/20 hover:bg-red-600/30 text-red-400 border border-red-500/50 font-mono uppercase tracking-wider"
                             >
-                              Clear All
+                              CLEAR ALL
                             </Button>
                           </div>
                           {notifications.length === 0 ? (
-                            <p className={`text-sm ${getSecondaryTextClass(currentTheme)} text-center py-4`}>
-                              No new notifications
+                            <p className="text-sm text-white/60 text-center py-4 font-mono uppercase tracking-wider">
+                              NO NEW NOTIFICATIONS
                             </p>
                           ) : (
                             <div className="space-y-3">
@@ -535,11 +561,17 @@ export default function PartiesPage() {
                                 return (
                                   <div
                                     key={idx}
-                                    className="p-4 bg-white/5 rounded-lg border border-white/10 hover:bg-white/10 transition-colors"
+                                    className="p-4 bg-gradient-to-r from-[#0a1628]/50 to-[#0f1f3a]/50 border border-cyan-400/20 hover:border-cyan-400/40 transition-all duration-300 relative group"
                                   >
+                                    {/* Corner Brackets for Notification Item */}
+                                    <div className="absolute top-0 left-0 w-2 h-2 border-l border-t border-cyan-400/30 group-hover:border-cyan-400/60"></div>
+                                    <div className="absolute top-0 right-0 w-2 h-2 border-r border-t border-cyan-400/30 group-hover:border-cyan-400/60"></div>
+                                    <div className="absolute bottom-0 left-0 w-2 h-2 border-l border-b border-cyan-400/30 group-hover:border-cyan-400/60"></div>
+                                    <div className="absolute bottom-0 right-0 w-2 h-2 border-r border-b border-cyan-400/30 group-hover:border-cyan-400/60"></div>
+                                    
                                     {/* Title */}
                                     {(notif as any).title && (
-                                      <h4 className={`text-sm font-semibold ${getTextClass(currentTheme)} mb-3`}>
+                                      <h4 className="text-sm font-semibold text-white mb-3 font-mono uppercase tracking-wider">
                                         {(notif as any).title}
                                       </h4>
                                     )}
@@ -548,7 +580,7 @@ export default function PartiesPage() {
                                     {notif.type === 'party_join_request' && requester && (
                                       <div className="flex items-start gap-3">
                                         {/* Square Profile Picture - Use LoL Icon if available */}
-                                        <div className="relative w-12 h-12 rounded-lg bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center overflow-hidden flex-shrink-0">
+                                        <div className="relative w-12 h-12 bg-gradient-to-br from-cyan-500/20 to-blue-500/20 flex items-center justify-center overflow-hidden flex-shrink-0 border border-cyan-400/30">
                                           {requester.lolAccount?.profileIconId ? (
                                             <img
                                               src={getCDNUrl(`img/profileicon/${requester.lolAccount.profileIconId}.png`)}
@@ -562,7 +594,7 @@ export default function PartiesPage() {
                                               className="w-full h-full object-cover"
                                             />
                                           ) : (
-                                            <Users className="w-6 h-6 text-white" />
+                                            <Users className="w-6 h-6 text-cyan-400" />
                                           )}
                                         </div>
                                         
@@ -571,24 +603,24 @@ export default function PartiesPage() {
                                           {requester.lolAccount ? (
                                             <>
                                               <div className="flex items-center gap-2 mb-1">
-                                                <p className={`text-sm font-semibold ${getTextClass(currentTheme)} truncate`}>
+                                                <p className="text-sm font-semibold text-white truncate font-mono">
                                                   {requester.lolAccount.gameName}#{requester.lolAccount.tagLine}
                                                 </p>
                                               </div>
-                                              <div className="flex items-center gap-2 text-xs flex-wrap">
+                                              <div className="flex items-center gap-2 text-xs flex-wrap font-mono">
                                                 {requester.lolAccount.rankedData?.map((rank: any, ridx: number) => (
-                                                  <span key={ridx} className={`${getSecondaryTextClass(currentTheme)}`}>
-                                                    {rank.queueType.includes('SOLO') ? 'Solo:' : 'Flex:'} {rank.tier} {rank.rank}
+                                                  <span key={ridx} className="text-cyan-400/80">
+                                                    {rank.queueType.includes('SOLO') ? 'SOLO:' : 'FLEX:'} {rank.tier} {rank.rank}
                                                   </span>
                                                 ))}
                                                 {(!requester.lolAccount.rankedData || requester.lolAccount.rankedData.length === 0) && (
-                                                  <span className={`${getSecondaryTextClass(currentTheme)}`}>Unranked</span>
+                                                  <span className="text-white/60 uppercase tracking-wider">UNRANKED</span>
                                                 )}
                                               </div>
                                             </>
                                           ) : (
                                             <div className="flex items-center gap-2">
-                                              <p className={`text-sm ${getTextClass(currentTheme)}`}>
+                                              <p className="text-sm text-white font-mono">
                                                 {notifData.requesterName}
                                               </p>
                                             </div>
@@ -597,8 +629,13 @@ export default function PartiesPage() {
 
                                         {/* Role Request Section - Right Side */}
                                         {notifData?.requestedPosition && (
-                                          <div className="flex flex-col items-center gap-1 px-3 py-2 bg-gradient-to-br from-yellow-500/10 to-orange-500/10 rounded-lg border border-yellow-500/20">
-                                            <div className="w-9 h-9 rounded-md bg-gradient-to-br from-yellow-500/20 to-orange-500/20 flex items-center justify-center overflow-hidden flex-shrink-0">
+                                          <div className="flex flex-col items-center gap-1 px-3 py-2 bg-gradient-to-br from-cyan-500/10 to-blue-500/10 border border-cyan-400/30 relative">
+                                            <div className="absolute top-0 left-0 w-1.5 h-1.5 border-l border-t border-cyan-400/50"></div>
+                                            <div className="absolute top-0 right-0 w-1.5 h-1.5 border-r border-t border-cyan-400/50"></div>
+                                            <div className="absolute bottom-0 left-0 w-1.5 h-1.5 border-l border-b border-cyan-400/50"></div>
+                                            <div className="absolute bottom-0 right-0 w-1.5 h-1.5 border-r border-b border-cyan-400/50"></div>
+                                            
+                                            <div className="w-9 h-9 bg-gradient-to-br from-cyan-500/20 to-blue-500/20 flex items-center justify-center overflow-hidden flex-shrink-0 border border-cyan-400/40">
                                               <Image
                                                 src={`/Position_Challenger-${notifData.requestedPosition.charAt(0).toUpperCase() + notifData.requestedPosition.slice(1)}.png`}
                                                 alt={notifData.requestedPosition}
@@ -607,7 +644,7 @@ export default function PartiesPage() {
                                                 className="w-full h-full object-contain"
                                               />
                                             </div>
-                                            <span className="text-[10px] font-bold text-yellow-400 uppercase">
+                                            <span className="text-[10px] font-bold text-cyan-400 uppercase font-mono tracking-wider">
                                               {notifData.requestedPosition}
                                             </span>
                                           </div>
@@ -619,7 +656,7 @@ export default function PartiesPage() {
                                     {notif.type === 'member_left' && notifData?.member && (
                                       <div className="flex items-start gap-3 mb-3">
                                         {/* Square Profile Picture - Use LoL Icon if available */}
-                                        <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-red-500 to-orange-500 flex items-center justify-center overflow-hidden flex-shrink-0">
+                                        <div className="w-12 h-12 bg-gradient-to-br from-red-500/20 to-orange-500/20 flex items-center justify-center overflow-hidden flex-shrink-0 border border-red-400/30">
                                           {notifData.member.lolAccount?.profileIconId ? (
                                             <img
                                               src={getCDNUrl(`img/profileicon/${notifData.member.lolAccount.profileIconId}.png`)}
@@ -633,7 +670,7 @@ export default function PartiesPage() {
                                               className="w-full h-full object-cover"
                                             />
                                           ) : (
-                                            <Users className="w-6 h-6 text-white" />
+                                            <Users className="w-6 h-6 text-red-400" />
                                           )}
                                         </div>
                                         
@@ -641,22 +678,22 @@ export default function PartiesPage() {
                                         <div className="flex-1 min-w-0">
                                           {notifData.member.lolAccount ? (
                                             <>
-                                              <p className={`text-sm font-semibold ${getTextClass(currentTheme)} truncate`}>
+                                              <p className="text-sm font-semibold text-white truncate font-mono">
                                                 {notifData.member.lolAccount.gameName}#{notifData.member.lolAccount.tagLine}
                                               </p>
-                                              <div className="flex items-center gap-2 text-xs flex-wrap mt-1">
+                                              <div className="flex items-center gap-2 text-xs flex-wrap mt-1 font-mono">
                                                 {notifData.member.lolAccount.rankedData?.map((rank: any, ridx: number) => (
-                                                  <span key={ridx} className={`${getSecondaryTextClass(currentTheme)}`}>
-                                                    {rank.queueType.includes('SOLO') ? 'Solo:' : 'Flex:'} {rank.tier} {rank.rank}
+                                                  <span key={ridx} className="text-cyan-400/80">
+                                                    {rank.queueType.includes('SOLO') ? 'SOLO:' : 'FLEX:'} {rank.tier} {rank.rank}
                                                   </span>
                                                 ))}
                                                 {(!notifData.member.lolAccount.rankedData || notifData.member.lolAccount.rankedData.length === 0) && (
-                                                  <span className={`${getSecondaryTextClass(currentTheme)}`}>Unranked</span>
+                                                  <span className="text-white/60 uppercase tracking-wider">UNRANKED</span>
                                                 )}
                                               </div>
                                             </>
                                           ) : (
-                                            <p className={`text-sm ${getTextClass(currentTheme)}`}>
+                                            <p className="text-sm text-white font-mono">
                                               {notifData.member.username}
                                             </p>
                                           )}
@@ -666,23 +703,23 @@ export default function PartiesPage() {
                                     
                                     {/* Message for non-join-request and non-member-left notifications */}
                                     {notif.type !== 'party_join_request' && notif.type !== 'member_left' && (
-                                      <p className={`text-sm ${getTextClass(currentTheme)} mb-2`}>
+                                      <p className="text-sm text-white mb-2 font-mono">
                                         {notif.message}
                                       </p>
                                     )}
                                     
                                     {/* Type Badge and Action Buttons */}
-                                    <div className="flex items-center justify-between">
-                                      <span className={`text-xs px-2 py-1 rounded-lg ${
+                                    <div className="flex items-center justify-between mt-3">
+                                      <span className={`text-xs px-2 py-1 font-bold font-mono border ${
                                         notif.type === 'party_join_request' 
-                                          ? 'bg-blue-500/20 text-blue-400'
+                                          ? 'bg-blue-500/20 text-blue-400 border-blue-400/30'
                                           : notif.type === 'request_accepted'
-                                          ? 'bg-green-500/20 text-green-400'
+                                          ? 'bg-green-500/20 text-green-400 border-green-400/30'
                                           : notif.type === 'request_rejected'
-                                          ? 'bg-red-500/20 text-red-400'
+                                          ? 'bg-red-500/20 text-red-400 border-red-400/30'
                                           : notif.type === 'member_left'
-                                          ? 'bg-orange-500/20 text-orange-400'
-                                          : 'bg-purple-500/20 text-purple-400'
+                                          ? 'bg-orange-500/20 text-orange-400 border-orange-400/30'
+                                          : 'bg-purple-500/20 text-purple-400 border-purple-400/30'
                                       }`}>
                                         {notif.type.replace(/_/g, ' ').toUpperCase()}
                                       </span>
@@ -692,15 +729,19 @@ export default function PartiesPage() {
                                         <div className="flex gap-2">
                                           <Button
                                             onClick={() => handleRejectRequest(notifData.partyId, notifData.requesterId)}
-                                            className="text-xs px-3 py-1.5 bg-red-600/20 hover:bg-red-600/30 text-red-400 border border-red-500/50 rounded-lg"
+                                            className="text-xs px-3 py-1.5 bg-red-600/20 hover:bg-red-600/30 text-red-400 border border-red-500/50 font-mono uppercase tracking-wider relative group"
                                           >
-                                            Reject
+                                            <div className="absolute top-0 left-0 w-1 h-1 border-l border-t border-red-400/50 group-hover:border-red-400"></div>
+                                            <div className="absolute bottom-0 right-0 w-1 h-1 border-r border-b border-red-400/50 group-hover:border-red-400"></div>
+                                            REJECT
                                           </Button>
                                           <Button
                                             onClick={() => handleAcceptRequest(notifData.partyId, notifData.requesterId)}
-                                            className="text-xs px-3 py-1.5 bg-green-600/20 hover:bg-green-600/30 text-green-400 border border-green-500/50 rounded-lg"
+                                            className="text-xs px-3 py-1.5 bg-green-600/20 hover:bg-green-600/30 text-green-400 border border-green-500/50 font-mono uppercase tracking-wider relative group"
                                           >
-                                            Accept
+                                            <div className="absolute top-0 left-0 w-1 h-1 border-l border-t border-green-400/50 group-hover:border-green-400"></div>
+                                            <div className="absolute bottom-0 right-0 w-1 h-1 border-r border-b border-green-400/50 group-hover:border-green-400"></div>
+                                            ACCEPT
                                           </Button>
                                         </div>
                                       )}
@@ -719,24 +760,32 @@ export default function PartiesPage() {
                 {/* Connection Status Indicator */}
                 <div className="flex items-center gap-2 px-3 py-2 bg-white/5 border border-white/10 rounded-lg">
                   <div className={`w-2 h-2 rounded-full ${isConnected ? 'bg-green-500 animate-pulse' : 'bg-gray-500'}`} />
-                  <span className={`text-xs font-medium ${getTextClass(currentTheme)}`}>
-                    {isConnected ? 'Live' : 'Connecting...'}
+                  <span className="text-xs font-medium font-mono text-white uppercase tracking-wider">
+                    {isConnected ? 'LIVE' : 'CONNECTING...'}
                   </span>
                 </div>
 
-                <Button
+                <button
                   onClick={() => router.push('/parties/create')}
                   disabled={!hasLolAccount || !isOnline}
-                  className={`px-5 py-2.5 rounded-xl font-semibold shadow-lg transition-all duration-300 ${
+                  className={`px-5 py-3 font-bold font-mono shadow-lg transition-all duration-300 relative group ${
                     hasLolAccount && isOnline
-                      ? 'bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white shadow-purple-500/30'
-                      : 'bg-gray-600 text-gray-400 cursor-not-allowed opacity-50'
+                      ? 'bg-gradient-to-r from-[#5383E8] to-cyan-400 hover:from-cyan-400 hover:to-[#5383E8] text-white shadow-[0_0_15px_rgba(0,255,255,0.3)] hover:shadow-[0_0_25px_rgba(0,255,255,0.5)] border border-cyan-400/50'
+                      : 'bg-gray-600/50 text-gray-400 cursor-not-allowed opacity-50 border border-gray-600/50'
                   }`}
                 >
-                  <Plus className="w-4 h-4 mr-2" />
-                  Create Party
-                  {!isOnline && <span className="ml-2 text-xs">(Offline)</span>}
-                </Button>
+                  {hasLolAccount && isOnline && (
+                    <>
+                      <div className="absolute top-0 left-0 w-2 h-2 border-t border-l border-white/50"></div>
+                      <div className="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-white/50"></div>
+                    </>
+                  )}
+                  <div className="flex items-center gap-2">
+                    <Plus className="w-4 h-4" />
+                    <span className="uppercase tracking-wider text-sm">CREATE PARTY</span>
+                    {!isOnline && <span className="text-xs">(OFFLINE)</span>}
+                  </div>
+                </button>
               </div>
             </div>
           </header>
@@ -749,10 +798,10 @@ export default function PartiesPage() {
               transition={{ duration: 0.6 }}
               className="mb-8"
             >
-              <h1 className={`text-4xl md:text-5xl font-black ${getTextClass(currentTheme)} mb-2`}>
-                Find Your Squad
+              <h1 className="text-4xl md:text-5xl font-black text-cyan-400 mb-2 font-mono tracking-wider drop-shadow-[0_0_10px_rgba(0,255,255,0.4)] uppercase">
+                FIND YOUR SQUAD
               </h1>
-              <p className={`text-xl ${getSecondaryTextClass(currentTheme)}`}>
+              <p className="text-xl text-white/60 font-mono">
                 Join parties and team up for League of Legends
               </p>
             </motion.div>
@@ -763,33 +812,37 @@ export default function PartiesPage() {
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4 }}
-                className="mb-6"
+                className="mb-6 relative"
               >
-                <Card className="border-2 border-yellow-500/50 shadow-2xl shadow-yellow-500/20 backdrop-blur-sm bg-yellow-500/10">
-                  <CardContent className="p-4">
-                    <div className="flex items-start gap-3">
-                      <div className="flex-shrink-0">
-                        <svg className="w-6 h-6 text-yellow-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                        </svg>
-                      </div>
-                      <div className="flex-1">
-                        <h3 className="text-yellow-500 font-semibold mb-1">
-                          League of Legends Account Required
-                        </h3>
-                        <p className={`text-sm ${getSecondaryTextClass(currentTheme)}`}>
-                          You need to link your League of Legends account to create or join parties. 
-                          <button
-                            onClick={() => router.push('/profile')}
-                            className="ml-1 text-yellow-500 hover:text-yellow-400 underline font-medium"
-                          >
-                            Link your account now
-                          </button>
-                        </p>
-                      </div>
+                {/* Corner Brackets */}
+                <div className="absolute top-0 left-0 w-4 h-4 border-l-2 border-t-2 border-yellow-400/60"></div>
+                <div className="absolute top-0 right-0 w-4 h-4 border-r-2 border-t-2 border-yellow-400/60"></div>
+                <div className="absolute bottom-0 left-0 w-4 h-4 border-l-2 border-b-2 border-yellow-400/60"></div>
+                <div className="absolute bottom-0 right-0 w-4 h-4 border-r-2 border-b-2 border-yellow-400/60"></div>
+                
+                <div className="bg-gradient-to-br from-yellow-500/10 to-orange-500/10 border border-yellow-500/40 backdrop-blur-sm p-4">
+                  <div className="flex items-start gap-3">
+                    <div className="flex-shrink-0">
+                      <svg className="w-6 h-6 text-yellow-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                      </svg>
                     </div>
-                  </CardContent>
-                </Card>
+                    <div className="flex-1">
+                      <h3 className="text-yellow-400 font-bold mb-1 font-mono uppercase tracking-wider text-sm">
+                        League of Legends Account Required
+                      </h3>
+                      <p className="text-white/60 text-sm font-mono">
+                        You need to link your League of Legends account to create or join parties. 
+                        <button
+                          onClick={() => router.push('/profile')}
+                          className="ml-1 text-yellow-400 hover:text-yellow-300 underline font-bold"
+                        >
+                          Link your account now
+                        </button>
+                      </p>
+                    </div>
+                  </div>
+                </div>
               </motion.div>
             )}
 
@@ -798,64 +851,136 @@ export default function PartiesPage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.1 }}
-              className="mb-6"
+              className="mb-6 relative"
             >
-              <Card className="bg-white/5 border-white/10 backdrop-blur-sm">
-                <CardContent className="p-4">
-                  <div className="flex flex-col md:flex-row gap-4">
-                    {/* Search */}
-                    <div className="flex-1 relative">
-                      <Search className={`absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 ${getSecondaryTextClass(currentTheme)}`} />
-                      <input
-                        type="text"
-                        placeholder="Search parties..."
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        className={`w-full pl-10 pr-4 py-3 bg-white/5 border border-white/10 rounded-xl ${getTextClass(currentTheme)} placeholder:${getSecondaryTextClass(currentTheme)} focus:outline-none focus:ring-2 focus:ring-purple-500/50`}
-                      />
-                    </div>
-
-                    {/* Game Mode Filter */}
-                    <div className="relative">
-                      <select
-                        value={selectedGameMode}
-                        onChange={(e) => setSelectedGameMode(e.target.value)}
-                        className={`w-full border border-white/10 shadow-md shadow-purple-500/5 backdrop-blur-sm bg-white/5 hover:shadow-purple-500/10 hover:border-purple-500/20 rounded-xl p-4 ${getTextClass(currentTheme)} focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 appearance-none pr-10`}
-                      >
-                        <option value="">All Game Modes</option>
-                        <option value="ranked_solo_duo">Ranked Solo/Duo</option>
-                        <option value="ranked_flex">Ranked Flex</option>
-                        <option value="aram">ARAM</option>
-                        <option value="draft_pick">Draft Pick</option>
-                      </select>
-                      <ChevronDown className={`absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 ${getSecondaryTextClass(currentTheme)}`} />
-                    </div>
-
-                    {/* Refresh Button */}
-                    <Button
-                      onClick={() => fetchParties()}
-                      className="bg-white/5 hover:bg-white/10 border border-white/10 px-4"
-                    >
-                      <RefreshCw className={`w-5 h-5 ${isLoading ? 'animate-spin' : ''}`} />
-                    </Button>
+              {/* Corner Brackets */}
+              <div className="absolute top-0 left-0 w-4 h-4 border-l-2 border-t-2 border-cyan-400/60"></div>
+              <div className="absolute top-0 right-0 w-4 h-4 border-r-2 border-t-2 border-cyan-400/60"></div>
+              <div className="absolute bottom-0 left-0 w-4 h-4 border-l-2 border-b-2 border-cyan-400/60"></div>
+              <div className="absolute bottom-0 right-0 w-4 h-4 border-r-2 border-b-2 border-cyan-400/60"></div>
+              
+              <div className="bg-gradient-to-br from-[#0a1628]/90 to-[#0f1f3a]/90 border border-cyan-400/30 backdrop-blur-sm p-4">
+                <div className="flex flex-col md:flex-row gap-4">
+                  {/* Search */}
+                  <div className="flex-1 relative">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-cyan-400/60" />
+                    <input
+                      type="text"
+                      placeholder="SEARCH PARTIES..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="w-full pl-10 pr-4 py-3 bg-[#0a1628]/50 border border-cyan-400/30 text-white placeholder:text-white/40 placeholder:font-mono placeholder:text-sm focus:outline-none focus:ring-2 focus:ring-cyan-400/50 focus:border-cyan-400/50 font-mono"
+                    />
                   </div>
-                </CardContent>
-              </Card>
+
+                  {/* Game Mode Filter */}
+                  <div className="relative">
+                    <select
+                      value={selectedGameMode}
+                      onChange={(e) => setSelectedGameMode(e.target.value)}
+                      className="w-full border border-cyan-400/30 bg-[#0a1628]/50 text-white font-mono p-3 focus:ring-2 focus:ring-cyan-400/50 focus:border-cyan-400/50 transition-all duration-300 appearance-none pr-10"
+                    >
+                      <option value="" className="bg-[#0a1628] text-white">ALL GAME MODES</option>
+                      <option value="ranked_solo_duo" className="bg-[#0a1628] text-white">RANKED SOLO/DUO</option>
+                      <option value="ranked_flex" className="bg-[#0a1628] text-white">RANKED FLEX</option>
+                      <option value="aram" className="bg-[#0a1628] text-white">ARAM</option>
+                      <option value="draft_pick" className="bg-[#0a1628] text-white">DRAFT PICK</option>
+                    </select>
+                    <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-cyan-400/60 pointer-events-none" />
+                  </div>
+
+                  {/* Refresh Button */}
+                  <button
+                    onClick={() => fetchParties()}
+                    className="bg-gradient-to-r from-[#5383E8]/20 to-cyan-400/20 hover:from-[#5383E8]/30 hover:to-cyan-400/30 border border-cyan-400/40 px-4 py-3 transition-all duration-300 relative group"
+                  >
+                    <div className="absolute top-0 left-0 w-2 h-2 border-t border-l border-cyan-400/60"></div>
+                    <div className="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-cyan-400/60"></div>
+                    <RefreshCw className={`w-5 h-5 text-cyan-400 ${isLoading ? 'animate-spin' : ''}`} />
+                  </button>
+                </div>
+              </div>
             </motion.div>
 
             {/* Parties Grid */}
             {isLoading ? (
               <div className="flex items-center justify-center py-20">
-                <div className={`${getTextClass(currentTheme)} text-xl`}>Loading parties...</div>
+                <div className="relative">
+                  {/* Spinning ring container */}
+                  <div className="relative w-32 h-32">
+                    {/* Outer ring */}
+                    <div className="absolute inset-0 border-2 border-cyan-400/20 animate-spin"
+                      style={{
+                        clipPath: 'polygon(3px 0, 100% 0, 100% calc(100% - 3px), calc(100% - 3px) 100%, 0 100%, 0 3px)',
+                        animationDuration: '3s'
+                      }}
+                    ></div>
+                    
+                    {/* Middle ring */}
+                    <div className="absolute inset-4 border-2 border-cyan-400/40 animate-spin"
+                      style={{
+                        clipPath: 'polygon(2px 0, 100% 0, 100% calc(100% - 2px), calc(100% - 2px) 100%, 0 100%, 0 2px)',
+                        animationDuration: '2s',
+                        animationDirection: 'reverse'
+                      }}
+                    ></div>
+                    
+                    {/* Inner ring */}
+                    <div className="absolute inset-8 border-2 border-cyan-400/60 animate-spin"
+                      style={{
+                        clipPath: 'polygon(2px 0, 100% 0, 100% calc(100% - 2px), calc(100% - 2px) 100%, 0 100%, 0 2px)',
+                        animationDuration: '1.5s'
+                      }}
+                    ></div>
+                    
+                    {/* Center icon */}
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <RefreshCw className="w-8 h-8 text-cyan-400 animate-pulse" />
+                    </div>
+                    
+                    {/* Corner accents */}
+                    <div className="absolute top-0 left-0 w-4 h-4 border-l-2 border-t-2 border-cyan-400"></div>
+                    <div className="absolute top-0 right-0 w-4 h-4 border-r-2 border-t-2 border-cyan-400"></div>
+                    <div className="absolute bottom-0 left-0 w-4 h-4 border-l-2 border-b-2 border-cyan-400"></div>
+                    <div className="absolute bottom-0 right-0 w-4 h-4 border-r-2 border-b-2 border-cyan-400"></div>
+                  </div>
+                  
+                  {/* Loading text */}
+                  <div className="mt-8 text-center">
+                    <div className="text-cyan-400 text-xl font-mono tracking-widest uppercase animate-pulse">
+                      LOADING PARTIES...
+                    </div>
+                    <div className="mt-2 flex items-center justify-center gap-1">
+                      <div className="w-2 h-2 bg-cyan-400 animate-pulse" 
+                        style={{ 
+                          clipPath: 'polygon(1px 0, 100% 0, 100% calc(100% - 1px), calc(100% - 1px) 100%, 0 100%, 0 1px)',
+                          animationDelay: '0s' 
+                        }}
+                      ></div>
+                      <div className="w-2 h-2 bg-cyan-400 animate-pulse" 
+                        style={{ 
+                          clipPath: 'polygon(1px 0, 100% 0, 100% calc(100% - 1px), calc(100% - 1px) 100%, 0 100%, 0 1px)',
+                          animationDelay: '0.2s' 
+                        }}
+                      ></div>
+                      <div className="w-2 h-2 bg-cyan-400 animate-pulse" 
+                        style={{ 
+                          clipPath: 'polygon(1px 0, 100% 0, 100% calc(100% - 1px), calc(100% - 1px) 100%, 0 100%, 0 1px)',
+                          animationDelay: '0.4s' 
+                        }}
+                      ></div>
+                    </div>
+                  </div>
+                </div>
               </div>
             ) : (
               <>
                 {/* My Parties Section */}
                 {myParties.length > 0 && (
                   <div className="mb-12">
-                    <h2 className={`text-2xl font-bold ${getTextClass(currentTheme)} mb-6 flex items-center gap-2`}>
+                    <h2 className="text-2xl font-bold text-cyan-400 mb-6 flex items-center gap-2 font-mono uppercase tracking-wider drop-shadow-[0_0_10px_rgba(0,255,255,0.4)]">
                       <Users className="w-6 h-6" />
-                      My Parties
+                      MY PARTIES
                       <CachedDataIndicator
                         dataType="Parties"
                         isAvailable={!isOnline && isDataAvailable('partiesList')}
@@ -869,155 +994,162 @@ export default function PartiesPage() {
                           initial={{ opacity: 0, y: 20 }}
                           animate={{ opacity: 1, y: 0 }}
                           transition={{ duration: 0.4, delay: index * 0.05 }}
+                          className="relative group"
                         >
-                          <Card className="border-2 border-border shadow-2xl shadow-purple-500/10 backdrop-blur-sm bg-card/95 hover:shadow-purple-500/20 transition-all duration-300">
-                            <CardContent className="p-6">
-                              {/* Header with Owner/Member Badge */}
-                              <div className="flex items-start justify-between mb-4">
-                                <div className="flex-1">
-                                  <div className="flex items-center gap-2 mb-2">
-                                    <h3 className={`text-lg font-bold ${getTextClass(currentTheme)}`}>
-                                      {party.name}
-                                    </h3>
-                                    {party.isPrivate && (
-                                      <Lock className="w-4 h-4 text-yellow-500" />
-                                    )}
-                                  </div>
-                                  <div className="flex items-center gap-2 flex-wrap">
-                                    <span className={`text-xs px-2 py-1 rounded-md ${
-                                      gameModeColors[party.gameMode] ? 'bg-purple-500/20 text-purple-400' : 'bg-gray-500/20 text-gray-400'
-                                    }`}>
-                                      {gameModeLabels[party.gameMode]}
+                          {/* Corner Brackets */}
+                          <div className="absolute top-0 left-0 w-4 h-4 border-l-2 border-t-2 border-cyan-400/60 z-10"></div>
+                          <div className="absolute top-0 right-0 w-4 h-4 border-r-2 border-t-2 border-cyan-400/60 z-10"></div>
+                          <div className="absolute bottom-0 left-0 w-4 h-4 border-l-2 border-b-2 border-cyan-400/60 z-10"></div>
+                          <div className="absolute bottom-0 right-0 w-4 h-4 border-r-2 border-b-2 border-cyan-400/60 z-10"></div>
+                          
+                          <div className="border border-cyan-400/30 shadow-xl shadow-cyan-500/10 backdrop-blur-sm bg-gradient-to-br from-[#0a1628]/90 to-[#0f1f3a]/90 hover:shadow-cyan-500/20 transition-all duration-300 p-6">
+                            {/* Header with Owner/Member Badge */}
+                            <div className="flex items-start justify-between mb-4">
+                              <div className="flex-1">
+                                <div className="flex items-center gap-2 mb-2">
+                                  <h3 className="text-lg font-bold text-white">
+                                    {party.name}
+                                  </h3>
+                                  {party.isPrivate && (
+                                    <Lock className="w-4 h-4 text-yellow-400" />
+                                  )}
+                                </div>
+                                <div className="flex items-center gap-2 flex-wrap">
+                                  <span className="text-xs px-2 py-1 bg-cyan-500/20 text-cyan-400 border border-cyan-400/30 font-mono">
+                                    {gameModeLabels[party.gameMode]}
+                                  </span>
+                                  {(party.creator?.email === session?.user?.email || (party as any).creatorId === session?.user?.email) ? (
+                                    <span className="text-xs px-2 py-1 bg-green-500/20 text-green-400 border border-green-400/30 font-mono font-bold">
+                                      OWNER
                                     </span>
-                                    {(party.creator?.email === session?.user?.email || (party as any).creatorId === session?.user?.email) ? (
-                                      <span className="text-xs px-2 py-1 bg-green-500/20 text-green-400 rounded-md">
-                                        OWNER
-                                      </span>
-                                    ) : (
-                                      <span className="text-xs px-2 py-1 bg-blue-500/20 text-blue-400 rounded-md">
-                                        MEMBER
-                                      </span>
-                                    )}
-                                  </div>
+                                  ) : (
+                                    <span className="text-xs px-2 py-1 bg-blue-500/20 text-blue-400 border border-blue-400/30 font-mono font-bold">
+                                      MEMBER
+                                    </span>
+                                  )}
                                 </div>
                               </div>
+                            </div>
 
-                              {/* Description */}
-                              <p className={`${getSecondaryTextClass(currentTheme)} text-sm mb-4 line-clamp-2`}>
-                                {party.description}
-                              </p>
+                            {/* Description */}
+                            <p className="text-white/60 text-sm mb-4 line-clamp-2 font-mono">
+                              {party.description}
+                            </p>
 
-                              {/* Party Info */}
-                              <div className="space-y-2 mb-4">
+                            {/* Party Info */}
+                            <div className="space-y-2 mb-4">
+                              <div className="flex items-center justify-between text-sm">
+                                <span className="text-white/60 font-mono uppercase text-xs tracking-wider">
+                                  STATUS
+                                </span>
+                                <span className={`text-xs font-bold px-2 py-0.5 font-mono border ${
+                                  party.status === 'open' 
+                                    ? 'bg-green-500/20 text-green-400 border-green-400/30' 
+                                    : party.status === 'closed'
+                                    ? 'bg-red-500/20 text-red-400 border-red-400/30'
+                                    : 'bg-blue-500/20 text-blue-400 border-blue-400/30'
+                                }`}>
+                                  {party.status?.toUpperCase()}
+                                </span>
+                              </div>
+
+                              <div className="flex items-center justify-between text-sm">
+                                <span className="text-white/60 font-mono uppercase text-xs tracking-wider">
+                                  MEMBERS
+                                </span>
+                                <div className="flex items-center gap-2">
+                                  <span className="text-white font-mono">
+                                    {party.members.length}/{getMaxMembers(party.gameMode)}
+                                  </span>
+                                  <button
+                                    onClick={() => {
+                                      setSelectedPartyMembers(party);
+                                      setShowMembersModal(true);
+                                    }}
+                                    className="p-1 hover:bg-cyan-400/10 transition-colors border border-cyan-400/20"
+                                    title="View members"
+                                  >
+                                    <Info className="w-4 h-4 text-cyan-400 hover:text-cyan-300" />
+                                  </button>
+                                </div>
+                              </div>
+                              
+                              {party.joinRequests && party.joinRequests.length > 0 && (
                                 <div className="flex items-center justify-between text-sm">
-                                  <span className={getSecondaryTextClass(currentTheme)}>
-                                    Status
+                                  <span className="text-white/60 font-mono uppercase text-xs tracking-wider">
+                                    PENDING REQUESTS
                                   </span>
-                                  <span className={`text-xs font-medium px-2 py-0.5 rounded ${
-                                    party.status === 'open' 
-                                      ? 'bg-green-500/20 text-green-400' 
-                                      : party.status === 'closed'
-                                      ? 'bg-red-500/20 text-red-400'
-                                      : 'bg-blue-500/20 text-blue-400'
-                                  }`}>
-                                    {party.status?.toUpperCase()}
+                                  <span className="text-yellow-400 font-mono font-bold">
+                                    {party.joinRequests.length}
                                   </span>
                                 </div>
-
-                                <div className="flex items-center justify-between text-sm">
-                                  <span className={getSecondaryTextClass(currentTheme)}>
-                                    Members
-                                  </span>
-                                  <div className="flex items-center gap-2">
-                                    <span className={getTextClass(currentTheme)}>
-                                      {party.members.length}/{getMaxMembers(party.gameMode)}
-                                    </span>
-                                    <button
-                                      onClick={() => {
-                                        setSelectedPartyMembers(party);
-                                        setShowMembersModal(true);
-                                      }}
-                                      className="p-1 hover:bg-white/10 rounded-md transition-colors"
-                                      title="View members"
-                                    >
-                                      <Info className="w-4 h-4 text-purple-400 hover:text-purple-300" />
-                                    </button>
-                                  </div>
-                                </div>
-                                
-                                {party.joinRequests && party.joinRequests.length > 0 && (
-                                  <div className="flex items-center justify-between text-sm">
-                                    <span className={getSecondaryTextClass(currentTheme)}>
-                                      Pending Requests
-                                    </span>
-                                    <span className="text-yellow-500">
-                                      {party.joinRequests.length}
-                                    </span>
-                                  </div>
-                                )}
-
-                                {/* Preferences */}
-                                {party.preferences?.minRank && (
-                                  <div className="flex items-center justify-between text-sm">
-                                    <span className={getSecondaryTextClass(currentTheme)}>
-                                      Min Rank
-                                    </span>
-                                    <span className="text-yellow-500">
-                                      {party.preferences.minRank}
-                                    </span>
-                                  </div>
-                                )}
-
-                                {party.preferences?.voiceChat && (
-                                  <div className="flex items-center gap-2 text-sm">
-                                    <Mic className="w-4 h-4 text-purple-400" />
-                                    <span className={getSecondaryTextClass(currentTheme)}>
-                                      Voice Chat Required
-                                    </span>
-                                  </div>
-                                )}
-
-                                {party.preferences?.language && (
-                                  <div className="flex items-center justify-between text-sm">
-                                    <span className={getSecondaryTextClass(currentTheme)}>
-                                      Language
-                                    </span>
-                                    <span className={getTextClass(currentTheme)}>
-                                      {party.preferences.language}
-                                    </span>
-                                  </div>
-                                )}
-                              </div>
-
-                              {/* Discord Integration - Show for all parties you're a member of */}
-                              <div className="mb-4">
-                                <DiscordIntegration
-                                  partyId={party._id}
-                                  partyName={party.name}
-                                  isOwner={party.creator?.email === session?.user?.email || (party as any).creatorId === session?.user?.email}
-                                  existingChannelUrl={(party as any).discordVoiceChannel?.inviteUrl}
-                                  hasDiscordAccount={hasDiscordAccount}
-                                />
-                              </div>
-
-                              {/* Action Button - Owner gets Manage, Members get Leave */}
-                              {(party.creator?.email === session?.user?.email || (party as any).creatorId === session?.user?.email) ? (
-                                <Button
-                                  className="w-full bg-purple-600 hover:bg-purple-700 text-white"
-                                  onClick={() => router.push(`/parties/${party._id}/edit`)}
-                                >
-                                  Manage Party
-                                </Button>
-                              ) : (
-                                <Button
-                                  className="w-full bg-red-600 hover:bg-red-700 text-white"
-                                  onClick={() => handleLeaveParty(party._id)}
-                                >
-                                  Leave Party
-                                </Button>
                               )}
-                            </CardContent>
-                          </Card>
+
+                              {/* Preferences */}
+                              {party.preferences?.minRank && (
+                                <div className="flex items-center justify-between text-sm">
+                                  <span className="text-white/60 font-mono uppercase text-xs tracking-wider">
+                                    MIN RANK
+                                  </span>
+                                  <span className="text-yellow-400 font-mono">
+                                    {party.preferences.minRank}
+                                  </span>
+                                </div>
+                              )}
+
+                              {party.preferences?.voiceChat && (
+                                <div className="flex items-center gap-2 text-sm">
+                                  <Mic className="w-4 h-4 text-cyan-400" />
+                                  <span className="text-white/60 font-mono uppercase text-xs tracking-wider">
+                                    VOICE CHAT REQUIRED
+                                  </span>
+                                </div>
+                              )}
+
+                              {party.preferences?.language && (
+                                <div className="flex items-center justify-between text-sm">
+                                  <span className="text-white/60 font-mono uppercase text-xs tracking-wider">
+                                    LANGUAGE
+                                  </span>
+                                  <span className="text-white font-mono">
+                                    {party.preferences.language}
+                                  </span>
+                                </div>
+                              )}
+                            </div>
+
+                            {/* Discord Integration - Show for all parties you're a member of */}
+                            <div className="mb-4">
+                              <DiscordIntegration
+                                partyId={party._id}
+                                partyName={party.name}
+                                isOwner={party.creator?.email === session?.user?.email || (party as any).creatorId === session?.user?.email}
+                                existingChannelUrl={(party as any).discordVoiceChannel?.inviteUrl}
+                                hasDiscordAccount={hasDiscordAccount}
+                              />
+                            </div>
+
+                            {/* Action Button - Owner gets Manage, Members get Leave */}
+                            {(party.creator?.email === session?.user?.email || (party as any).creatorId === session?.user?.email) ? (
+                              <button
+                                className="w-full bg-gradient-to-r from-[#5383E8] to-cyan-400 hover:from-cyan-400 hover:to-[#5383E8] text-white py-3 font-bold font-mono uppercase tracking-wider text-sm transition-all duration-300 relative group border border-cyan-400/50"
+                                onClick={() => router.push(`/parties/${party._id}/edit`)}
+                              >
+                                <div className="absolute top-0 left-0 w-2 h-2 border-t border-l border-white/50"></div>
+                                <div className="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-white/50"></div>
+                                MANAGE PARTY
+                              </button>
+                            ) : (
+                              <button
+                                className="w-full bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white py-3 font-bold font-mono uppercase tracking-wider text-sm transition-all duration-300 relative group border border-red-500/50"
+                                onClick={() => handleLeaveParty(party._id)}
+                              >
+                                <div className="absolute top-0 left-0 w-2 h-2 border-t border-l border-white/50"></div>
+                                <div className="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-white/50"></div>
+                                LEAVE PARTY
+                              </button>
+                            )}
+                          </div>
                         </motion.div>
                       ))}
                     </div>
@@ -1026,9 +1158,9 @@ export default function PartiesPage() {
 
                 {/* Available Parties Section */}
                 <div>
-                  <h2 className={`text-2xl font-bold ${getTextClass(currentTheme)} mb-6 flex items-center gap-2`}>
+                  <h2 className="text-2xl font-bold text-cyan-400 mb-6 flex items-center gap-2 font-mono uppercase tracking-wider drop-shadow-[0_0_10px_rgba(0,255,255,0.4)]">
                     <Gamepad2 className="w-6 h-6" />
-                    Available Parties
+                    AVAILABLE PARTIES
                   </h2>
                   
                   {otherParties.length === 0 ? (
@@ -1037,11 +1169,11 @@ export default function PartiesPage() {
                       animate={{ opacity: 1, y: 0 }}
                       className="text-center py-20"
                     >
-                      <Gamepad2 className={`w-16 h-16 ${getSecondaryTextClass(currentTheme)} mx-auto mb-4`} />
-                      <h3 className={`text-2xl font-bold ${getTextClass(currentTheme)} mb-2`}>
-                        {isOnline ? 'No parties found' : 'Parties Unavailable Offline'}
+                      <Gamepad2 className="w-16 h-16 text-white/40 mx-auto mb-4" />
+                      <h3 className="text-2xl font-bold text-white mb-2 font-mono">
+                        {isOnline ? 'NO PARTIES FOUND' : 'PARTIES UNAVAILABLE OFFLINE'}
                       </h3>
-                      <p className={`${getSecondaryTextClass(currentTheme)} mb-6`}>
+                      <p className="text-white/60 mb-6 font-mono">
                         {isOnline ? (
                           myParties.length > 0 
                             ? 'No other parties match your filters.'
@@ -1051,13 +1183,17 @@ export default function PartiesPage() {
                         )}
                       </p>
                       {myParties.length === 0 && isOnline && (
-                        <Button
+                        <button
                           onClick={() => router.push('/parties/create')}
-                          className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white"
+                          className="bg-gradient-to-r from-[#5383E8] to-cyan-400 hover:from-cyan-400 hover:to-[#5383E8] text-white px-6 py-3 font-bold font-mono uppercase tracking-wider text-sm transition-all duration-300 relative group border border-cyan-400/50 shadow-[0_0_15px_rgba(0,255,255,0.3)] hover:shadow-[0_0_25px_rgba(0,255,255,0.5)]"
                         >
-                          <Plus className="w-5 h-5 mr-2" />
-                          Create Party
-                        </Button>
+                          <div className="absolute top-0 left-0 w-2 h-2 border-t border-l border-white/50"></div>
+                          <div className="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-white/50"></div>
+                          <div className="flex items-center gap-2">
+                            <Plus className="w-5 h-5" />
+                            CREATE PARTY
+                          </div>
+                        </button>
                       )}
                       {!isOnline && (
                         <OfflineMessage
@@ -1076,157 +1212,166 @@ export default function PartiesPage() {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.4, delay: index * 0.05 }}
+                    className="relative group"
                   >
-                    <Card className="border-2 border-border shadow-2xl shadow-purple-500/10 backdrop-blur-sm bg-card/95 hover:shadow-purple-500/20 transition-all duration-300">
-                      <CardContent className="p-6">
-                        {/* Header */}
-                        <div className="flex items-start justify-between mb-4">
-                          <div className="flex-1">
-                            <div className="flex items-center gap-2 mb-2">
-                              <h3 className={`text-lg font-bold ${getTextClass(currentTheme)}`}>
-                                {party.name}
-                              </h3>
-                              {party.isPrivate && (
-                                <Lock className="w-4 h-4 text-yellow-500" />
-                              )}
-                            </div>
-                            <span className={`text-xs px-2 py-1 rounded-md ${
-                              gameModeColors[party.gameMode] ? 'bg-purple-500/20 text-purple-400' : 'bg-gray-500/20 text-gray-400'
-                            }`}>
-                              {gameModeLabels[party.gameMode]}
+                    {/* Corner Brackets */}
+                    <div className="absolute top-0 left-0 w-4 h-4 border-l-2 border-t-2 border-cyan-400/60 z-10"></div>
+                    <div className="absolute top-0 right-0 w-4 h-4 border-r-2 border-t-2 border-cyan-400/60 z-10"></div>
+                    <div className="absolute bottom-0 left-0 w-4 h-4 border-l-2 border-b-2 border-cyan-400/60 z-10"></div>
+                    <div className="absolute bottom-0 right-0 w-4 h-4 border-r-2 border-b-2 border-cyan-400/60 z-10"></div>
+                    
+                    <div className="border border-cyan-400/30 shadow-xl shadow-cyan-500/10 backdrop-blur-sm bg-gradient-to-br from-[#0a1628]/90 to-[#0f1f3a]/90 hover:shadow-cyan-500/20 transition-all duration-300 p-6">
+                      {/* Header */}
+                      <div className="flex items-start justify-between mb-4">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 mb-2">
+                            <h3 className="text-lg font-bold text-white">
+                              {party.name}
+                            </h3>
+                            {party.isPrivate && (
+                              <Lock className="w-4 h-4 text-yellow-400" />
+                            )}
+                          </div>
+                          <span className="text-xs px-2 py-1 bg-cyan-500/20 text-cyan-400 border border-cyan-400/30 font-mono">
+                            {gameModeLabels[party.gameMode]}
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Description */}
+                      <p className="text-white/60 text-sm mb-4 line-clamp-2 font-mono">
+                        {party.description}
+                      </p>
+
+                      {/* Creator */}
+                      <div className="flex items-center gap-3 mb-4 pb-4 border-b border-cyan-400/20">
+                        <div className="w-10 h-10 bg-gradient-to-br from-cyan-500/20 to-blue-500/20 flex items-center justify-center overflow-hidden flex-shrink-0 border border-cyan-400/30">
+                          {party.creator?.lolAccount?.profileIconId ? (
+                            <img
+                              src={getCDNUrl(`img/profileicon/${party.creator.lolAccount.profileIconId}.png`)}
+                              alt="LoL Icon"
+                              className="w-full h-full object-cover"
+                            />
+                          ) : party.creator?.profilePicture ? (
+                            <img
+                              src={party.creator.profilePicture}
+                              alt="Creator"
+                              className="w-full h-full object-cover"
+                            />
+                          ) : (
+                            <Users className="w-6 h-6 text-cyan-400" />
+                          )}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          {party.creator?.lolAccount ? (
+                            <>
+                              <p className="text-sm text-white font-semibold truncate font-mono">
+                                {party.creator.lolAccount.gameName}#{party.creator.lolAccount.tagLine}
+                              </p>
+                              <div className="flex items-center gap-2 text-xs flex-wrap font-mono">
+                                {party.creator.lolAccount.rankedData?.map((rank, idx) => (
+                                  <span key={idx} className="text-cyan-400/80">
+                                    {rank.queueType.includes('SOLO') ? 'SOLO:' : 'FLEX:'} {rank.tier} {rank.rank}
+                                  </span>
+                                ))}
+                                {(!party.creator.lolAccount.rankedData || party.creator.lolAccount.rankedData.length === 0) && (
+                                  <span className="text-white/60 uppercase tracking-wider">UNRANKED</span>
+                                )}
+                              </div>
+                            </>
+                          ) : (
+                            <>
+                              <p className="text-sm text-white font-medium truncate font-mono">
+                                {party.creator?.firstName && party.creator?.lastName 
+                                  ? `${party.creator.firstName} ${party.creator.lastName}`
+                                  : (party as any).creatorUsername || 'Unknown'}
+                              </p>
+                              <p className="text-xs text-white/60 font-mono uppercase tracking-wider">
+                                NO LOL ACCOUNT
+                              </p>
+                            </>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Party Info */}
+                      <div className="space-y-2 mb-4">
+                        <div className="flex items-center justify-between text-sm">
+                          <span className="text-white/60 font-mono uppercase text-xs tracking-wider">
+                            MEMBERS
+                          </span>
+                          <div className="flex items-center gap-2">
+                            <span className="text-white font-mono">
+                              {party.members.length}/{getMaxMembers(party.gameMode)}
                             </span>
+                            <button
+                              onClick={() => {
+                                setSelectedPartyMembers(party);
+                                setShowMembersModal(true);
+                              }}
+                              className="p-1 hover:bg-cyan-400/10 transition-colors border border-cyan-400/20"
+                              title="View members"
+                            >
+                              <Info className="w-4 h-4 text-cyan-400 hover:text-cyan-300" />
+                            </button>
                           </div>
                         </div>
-
-                        {/* Description */}
-                        <p className={`${getSecondaryTextClass(currentTheme)} text-sm mb-4 line-clamp-2`}>
-                          {party.description}
-                        </p>
-
-                        {/* Creator */}
-                        <div className="flex items-center gap-3 mb-4 pb-4 border-b border-border">
-                          <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center overflow-hidden flex-shrink-0">
-                            {party.creator?.lolAccount?.profileIconId ? (
-                              <img
-                                src={getCDNUrl(`img/profileicon/${party.creator.lolAccount.profileIconId}.png`)}
-                                alt="LoL Icon"
-                                className="w-full h-full object-cover"
-                              />
-                            ) : party.creator?.profilePicture ? (
-                              <img
-                                src={party.creator.profilePicture}
-                                alt="Creator"
-                                className="w-full h-full object-cover"
-                              />
-                            ) : (
-                              <Users className="w-6 h-6 text-white" />
-                            )}
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            {party.creator?.lolAccount ? (
-                              <>
-                                <p className={`text-sm ${getTextClass(currentTheme)} font-semibold truncate`}>
-                                  {party.creator.lolAccount.gameName}#{party.creator.lolAccount.tagLine}
-                                </p>
-                                <div className="flex items-center gap-2 text-xs flex-wrap">
-                                  {party.creator.lolAccount.rankedData?.map((rank, idx) => (
-                                    <span key={idx} className={`${getSecondaryTextClass(currentTheme)}`}>
-                                      {rank.queueType.includes('SOLO') ? 'Solo:' : 'Flex:'} {rank.tier} {rank.rank}
-                                    </span>
-                                  ))}
-                                  {(!party.creator.lolAccount.rankedData || party.creator.lolAccount.rankedData.length === 0) && (
-                                    <span className={`${getSecondaryTextClass(currentTheme)}`}>Unranked</span>
-                                  )}
-                                </div>
-                              </>
-                            ) : (
-                              <>
-                                <p className={`text-sm ${getTextClass(currentTheme)} font-medium truncate`}>
-                                  {party.creator?.firstName && party.creator?.lastName 
-                                    ? `${party.creator.firstName} ${party.creator.lastName}`
-                                    : (party as any).creatorUsername || 'Unknown'}
-                                </p>
-                                <p className={`text-xs ${getSecondaryTextClass(currentTheme)}`}>
-                                  No LoL Account Linked
-                                </p>
-                              </>
-                            )}
-                          </div>
-                        </div>
-
-                        {/* Party Info */}
-                        <div className="space-y-2 mb-4">
+                        
+                        {party.preferences?.minRank && (
                           <div className="flex items-center justify-between text-sm">
-                            <span className={getSecondaryTextClass(currentTheme)}>
-                              Members
+                            <span className="text-white/60 font-mono uppercase text-xs tracking-wider">
+                              MIN RANK
                             </span>
-                            <div className="flex items-center gap-2">
-                              <span className={getTextClass(currentTheme)}>
-                                {party.members.length}/{getMaxMembers(party.gameMode)}
-                              </span>
-                              <button
-                                onClick={() => {
-                                  setSelectedPartyMembers(party);
-                                  setShowMembersModal(true);
-                                }}
-                                className="p-1 hover:bg-white/10 rounded-md transition-colors"
-                                title="View members"
-                              >
-                                <Info className="w-4 h-4 text-purple-400 hover:text-purple-300" />
-                              </button>
-                            </div>
+                            <span className="text-yellow-400 font-mono">
+                              {party.preferences.minRank}
+                            </span>
                           </div>
-                          
-                          {party.preferences?.minRank && (
-                            <div className="flex items-center justify-between text-sm">
-                              <span className={getSecondaryTextClass(currentTheme)}>
-                                Min Rank
-                              </span>
-                              <span className="text-yellow-500">
-                                {party.preferences.minRank}
-                              </span>
-                            </div>
-                          )}
+                        )}
 
-                          {party.preferences?.voiceChat && (
-                            <div className="flex items-center gap-2 text-sm">
-                              <Mic className="w-4 h-4 text-purple-400" />
-                              <span className={getSecondaryTextClass(currentTheme)}>
-                                Voice Chat Required
-                              </span>
-                            </div>
-                          )}
+                        {party.preferences?.voiceChat && (
+                          <div className="flex items-center gap-2 text-sm">
+                            <Mic className="w-4 h-4 text-cyan-400" />
+                            <span className="text-white/60 font-mono uppercase text-xs tracking-wider">
+                              VOICE CHAT REQUIRED
+                            </span>
+                          </div>
+                        )}
 
-                          {party.preferences?.language && (
-                            <div className="flex items-center justify-between">
-                              <span className={`text-sm ${getSecondaryTextClass(currentTheme)}`}>
-                                Language
-                              </span>
-                              <span className={`text-sm font-medium ${getTextClass(currentTheme)}`}>
-                                {party.preferences.language}
-                              </span>
-                            </div>
-                          )}
-                        </div>
+                        {party.preferences?.language && (
+                          <div className="flex items-center justify-between text-sm">
+                            <span className="text-white/60 font-mono uppercase text-xs tracking-wider">
+                              LANGUAGE
+                            </span>
+                            <span className="text-white font-mono">
+                              {party.preferences.language}
+                            </span>
+                          </div>
+                        )}
+                      </div>
 
-                        {/* Action Button */}
-                        <Button
-                          onClick={() => handleJoinRequest(party)}
-                          disabled={!hasLolAccount || party.members.length >= getMaxMembers(party.gameMode)}
-                          className={`w-full ${
-                            !hasLolAccount || party.members.length >= getMaxMembers(party.gameMode)
-                              ? 'bg-gray-600 text-gray-400 cursor-not-allowed'
-                              : 'bg-purple-600 hover:bg-purple-700 text-white'
-                          }`}
-                        >
-                          {!hasLolAccount 
-                            ? 'Link LoL Account to Join' 
-                            : party.members.length >= getMaxMembers(party.gameMode) 
-                            ? 'Party Full' 
-                            : 'Request to Join'}
-                        </Button>
-                      </CardContent>
-                    </Card>
+                      {/* Action Button */}
+                      <button
+                        onClick={() => handleJoinRequest(party)}
+                        disabled={!hasLolAccount || party.members.length >= getMaxMembers(party.gameMode)}
+                        className={`w-full py-3 font-bold font-mono uppercase tracking-wider text-sm transition-all duration-300 relative group ${
+                          !hasLolAccount || party.members.length >= getMaxMembers(party.gameMode)
+                            ? 'bg-gray-600/50 text-gray-400 cursor-not-allowed border border-gray-600/50'
+                            : 'bg-gradient-to-r from-[#5383E8] to-cyan-400 hover:from-cyan-400 hover:to-[#5383E8] text-white border border-cyan-400/50'
+                        }`}
+                      >
+                        {hasLolAccount && party.members.length < getMaxMembers(party.gameMode) && (
+                          <>
+                            <div className="absolute top-0 left-0 w-2 h-2 border-t border-l border-white/50"></div>
+                            <div className="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-white/50"></div>
+                          </>
+                        )}
+                        {!hasLolAccount 
+                          ? 'LINK LOL ACCOUNT TO JOIN' 
+                          : party.members.length >= getMaxMembers(party.gameMode) 
+                          ? 'PARTY FULL' 
+                          : 'REQUEST TO JOIN'}
+                      </button>
+                    </div>
                   </motion.div>
                       ))}
                     </div>
@@ -1245,7 +1390,7 @@ export default function PartiesPage() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md"
             onClick={() => setShowMembersModal(false)}
           >
             <motion.div
@@ -1255,32 +1400,45 @@ export default function PartiesPage() {
               onClick={(e) => e.stopPropagation()}
               className="w-full max-w-md"
             >
-              <Card className="border-2 border-border shadow-2xl shadow-purple-500/20 backdrop-blur-sm bg-card/95">
+              <Card className="border-2 border-cyan-400/30 shadow-[0_0_30px_rgba(0,255,255,0.3)] backdrop-blur-sm bg-gradient-to-br from-[#0a1628]/95 to-[#0f1f3a]/95 relative">
+                {/* Corner Brackets */}
+                <div className="absolute top-0 left-0 w-6 h-6 border-l-2 border-t-2 border-cyan-400"></div>
+                <div className="absolute top-0 right-0 w-6 h-6 border-r-2 border-t-2 border-cyan-400"></div>
+                <div className="absolute bottom-0 left-0 w-6 h-6 border-l-2 border-b-2 border-cyan-400"></div>
+                <div className="absolute bottom-0 right-0 w-6 h-6 border-r-2 border-b-2 border-cyan-400"></div>
+                
                 <CardContent className="p-6">
                   {/* Modal Header */}
                   <div className="flex items-center justify-between mb-6">
                     <div>
-                      <h2 className={`text-2xl font-bold ${getTextClass(currentTheme)} flex items-center gap-2`}>
-                        <Users className="w-6 h-6" />
-                        Party Members
+                      <h2 className="text-2xl font-bold text-white flex items-center gap-2 font-mono uppercase tracking-wider">
+                        <Users className="w-6 h-6 text-cyan-400" />
+                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-400">
+                          PARTY MEMBERS
+                        </span>
                       </h2>
-                      <p className={`text-sm ${getSecondaryTextClass(currentTheme)} mt-1`}>
+                      <p className="text-sm text-white/60 mt-1 font-mono">
                         {selectedPartyMembers.name}
                       </p>
                     </div>
                     <button
                       onClick={() => setShowMembersModal(false)}
-                      className="p-2 hover:bg-white/10 rounded-lg transition-colors"
+                      className="p-2 hover:bg-cyan-400/10 border border-cyan-400/30 transition-all duration-300 hover:border-cyan-400/60 relative group"
                     >
-                      <X className={`w-5 h-5 ${getTextClass(currentTheme)}`} />
+                      {/* Corner Brackets for Close Button */}
+                      <div className="absolute top-0 left-0 w-2 h-2 border-l border-t border-cyan-400/40 group-hover:border-cyan-400"></div>
+                      <div className="absolute top-0 right-0 w-2 h-2 border-r border-t border-cyan-400/40 group-hover:border-cyan-400"></div>
+                      <div className="absolute bottom-0 left-0 w-2 h-2 border-l border-b border-cyan-400/40 group-hover:border-cyan-400"></div>
+                      <div className="absolute bottom-0 right-0 w-2 h-2 border-r border-b border-cyan-400/40 group-hover:border-cyan-400"></div>
+                      <X className="w-5 h-5 text-cyan-400" />
                     </button>
                   </div>
 
                   {/* Members List */}
-                  <div className="space-y-3 max-h-96 overflow-y-auto">
+                  <div className="space-y-3 max-h-96 overflow-y-auto pr-2 custom-scrollbar">
                     {selectedPartyMembers.members.length === 0 ? (
-                      <p className={`text-center py-8 ${getSecondaryTextClass(currentTheme)}`}>
-                        No members in this party yet
+                      <p className="text-center py-8 text-white/60 font-mono uppercase text-sm tracking-wider">
+                        NO MEMBERS YET
                       </p>
                     ) : (
                       selectedPartyMembers.members.map((member, idx) => {
@@ -1289,10 +1447,16 @@ export default function PartiesPage() {
                         return (
                           <div
                             key={idx}
-                            className="flex items-center gap-3 p-4 bg-white/5 border border-white/10 rounded-lg hover:bg-white/10 transition-colors"
+                            className="flex items-center gap-3 p-4 bg-gradient-to-r from-[#0a1628]/50 to-[#0f1f3a]/50 border border-cyan-400/20 hover:border-cyan-400/40 transition-all duration-300 relative group"
                           >
+                            {/* Corner Brackets for Member Card */}
+                            <div className="absolute top-0 left-0 w-2 h-2 border-l border-t border-cyan-400/30 group-hover:border-cyan-400/60"></div>
+                            <div className="absolute top-0 right-0 w-2 h-2 border-r border-t border-cyan-400/30 group-hover:border-cyan-400/60"></div>
+                            <div className="absolute bottom-0 left-0 w-2 h-2 border-l border-b border-cyan-400/30 group-hover:border-cyan-400/60"></div>
+                            <div className="absolute bottom-0 right-0 w-2 h-2 border-r border-b border-cyan-400/30 group-hover:border-cyan-400/60"></div>
+                            
                             {/* Profile Picture - Use LoL Icon if available */}
-                            <div className="relative w-12 h-12 rounded-lg bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center flex-shrink-0 overflow-hidden">
+                            <div className="relative w-12 h-12 bg-gradient-to-br from-cyan-500/20 to-blue-500/20 flex items-center justify-center flex-shrink-0 overflow-hidden border-2 border-cyan-400/30">
                               {member.lolAccount?.profileIconId ? (
                                 <img
                                   src={getCDNUrl(`img/profileicon/${member.lolAccount.profileIconId}.png`)}
@@ -1306,7 +1470,7 @@ export default function PartiesPage() {
                                   className="w-full h-full object-cover"
                                 />
                               ) : (
-                                <Users className="w-6 h-6 text-white" />
+                                <Users className="w-6 h-6 text-cyan-400" />
                               )}
                             </div>
                             
@@ -1314,39 +1478,45 @@ export default function PartiesPage() {
                             <div className="flex-1 min-w-0">
                               <div className="flex items-center gap-2 mb-1">
                                 {member.lolAccount ? (
-                                  <h3 className={`text-sm font-semibold ${getTextClass(currentTheme)} truncate`}>
+                                  <h3 className="text-sm font-semibold text-white truncate font-mono">
                                     {member.lolAccount.gameName}#{member.lolAccount.tagLine}
                                   </h3>
                                 ) : (
-                                  <h3 className={`text-sm font-semibold ${getTextClass(currentTheme)} truncate`}>
+                                  <h3 className="text-sm font-semibold text-white truncate font-mono">
                                     {member.username}
                                   </h3>
                                 )}
                                 {isOwner && (
-                                  <span className="px-2 py-0.5 bg-yellow-500/20 text-yellow-400 text-xs font-semibold rounded-md flex-shrink-0">
+                                  <span className="px-2 py-0.5 bg-yellow-500/20 text-yellow-400 text-xs font-bold border border-yellow-400/30 flex-shrink-0 font-mono uppercase tracking-wider">
                                     OWNER
                                   </span>
                                 )}
                               </div>
                               {member.lolAccount?.rankedData && member.lolAccount.rankedData.length > 0 ? (
-                                <div className="flex items-center gap-2 text-xs flex-wrap">
+                                <div className="flex items-center gap-2 text-xs flex-wrap font-mono">
                                   {member.lolAccount.rankedData.map((rank: any, ridx: number) => (
-                                    <span key={ridx} className={`${getSecondaryTextClass(currentTheme)}`}>
-                                      {rank.queueType.includes('SOLO') ? 'Solo:' : 'Flex:'} {rank.tier} {rank.rank}
+                                    <span key={ridx} className="text-cyan-400/80">
+                                      {rank.queueType.includes('SOLO') ? 'SOLO:' : 'FLEX:'} {rank.tier} {rank.rank}
                                     </span>
                                   ))}
                                 </div>
                               ) : member.lolAccount ? (
-                                <p className={`text-xs ${getSecondaryTextClass(currentTheme)}`}>
-                                  Unranked
+                                <p className="text-xs text-white/60 font-mono uppercase tracking-wider">
+                                  UNRANKED
                                 </p>
                               ) : null}
                             </div>
 
                             {/* Role Section - Right Side */}
                             {member.position && selectedPartyMembers.gameMode !== 'aram' && (
-                              <div className="flex flex-col items-center gap-1 px-3 py-2 bg-gradient-to-br from-yellow-500/10 to-orange-500/10 rounded-lg border border-yellow-500/20">
-                                <div className="w-9 h-9 rounded-md bg-gradient-to-br from-yellow-500/20 to-orange-500/20 flex items-center justify-center overflow-hidden flex-shrink-0">
+                              <div className="flex flex-col items-center gap-1 px-3 py-2 bg-gradient-to-br from-cyan-500/10 to-blue-500/10 border border-cyan-400/30 relative">
+                                {/* Role Corner Brackets */}
+                                <div className="absolute top-0 left-0 w-1.5 h-1.5 border-l border-t border-cyan-400/50"></div>
+                                <div className="absolute top-0 right-0 w-1.5 h-1.5 border-r border-t border-cyan-400/50"></div>
+                                <div className="absolute bottom-0 left-0 w-1.5 h-1.5 border-l border-b border-cyan-400/50"></div>
+                                <div className="absolute bottom-0 right-0 w-1.5 h-1.5 border-r border-b border-cyan-400/50"></div>
+                                
+                                <div className="w-9 h-9 bg-gradient-to-br from-cyan-500/20 to-blue-500/20 flex items-center justify-center overflow-hidden flex-shrink-0 border border-cyan-400/40">
                                   <Image
                                     src={`/Position_Challenger-${member.position.charAt(0).toUpperCase() + member.position.slice(1)}.png`}
                                     alt={member.position}
@@ -1355,7 +1525,7 @@ export default function PartiesPage() {
                                     className="w-full h-full object-contain"
                                   />
                                 </div>
-                                <span className="text-[10px] font-bold text-yellow-400 uppercase">
+                                <span className="text-[10px] font-bold text-cyan-400 uppercase font-mono tracking-wider">
                                   {member.position}
                                 </span>
                               </div>
@@ -1370,9 +1540,14 @@ export default function PartiesPage() {
                   <div className="mt-6">
                     <Button
                       onClick={() => setShowMembersModal(false)}
-                      className="w-full bg-purple-600 hover:bg-purple-700 text-white"
+                      className="w-full bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white font-bold font-mono uppercase tracking-wider border-2 border-red-400/30 shadow-[0_0_15px_rgba(239,68,68,0.3)] hover:shadow-[0_0_20px_rgba(239,68,68,0.5)] transition-all duration-300 relative group"
                     >
-                      Close
+                      {/* Corner Brackets for Button */}
+                      <div className="absolute top-0 left-0 w-3 h-3 border-l-2 border-t-2 border-red-400/40 group-hover:border-red-400"></div>
+                      <div className="absolute top-0 right-0 w-3 h-3 border-r-2 border-t-2 border-red-400/40 group-hover:border-red-400"></div>
+                      <div className="absolute bottom-0 left-0 w-3 h-3 border-l-2 border-b-2 border-red-400/40 group-hover:border-red-400"></div>
+                      <div className="absolute bottom-0 right-0 w-3 h-3 border-r-2 border-b-2 border-red-400/40 group-hover:border-red-400"></div>
+                      CLOSE
                     </Button>
                   </div>
                 </CardContent>

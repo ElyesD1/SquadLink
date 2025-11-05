@@ -125,12 +125,12 @@ export default function RoleSelector({
   }
 
   return (
-    <div className="space-y-3">
-      <div className={`text-sm font-medium ${getTextClass(theme)}`}>
-        Select Your Role
+    <div className="space-y-4">
+      <div className="text-sm font-bold text-cyan-400 font-mono uppercase tracking-wider">
+        SELECT YOUR ROLE
       </div>
       
-      <div className="flex gap-3 justify-center">
+      <div className="flex gap-4 justify-center">
         {allRoles.map((role) => {
           const available = isRoleAvailable(role);
           const isSelected = selectedRole === role;
@@ -146,31 +146,41 @@ export default function RoleSelector({
               }}
               disabled={disabled || !available}
               className={`
-                relative flex flex-col items-center gap-1.5
+                relative flex flex-col items-center gap-2
                 transition-all duration-200
                 ${disabled || !available ? 'cursor-not-allowed' : 'cursor-pointer'}
               `}
-              whileHover={available && !disabled ? { y: -2 } : {}}
+              whileHover={available && !disabled ? { y: -4, scale: 1.05 } : {}}
               whileTap={available && !disabled ? { scale: 0.95 } : {}}
             >
               <div
                 className={`
-                  relative w-14 h-14 rounded-lg overflow-hidden
-                  transition-all duration-200
+                  relative w-16 h-16 overflow-hidden
+                  transition-all duration-300
                   ${
                     isSelected
-                      ? 'ring-2 ring-yellow-500 scale-105'
+                      ? 'border-2 border-cyan-400 shadow-[0_0_15px_rgba(0,255,255,0.6)]'
                       : available
-                      ? 'hover:ring-2 hover:ring-yellow-500/50'
-                      : 'opacity-30'
+                      ? 'border-2 border-cyan-400/30 hover:border-cyan-400/60 hover:shadow-[0_0_10px_rgba(0,255,255,0.4)]'
+                      : 'opacity-30 border-2 border-white/10'
                   }
-                  ${
-                    theme === 'light'
-                      ? 'bg-white border border-gray-200'
-                      : 'bg-white/5 border border-white/10'
-                  }
+                  bg-gradient-to-br from-[#0a1628]/80 to-[#0f1f3a]/80
                 `}
               >
+                {/* Corner Brackets */}
+                <div className={`absolute top-0 left-0 w-2 h-2 border-l-2 border-t-2 transition-all duration-300 ${
+                  isSelected ? 'border-cyan-400' : 'border-cyan-400/40'
+                }`}></div>
+                <div className={`absolute top-0 right-0 w-2 h-2 border-r-2 border-t-2 transition-all duration-300 ${
+                  isSelected ? 'border-cyan-400' : 'border-cyan-400/40'
+                }`}></div>
+                <div className={`absolute bottom-0 left-0 w-2 h-2 border-l-2 border-b-2 transition-all duration-300 ${
+                  isSelected ? 'border-cyan-400' : 'border-cyan-400/40'
+                }`}></div>
+                <div className={`absolute bottom-0 right-0 w-2 h-2 border-r-2 border-b-2 transition-all duration-300 ${
+                  isSelected ? 'border-cyan-400' : 'border-cyan-400/40'
+                }`}></div>
+                
                 <div className="relative w-full h-full p-2">
                   <Image
                     src={roleIcons[role]}
@@ -184,7 +194,7 @@ export default function RoleSelector({
                   <motion.div
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
-                    className="absolute top-1 right-1 w-5 h-5 bg-yellow-500 rounded-full flex items-center justify-center"
+                    className="absolute top-1 right-1 w-5 h-5 bg-cyan-400 flex items-center justify-center shadow-[0_0_10px_rgba(0,255,255,0.8)]"
                   >
                     <svg className="w-3 h-3 text-black" fill="currentColor" viewBox="0 0 20 20">
                       <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
@@ -193,7 +203,7 @@ export default function RoleSelector({
                 )}
 
                 {!available && (
-                  <div className="absolute inset-0 bg-black/70 flex items-center justify-center">
+                  <div className="absolute inset-0 bg-black/80 flex items-center justify-center">
                     <svg className="w-6 h-6 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                     </svg>
@@ -201,7 +211,13 @@ export default function RoleSelector({
                 )}
               </div>
 
-              <span className={`text-xs font-medium ${getTextClass(theme)} ${!available ? 'opacity-30' : ''}`}>
+              <span className={`text-xs font-bold font-mono uppercase tracking-wider transition-all duration-300 ${
+                isSelected 
+                  ? 'text-cyan-400' 
+                  : available 
+                  ? 'text-white/80' 
+                  : 'text-white/20'
+              }`}>
                 {roleLabels[role]}
               </span>
             </motion.button>

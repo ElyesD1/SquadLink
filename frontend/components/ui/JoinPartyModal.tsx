@@ -117,7 +117,7 @@ export default function JoinPartyModal({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50"
+            className="fixed inset-0 bg-black/80 backdrop-blur-md z-50"
           />
 
           {/* Modal */}
@@ -126,37 +126,34 @@ export default function JoinPartyModal({
               initial={{ opacity: 0, scale: 0.9, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.9, y: 20 }}
-              className={`
-                w-full max-w-2xl rounded-2xl p-6
-                ${
-                  theme === 'light'
-                    ? 'bg-white shadow-2xl'
-                    : 'bg-gradient-to-br from-gray-900 to-gray-800 border border-white/10'
-                }
-              `}
+              className="w-full max-w-2xl p-6 bg-gradient-to-br from-[#0a1628]/95 to-[#0f1f3a]/95 border-2 border-cyan-400/30 shadow-[0_0_30px_rgba(0,255,255,0.3)] relative"
             >
+              {/* Corner Brackets */}
+              <div className="absolute top-0 left-0 w-6 h-6 border-l-2 border-t-2 border-cyan-400"></div>
+              <div className="absolute top-0 right-0 w-6 h-6 border-r-2 border-t-2 border-cyan-400"></div>
+              <div className="absolute bottom-0 left-0 w-6 h-6 border-l-2 border-b-2 border-cyan-400"></div>
+              <div className="absolute bottom-0 right-0 w-6 h-6 border-r-2 border-b-2 border-cyan-400"></div>
+              
               {/* Header */}
               <div className="flex items-start justify-between mb-6">
                 <div>
-                  <h2 className={`text-2xl font-bold ${getTextClass(theme)}`}>
-                    Join Party
+                  <h2 className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-400 font-mono uppercase tracking-wider">
+                    JOIN PARTY
                   </h2>
-                  <p className={`text-sm ${getSecondaryTextClass(theme)} mt-1`}>
+                  <p className="text-sm text-white/60 mt-1 font-mono">
                     {partyName}
                   </p>
                 </div>
                 <button
                   onClick={onClose}
-                  className={`
-                    p-2 rounded-lg transition-colors
-                    ${
-                      theme === 'light'
-                        ? 'hover:bg-gray-100'
-                        : 'hover:bg-white/10'
-                    }
-                  `}
+                  className="p-2 hover:bg-cyan-400/10 border border-cyan-400/30 transition-all duration-300 hover:border-cyan-400/60 relative group"
                 >
-                  <X className="w-5 h-5" />
+                  {/* Corner Brackets for Close Button */}
+                  <div className="absolute top-0 left-0 w-2 h-2 border-l border-t border-cyan-400/40 group-hover:border-cyan-400"></div>
+                  <div className="absolute top-0 right-0 w-2 h-2 border-r border-t border-cyan-400/40 group-hover:border-cyan-400"></div>
+                  <div className="absolute bottom-0 left-0 w-2 h-2 border-l border-b border-cyan-400/40 group-hover:border-cyan-400"></div>
+                  <div className="absolute bottom-0 right-0 w-2 h-2 border-r border-b border-cyan-400/40 group-hover:border-cyan-400"></div>
+                  <X className="w-5 h-5 text-cyan-400" />
                 </button>
               </div>
 
@@ -167,30 +164,29 @@ export default function JoinPartyModal({
                   <motion.div
                     initial={{ opacity: 0, y: -10 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className={`
-                      p-4 rounded-xl border-2
-                      ${
-                        theme === 'light'
-                          ? 'bg-red-50 border-red-200 text-red-800'
-                          : 'bg-red-500/10 border-red-500/30 text-red-400'
-                      }
-                    `}
+                    className="p-4 border-2 border-red-500/30 bg-red-500/10 relative"
                   >
+                    {/* Corner Brackets for Error */}
+                    <div className="absolute top-0 left-0 w-3 h-3 border-l-2 border-t-2 border-red-400"></div>
+                    <div className="absolute top-0 right-0 w-3 h-3 border-r-2 border-t-2 border-red-400"></div>
+                    <div className="absolute bottom-0 left-0 w-3 h-3 border-l-2 border-b-2 border-red-400"></div>
+                    <div className="absolute bottom-0 right-0 w-3 h-3 border-r-2 border-b-2 border-red-400"></div>
+                    
                     <div className="flex items-start gap-3">
                       <div className="flex-shrink-0">
-                        <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                        <svg className="w-5 h-5 text-red-400" fill="currentColor" viewBox="0 0 20 20">
                           <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
                         </svg>
                       </div>
                       <div className="flex-1">
-                        <h4 className="font-semibold mb-1">Unable to Join Party</h4>
-                        <p className="text-sm">{error}</p>
+                        <h4 className="font-bold mb-1 text-red-400 font-mono uppercase text-sm tracking-wider">UNABLE TO JOIN PARTY</h4>
+                        <p className="text-sm text-red-300 font-mono">{error}</p>
                       </div>
                       <button
                         onClick={() => setError(null)}
-                        className="flex-shrink-0 p-1 hover:bg-red-500/20 rounded transition-colors"
+                        className="flex-shrink-0 p-1 hover:bg-red-500/20 transition-colors"
                       >
-                        <X className="w-4 h-4" />
+                        <X className="w-4 h-4 text-red-400" />
                       </button>
                     </div>
                   </motion.div>
@@ -198,25 +194,28 @@ export default function JoinPartyModal({
 
                 {/* Role Selection */}
                 {requiresRole && (
-                  <div>
+                  <div className="p-6 bg-gradient-to-br from-[#0a1628]/30 to-[#0f1f3a]/30 border border-cyan-400/20 relative">
+                    {/* Corner Brackets */}
+                    <div className="absolute top-0 left-0 w-4 h-4 border-l-2 border-t-2 border-cyan-400/40"></div>
+                    <div className="absolute top-0 right-0 w-4 h-4 border-r-2 border-t-2 border-cyan-400/40"></div>
+                    <div className="absolute bottom-0 left-0 w-4 h-4 border-l-2 border-b-2 border-cyan-400/40"></div>
+                    <div className="absolute bottom-0 right-0 w-4 h-4 border-r-2 border-b-2 border-cyan-400/40"></div>
+                    
                     {isLoadingRoles ? (
                       <div className="text-center py-8">
-                        <div className={`text-sm ${getSecondaryTextClass(theme)}`}>
-                          Loading available roles...
+                        <div className="text-sm text-cyan-400 font-mono uppercase tracking-wider animate-pulse">
+                          LOADING AVAILABLE ROLES...
                         </div>
                       </div>
                     ) : availableRoles.length === 0 ? (
-                      <div
-                        className={`
-                          p-4 rounded-lg text-center
-                          ${
-                            theme === 'light'
-                              ? 'bg-red-50 text-red-700'
-                              : 'bg-red-500/10 text-red-400'
-                          }
-                        `}
-                      >
-                        No roles available. This party is full or all roles are taken.
+                      <div className="p-4 bg-red-500/10 text-red-400 text-center border border-red-500/30 relative">
+                        <div className="absolute top-0 left-0 w-2 h-2 border-l border-t border-red-400/50"></div>
+                        <div className="absolute top-0 right-0 w-2 h-2 border-r border-t border-red-400/50"></div>
+                        <div className="absolute bottom-0 left-0 w-2 h-2 border-l border-b border-red-400/50"></div>
+                        <div className="absolute bottom-0 right-0 w-2 h-2 border-r border-b border-red-400/50"></div>
+                        <p className="font-mono uppercase text-sm tracking-wider">
+                          NO ROLES AVAILABLE - PARTY FULL
+                        </p>
                       </div>
                     ) : (
                       <RoleSelector
@@ -231,24 +230,24 @@ export default function JoinPartyModal({
 
                 {/* Message */}
                 <div>
-                  <label className={`block text-sm font-medium ${getTextClass(theme)} mb-2`}>
-                    Message (Optional)
+                  <label className="block text-sm font-bold text-cyan-400 mb-2 font-mono uppercase tracking-wider">
+                    MESSAGE (OPTIONAL)
                   </label>
-                  <textarea
-                    value={message}
-                    onChange={(e) => setMessage(e.target.value)}
-                    placeholder="Introduce yourself or add a message for the party leader..."
-                    rows={4}
-                    className={`
-                      w-full px-4 py-3 rounded-xl resize-none
-                      focus:outline-none focus:ring-2 focus:ring-purple-500/50
-                      ${
-                        theme === 'light'
-                          ? 'bg-gray-50 border border-gray-200 text-gray-900 placeholder:text-gray-400'
-                          : 'bg-white/5 border border-white/10 text-white placeholder:text-white/40'
-                      }
-                    `}
-                  />
+                  <div className="relative">
+                    {/* Corner Brackets for Textarea */}
+                    <div className="absolute top-0 left-0 w-3 h-3 border-l-2 border-t-2 border-cyan-400/40 pointer-events-none z-10"></div>
+                    <div className="absolute top-0 right-0 w-3 h-3 border-r-2 border-t-2 border-cyan-400/40 pointer-events-none z-10"></div>
+                    <div className="absolute bottom-0 left-0 w-3 h-3 border-l-2 border-b-2 border-cyan-400/40 pointer-events-none z-10"></div>
+                    <div className="absolute bottom-0 right-0 w-3 h-3 border-r-2 border-b-2 border-cyan-400/40 pointer-events-none z-10"></div>
+                    
+                    <textarea
+                      value={message}
+                      onChange={(e) => setMessage(e.target.value)}
+                      placeholder="Introduce yourself or add a message for the party leader..."
+                      rows={4}
+                      className="w-full px-4 py-3 resize-none focus:outline-none focus:ring-2 focus:ring-cyan-400/50 focus:border-cyan-400/50 bg-gradient-to-r from-[#0a1628]/80 to-[#0f1f3a]/80 border border-cyan-400/30 text-white placeholder:text-white/40 font-mono hover:border-cyan-400/50 transition-all duration-300"
+                    />
+                  </div>
                 </div>
               </div>
 
@@ -256,24 +255,38 @@ export default function JoinPartyModal({
               <div className="flex gap-3 mt-6">
                 <Button
                   onClick={onClose}
-                  className="flex-1 bg-white/5 hover:bg-white/10 border border-white/10"
+                  className="flex-1 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 border-2 border-red-400/30 text-white font-bold font-mono uppercase tracking-wider shadow-[0_0_15px_rgba(239,68,68,0.3)] hover:shadow-[0_0_20px_rgba(239,68,68,0.5)] transition-all duration-300 relative group"
                   disabled={isSubmitting}
                 >
-                  Cancel
+                  {/* Corner Brackets for Cancel Button */}
+                  <div className="absolute top-0 left-0 w-3 h-3 border-l-2 border-t-2 border-red-400/40 group-hover:border-red-400"></div>
+                  <div className="absolute top-0 right-0 w-3 h-3 border-r-2 border-t-2 border-red-400/40 group-hover:border-red-400"></div>
+                  <div className="absolute bottom-0 left-0 w-3 h-3 border-l-2 border-b-2 border-red-400/40 group-hover:border-red-400"></div>
+                  <div className="absolute bottom-0 right-0 w-3 h-3 border-r-2 border-b-2 border-red-400/40 group-hover:border-red-400"></div>
+                  CANCEL
                 </Button>
                 <Button
                   onClick={handleSubmit}
                   disabled={isSubmitting || (requiresRole && !selectedRole) || (requiresRole && availableRoles.length === 0)}
                   className={`
-                    flex-1 font-semibold
+                    flex-1 font-bold font-mono uppercase tracking-wider relative group transition-all duration-300
                     ${
                       isSubmitting || (requiresRole && !selectedRole) || (requiresRole && availableRoles.length === 0)
-                        ? 'bg-gray-600 text-gray-400 cursor-not-allowed'
-                        : 'bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white'
+                        ? 'bg-gray-600 text-gray-400 cursor-not-allowed border-2 border-gray-500/30'
+                        : 'bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white border-2 border-cyan-400/30 shadow-[0_0_15px_rgba(0,255,255,0.3)] hover:shadow-[0_0_25px_rgba(0,255,255,0.5)]'
                     }
                   `}
                 >
-                  {isSubmitting ? 'Sending...' : 'Send Request'}
+                  {!(isSubmitting || (requiresRole && !selectedRole) || (requiresRole && availableRoles.length === 0)) && (
+                    <>
+                      {/* Corner Brackets for Send Button */}
+                      <div className="absolute top-0 left-0 w-3 h-3 border-l-2 border-t-2 border-cyan-400/40 group-hover:border-cyan-400"></div>
+                      <div className="absolute top-0 right-0 w-3 h-3 border-r-2 border-t-2 border-cyan-400/40 group-hover:border-cyan-400"></div>
+                      <div className="absolute bottom-0 left-0 w-3 h-3 border-l-2 border-b-2 border-cyan-400/40 group-hover:border-cyan-400"></div>
+                      <div className="absolute bottom-0 right-0 w-3 h-3 border-r-2 border-b-2 border-cyan-400/40 group-hover:border-cyan-400"></div>
+                    </>
+                  )}
+                  {isSubmitting ? 'SENDING...' : 'SEND REQUEST'}
                 </Button>
               </div>
             </motion.div>

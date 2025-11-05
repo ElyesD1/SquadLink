@@ -153,41 +153,48 @@ export default function CreatePartyPage() {
 
   if (!mounted || status === 'loading') {
     return (
-      <div className={`min-h-screen ${getBackgroundClass(currentTheme)} flex items-center justify-center`}>
-        <div className={`${getTextClass(currentTheme)} text-2xl`}>Loading...</div>
-      </div>
+      <NavigationDrawer>
+        <div className="min-h-screen bg-[#050a15] flex items-center justify-center relative overflow-hidden">
+          {/* Futuristic Background Layers */}
+          <div className="fixed inset-0 bg-[linear-gradient(rgba(0,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(0,255,255,0.03)_1px,transparent_1px)] bg-[size:50px_50px] [mask-image:radial-gradient(ellipse_80%_50%_at_50%_0%,black,transparent)]"></div>
+          <div className="fixed top-0 left-1/4 w-[600px] h-[600px] bg-[#5383E8]/10 rounded-full blur-[120px] animate-pulse"></div>
+          <div className="fixed bottom-0 right-1/4 w-[600px] h-[600px] bg-cyan-400/10 rounded-full blur-[120px] animate-pulse" style={{ animationDelay: '2s' }}></div>
+          <div className="fixed inset-0 bg-[linear-gradient(transparent_50%,rgba(0,255,255,0.02)_50%)] bg-[length:100%_4px] pointer-events-none"></div>
+          
+          <div className="text-cyan-400 text-2xl font-mono font-bold tracking-wider uppercase relative z-10">LOADING...</div>
+        </div>
+      </NavigationDrawer>
     );
   }
 
   return (
     <NavigationDrawer>
-      <div className={`min-h-screen relative overflow-hidden ${getBackgroundClass(currentTheme)}`}>
-        {/* Animated Background */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <motion.div 
-            className="absolute w-[500px] h-[500px] bg-purple-600/30 rounded-full blur-[100px] -top-48 -left-48"
-            animate={{
-              scale: [1, 1.2, 1],
-              opacity: [0.3, 0.6, 0.3],
-            }}
-            transition={{
-              duration: 8,
-              repeat: Infinity,
-              ease: "easeInOut",
-            }}
-          />
-          <motion.div 
-            className="absolute w-[500px] h-[500px] bg-indigo-600/30 rounded-full blur-[100px] -bottom-48 -right-48"
-            animate={{
-              scale: [1.2, 1, 1.2],
-              opacity: [0.3, 0.6, 0.3],
-            }}
-            transition={{
-              duration: 10,
-              repeat: Infinity,
-              ease: "easeInOut",
-            }}
-          />
+      <div className="min-h-screen bg-[#050a15] relative overflow-hidden">
+        {/* Futuristic Background Layers */}
+        
+        {/* Animated grid pattern */}
+        <div className="fixed inset-0 bg-[linear-gradient(rgba(0,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(0,255,255,0.03)_1px,transparent_1px)] bg-[size:50px_50px] [mask-image:radial-gradient(ellipse_80%_50%_at_50%_0%,black,transparent)]"></div>
+        
+        {/* Large glowing orbs */}
+        <div className="fixed top-0 left-1/4 w-[600px] h-[600px] bg-[#5383E8]/10 rounded-full blur-[120px] animate-pulse"></div>
+        <div className="fixed bottom-0 right-1/4 w-[600px] h-[600px] bg-cyan-400/10 rounded-full blur-[120px] animate-pulse" style={{ animationDelay: '2s' }}></div>
+        
+        {/* Scan lines effect */}
+        <div className="fixed inset-0 bg-[linear-gradient(transparent_50%,rgba(0,255,255,0.02)_50%)] bg-[length:100%_4px] pointer-events-none"></div>
+        
+        {/* Diagonal tech lines */}
+        <div className="fixed inset-0 opacity-10">
+          <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-cyan-400/50 to-transparent"></div>
+          <div className="absolute top-20 left-0 w-full h-px bg-gradient-to-r from-transparent via-[#5383E8]/30 to-transparent"></div>
+          <div className="absolute bottom-20 left-0 w-full h-px bg-gradient-to-r from-transparent via-cyan-400/30 to-transparent"></div>
+        </div>
+        
+        {/* Circuit pattern overlay */}
+        <div className="fixed inset-0 opacity-5">
+          <div className="absolute top-10 left-10 w-20 h-20 border-l-2 border-t-2 border-cyan-400"></div>
+          <div className="absolute top-10 right-10 w-20 h-20 border-r-2 border-t-2 border-cyan-400"></div>
+          <div className="absolute bottom-10 left-10 w-20 h-20 border-l-2 border-b-2 border-cyan-400"></div>
+          <div className="absolute bottom-10 right-10 w-20 h-20 border-r-2 border-b-2 border-cyan-400"></div>
         </div>
 
         {/* Content */}
@@ -195,14 +202,18 @@ export default function CreatePartyPage() {
           {/* Header */}
           <header className="max-w-7xl mx-auto mb-8">
             <div className="flex items-center justify-between">
-              <AnimatedLogo size="md" />
-              <Button
+              <AnimatedLogo size="md" variant="futuristic" />
+              <button
                 onClick={() => router.push('/parties')}
-                className="bg-white/5 hover:bg-white/10 border border-white/10 px-4 py-2 mr-16"
+                className="bg-gradient-to-r from-[#5383E8]/20 to-cyan-400/20 hover:from-[#5383E8]/30 hover:to-cyan-400/30 border border-cyan-400/40 px-4 py-2 mr-16 transition-all duration-300 relative group"
               >
-                <ArrowLeft className="w-5 h-5 mr-2" />
-                Back to Parties
-              </Button>
+                <div className="absolute top-0 left-0 w-2 h-2 border-t border-l border-cyan-400/60"></div>
+                <div className="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-cyan-400/60"></div>
+                <div className="flex items-center gap-2">
+                  <ArrowLeft className="w-5 h-5 text-cyan-400" />
+                  <span className="text-white font-mono uppercase text-sm tracking-wider">BACK TO PARTIES</span>
+                </div>
+              </button>
             </div>
           </header>
 
@@ -214,10 +225,10 @@ export default function CreatePartyPage() {
               transition={{ duration: 0.6 }}
               className="mb-8"
             >
-              <h1 className={`text-4xl md:text-5xl font-black ${getTextClass(currentTheme)} mb-2`}>
-                Create Your Party
+              <h1 className="text-4xl md:text-5xl font-black text-cyan-400 mb-2 font-mono tracking-wider drop-shadow-[0_0_10px_rgba(0,255,255,0.4)] uppercase">
+                CREATE YOUR PARTY
               </h1>
-              <p className={`text-xl ${getSecondaryTextClass(currentTheme)}`}>
+              <p className="text-xl text-white/60 font-mono">
                 Set up your squad and find teammates
               </p>
             </motion.div>
@@ -227,241 +238,299 @@ export default function CreatePartyPage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.1 }}
+              className="relative"
             >
+              {/* Corner Brackets */}
+              <div className="absolute top-0 left-0 w-4 h-4 border-l-2 border-t-2 border-cyan-400/60 z-10"></div>
+              <div className="absolute top-0 right-0 w-4 h-4 border-r-2 border-t-2 border-cyan-400/60 z-10"></div>
+              <div className="absolute bottom-0 left-0 w-4 h-4 border-l-2 border-b-2 border-cyan-400/60 z-10"></div>
+              <div className="absolute bottom-0 right-0 w-4 h-4 border-r-2 border-b-2 border-cyan-400/60 z-10"></div>
+              
               <form onSubmit={handleSubmit}>
-                <Card className="bg-white/5 border-white/10 backdrop-blur-sm mb-6">
-                  <CardContent className="p-6 space-y-6">
-                    {/* Party Name */}
-                    <div>
-                      <label className={`block text-sm font-medium ${getTextClass(currentTheme)} mb-2`}>
-                        Party Name *
-                      </label>
-                      <input
-                        type="text"
-                        value={formData.name}
-                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                        placeholder="e.g., Gold+ Ranked Climb"
-                        className={`w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl ${getTextClass(currentTheme)} placeholder:${getSecondaryTextClass(currentTheme)} focus:outline-none focus:ring-2 focus:ring-purple-500/50`}
-                        required
-                      />
-                    </div>
+                <div className="bg-gradient-to-br from-[#0a1628]/90 to-[#0f1f3a]/90 border border-cyan-400/30 backdrop-blur-sm mb-6 p-6 space-y-6">
+                  {/* Party Name */}
+                  <div>
+                    <label className="block text-sm font-bold text-cyan-400 mb-2 font-mono uppercase tracking-wider">
+                      PARTY NAME *
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.name}
+                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                      placeholder="e.g., Gold+ Ranked Climb"
+                      className="w-full px-4 py-3 bg-[#0a1628]/50 border border-cyan-400/30 text-white placeholder:text-white/40 placeholder:font-mono focus:outline-none focus:ring-2 focus:ring-cyan-400/50 focus:border-cyan-400/50 font-mono"
+                      required
+                    />
+                  </div>
 
-                    {/* Description */}
-                    <div>
-                      <label className={`block text-sm font-medium ${getTextClass(currentTheme)} mb-2`}>
-                        Description
-                      </label>
-                      <textarea
-                        value={formData.description}
-                        onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                        placeholder="Describe your party and what you're looking for..."
-                        rows={4}
-                        className={`w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl ${getTextClass(currentTheme)} placeholder:${getSecondaryTextClass(currentTheme)} focus:outline-none focus:ring-2 focus:ring-purple-500/50 resize-none`}
-                      />
-                    </div>
+                  {/* Description */}
+                  <div>
+                    <label className="block text-sm font-bold text-cyan-400 mb-2 font-mono uppercase tracking-wider">
+                      DESCRIPTION
+                    </label>
+                    <textarea
+                      value={formData.description}
+                      onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                      placeholder="Describe your party and what you're looking for..."
+                      rows={4}
+                      className="w-full px-4 py-3 bg-[#0a1628]/50 border border-cyan-400/30 text-white placeholder:text-white/40 placeholder:font-mono focus:outline-none focus:ring-2 focus:ring-cyan-400/50 focus:border-cyan-400/50 resize-none font-mono"
+                    />
+                  </div>
 
-                    {/* Game Mode Selection */}
-                    <div>
-                      <label className={`block text-sm font-medium ${getTextClass(currentTheme)} mb-3`}>
-                        Game Mode *
-                      </label>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        {gameModes.map((mode) => (
-                          <motion.div
-                            key={mode.id}
-                            whileHover={{ scale: 1.02 }}
-                            whileTap={{ scale: 0.98 }}
-                            onClick={() => setFormData({ ...formData, gameMode: mode.id })}
-                            className={`cursor-pointer p-4 rounded-xl border-2 transition-all duration-300 ${
-                              formData.gameMode === mode.id
-                                ? 'border-purple-500 bg-purple-500/10'
-                                : 'border-white/10 bg-white/5 hover:border-white/20'
-                            }`}
-                          >
-                            <div className="flex items-start justify-between mb-2">
-                              <div>
-                                <h3 className={`font-bold ${getTextClass(currentTheme)}`}>
-                                  {mode.label}
-                                </h3>
-                                <p className={`text-sm ${getSecondaryTextClass(currentTheme)}`}>
-                                  {mode.description}
-                                </p>
+                  {/* Game Mode Selection */}
+                  <div>
+                    <label className="block text-sm font-bold text-cyan-400 mb-3 font-mono uppercase tracking-wider">
+                      GAME MODE *
+                    </label>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {gameModes.map((mode) => (
+                        <motion.div
+                          key={mode.id}
+                          whileHover={{ scale: 1.02 }}
+                          whileTap={{ scale: 0.98 }}
+                          onClick={() => setFormData({ ...formData, gameMode: mode.id })}
+                          className={`cursor-pointer p-4 border-2 transition-all duration-300 relative ${
+                            formData.gameMode === mode.id
+                              ? 'border-cyan-400 bg-cyan-400/10'
+                              : 'border-cyan-400/20 bg-[#0a1628]/30 hover:border-cyan-400/40'
+                          }`}
+                        >
+                          {formData.gameMode === mode.id && (
+                            <>
+                              <div className="absolute top-0 left-0 w-3 h-3 border-l-2 border-t-2 border-cyan-400"></div>
+                              <div className="absolute top-0 right-0 w-3 h-3 border-r-2 border-t-2 border-cyan-400"></div>
+                              <div className="absolute bottom-0 left-0 w-3 h-3 border-l-2 border-b-2 border-cyan-400"></div>
+                              <div className="absolute bottom-0 right-0 w-3 h-3 border-r-2 border-b-2 border-cyan-400"></div>
+                            </>
+                          )}
+                          <div className="flex items-start justify-between mb-2">
+                            <div>
+                              <h3 className="font-bold text-white font-mono">
+                                {mode.label}
+                              </h3>
+                              <p className="text-sm text-white/60 font-mono">
+                                {mode.description}
+                              </p>
+                            </div>
+                            {formData.gameMode === mode.id && (
+                              <div className="w-6 h-6 bg-cyan-400 flex items-center justify-center shadow-[0_0_10px_rgba(0,255,255,0.6)]">
+                                <div className="w-2 h-2 bg-white" />
                               </div>
-                              {formData.gameMode === mode.id && (
-                                <div className="w-6 h-6 bg-purple-500 rounded-full flex items-center justify-center">
-                                  <div className="w-2 h-2 bg-white rounded-full" />
-                                </div>
-                              )}
-                            </div>
-                            <div className={`inline-block px-3 py-1 bg-gradient-to-r ${mode.gradient} rounded-lg text-white text-xs font-medium`}>
-                              {mode.maxPlayers} Players Max
-                            </div>
-                          </motion.div>
-                        ))}
-                      </div>
-                    </div>
-
-                    {/* Role Selection - Only for non-ARAM modes */}
-                    {formData.gameMode && formData.gameMode !== 'aram' && (
-                      <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        className="p-6 bg-white/5 rounded-xl border border-white/10"
-                      >
-                        <RoleSelector
-                          selectedRole={formData.creatorPosition || null}
-                          onRoleSelect={(role) => setFormData({ ...formData, creatorPosition: role })}
-                          theme={currentTheme}
-                        />
-                      </motion.div>
-                    )}
-
-                    {/* Privacy Setting */}
-                    <div>
-                      <label className={`block text-sm font-medium ${getTextClass(currentTheme)} mb-3`}>
-                        Privacy
-                      </label>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <motion.div
-                          whileHover={{ scale: 1.02 }}
-                          whileTap={{ scale: 0.98 }}
-                          onClick={() => setFormData({ ...formData, isPrivate: false })}
-                          className={`cursor-pointer p-4 rounded-xl border-2 transition-all duration-300 ${
-                            !formData.isPrivate
-                              ? 'border-green-500 bg-green-500/10'
-                              : 'border-white/10 bg-white/5 hover:border-white/20'
-                          }`}
-                        >
-                          <Globe className="w-6 h-6 text-green-500 mb-2" />
-                          <h3 className={`font-bold ${getTextClass(currentTheme)} mb-1`}>Public</h3>
-                          <p className={`text-sm ${getSecondaryTextClass(currentTheme)}`}>
-                            Anyone can see and request to join
-                          </p>
+                            )}
+                          </div>
+                          <div className={`inline-block px-3 py-1 bg-gradient-to-r ${mode.gradient} text-white text-xs font-bold font-mono uppercase tracking-wider`}>
+                            {mode.maxPlayers} PLAYERS MAX
+                          </div>
                         </motion.div>
-
-                        <motion.div
-                          whileHover={{ scale: 1.02 }}
-                          whileTap={{ scale: 0.98 }}
-                          onClick={() => setFormData({ ...formData, isPrivate: true })}
-                          className={`cursor-pointer p-4 rounded-xl border-2 transition-all duration-300 ${
-                            formData.isPrivate
-                              ? 'border-yellow-500 bg-yellow-500/10'
-                              : 'border-white/10 bg-white/5 hover:border-white/20'
-                          }`}
-                        >
-                          <Lock className="w-6 h-6 text-yellow-500 mb-2" />
-                          <h3 className={`font-bold ${getTextClass(currentTheme)} mb-1`}>Private</h3>
-                          <p className={`text-sm ${getSecondaryTextClass(currentTheme)}`}>
-                            Only people with invite code can join
-                          </p>
-                        </motion.div>
-                      </div>
+                      ))}
                     </div>
+                  </div>
 
-                    {/* Preferences */}
-                    <div>
-                      <label className={`block text-sm font-medium ${getTextClass(currentTheme)} mb-3`}>
-                        Preferences (Optional)
-                      </label>
+                  {/* Role Selection - Only for non-ARAM modes */}
+                  {formData.gameMode && formData.gameMode !== 'aram' && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="p-6 bg-gradient-to-br from-[#0a1628]/30 to-[#0f1f3a]/30 border border-cyan-400/20 relative"
+                    >
+                      {/* Corner Brackets */}
+                      <div className="absolute top-0 left-0 w-4 h-4 border-l-2 border-t-2 border-cyan-400/40"></div>
+                      <div className="absolute top-0 right-0 w-4 h-4 border-r-2 border-t-2 border-cyan-400/40"></div>
+                      <div className="absolute bottom-0 left-0 w-4 h-4 border-l-2 border-b-2 border-cyan-400/40"></div>
+                      <div className="absolute bottom-0 right-0 w-4 h-4 border-r-2 border-b-2 border-cyan-400/40"></div>
                       
-                      {/* Minimum Rank */}
-                      <div className="mb-4">
-                        <label className={`block text-sm ${getSecondaryTextClass(currentTheme)} mb-2`}>
-                          Minimum Rank
-                        </label>
+                      <RoleSelector
+                        selectedRole={formData.creatorPosition || null}
+                        onRoleSelect={(role) => setFormData({ ...formData, creatorPosition: role })}
+                        theme={currentTheme}
+                      />
+                    </motion.div>
+                  )}
+
+                  {/* Privacy Setting */}
+                  <div>
+                    <label className="block text-sm font-bold text-cyan-400 mb-3 font-mono uppercase tracking-wider">
+                      PRIVACY
+                    </label>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <motion.div
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        onClick={() => setFormData({ ...formData, isPrivate: false })}
+                        className={`cursor-pointer p-4 border-2 transition-all duration-300 relative ${
+                          !formData.isPrivate
+                            ? 'border-green-400 bg-green-400/10'
+                            : 'border-cyan-400/20 bg-[#0a1628]/30 hover:border-cyan-400/40'
+                        }`}
+                      >
+                        {!formData.isPrivate && (
+                          <>
+                            <div className="absolute top-0 left-0 w-3 h-3 border-l-2 border-t-2 border-green-400"></div>
+                            <div className="absolute top-0 right-0 w-3 h-3 border-r-2 border-t-2 border-green-400"></div>
+                            <div className="absolute bottom-0 left-0 w-3 h-3 border-l-2 border-b-2 border-green-400"></div>
+                            <div className="absolute bottom-0 right-0 w-3 h-3 border-r-2 border-b-2 border-green-400"></div>
+                          </>
+                        )}
+                        <Globe className="w-6 h-6 text-green-400 mb-2" />
+                        <h3 className="font-bold text-white mb-1 font-mono uppercase">PUBLIC</h3>
+                        <p className="text-sm text-white/60 font-mono">
+                          Anyone can see and request to join
+                        </p>
+                      </motion.div>
+
+                      <motion.div
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        onClick={() => setFormData({ ...formData, isPrivate: true })}
+                        className={`cursor-pointer p-4 border-2 transition-all duration-300 relative ${
+                          formData.isPrivate
+                            ? 'border-yellow-400 bg-yellow-400/10'
+                            : 'border-cyan-400/20 bg-[#0a1628]/30 hover:border-cyan-400/40'
+                        }`}
+                      >
+                        {formData.isPrivate && (
+                          <>
+                            <div className="absolute top-0 left-0 w-3 h-3 border-l-2 border-t-2 border-yellow-400"></div>
+                            <div className="absolute top-0 right-0 w-3 h-3 border-r-2 border-t-2 border-yellow-400"></div>
+                            <div className="absolute bottom-0 left-0 w-3 h-3 border-l-2 border-b-2 border-yellow-400"></div>
+                            <div className="absolute bottom-0 right-0 w-3 h-3 border-r-2 border-b-2 border-yellow-400"></div>
+                          </>
+                        )}
+                        <Lock className="w-6 h-6 text-yellow-400 mb-2" />
+                        <h3 className="font-bold text-white mb-1 font-mono uppercase">PRIVATE</h3>
+                        <p className="text-sm text-white/60 font-mono">
+                          Only people with invite code can join
+                        </p>
+                      </motion.div>
+                    </div>
+                  </div>
+
+                  {/* Preferences */}
+                  <div>
+                    <label className="block text-sm font-bold text-cyan-400 mb-3 font-mono uppercase tracking-wider">
+                      PREFERENCES (OPTIONAL)
+                    </label>
+                      
+                    {/* Minimum Rank */}
+                    <div className="mb-4 relative">
+                      <label className="block text-sm text-white/60 mb-2 font-mono uppercase text-xs tracking-wider">
+                        MINIMUM RANK
+                      </label>
+                      <div className="relative">
+                        {/* Corner Brackets for Dropdown */}
+                        <div className="absolute top-0 left-0 w-3 h-3 border-l-2 border-t-2 border-cyan-400/40 pointer-events-none z-10"></div>
+                        <div className="absolute top-0 right-0 w-3 h-3 border-r-2 border-t-2 border-cyan-400/40 pointer-events-none z-10"></div>
+                        <div className="absolute bottom-0 left-0 w-3 h-3 border-l-2 border-b-2 border-cyan-400/40 pointer-events-none z-10"></div>
+                        <div className="absolute bottom-0 right-0 w-3 h-3 border-r-2 border-b-2 border-cyan-400/40 pointer-events-none z-10"></div>
+                        
                         <select
                           value={formData.preferences.minRank || ''}
                           onChange={(e) => setFormData({ 
                             ...formData, 
                             preferences: { ...formData.preferences, minRank: e.target.value || undefined }
                           })}
-                          className={`w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl ${getTextClass(currentTheme)} focus:outline-none focus:ring-2 focus:ring-purple-500/50`}
+                          className="w-full px-4 py-3 bg-gradient-to-r from-[#0a1628]/80 to-[#0f1f3a]/80 border border-cyan-400/30 text-white focus:outline-none focus:ring-2 focus:ring-cyan-400/50 focus:border-cyan-400/50 font-mono appearance-none cursor-pointer hover:border-cyan-400/50 transition-all duration-300 uppercase tracking-wider text-sm shadow-[inset_0_1px_2px_rgba(0,255,255,0.1)]"
+                          style={{
+                            backgroundImage: `url("data:image/svg+xml,%3Csvg width='12' height='12' viewBox='0 0 12 12' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M6 9L1 4h10z' fill='%2300ffff' fill-opacity='0.6'/%3E%3C/svg%3E")`,
+                            backgroundRepeat: 'no-repeat',
+                            backgroundPosition: 'right 12px center',
+                            backgroundSize: '12px 12px',
+                            paddingRight: '40px'
+                          }}
                         >
-                          <option value="">No minimum rank</option>
+                          <option value="" className="bg-[#0a1628] text-white py-2">NO MINIMUM RANK</option>
                           {ranks.map(rank => (
-                            <option key={rank} value={rank}>{rank}</option>
+                            <option key={rank} value={rank} className="bg-[#0a1628] text-white py-2">{rank.toUpperCase()}</option>
                           ))}
                         </select>
                       </div>
-
-                      {/* Voice Chat */}
-                      <div className="flex items-center gap-3 p-4 bg-white/5 rounded-xl border border-white/10">
-                        <input
-                          type="checkbox"
-                          id="voiceChat"
-                          checked={formData.preferences.voiceChat || false}
-                          onChange={(e) => setFormData({
-                            ...formData,
-                            preferences: { ...formData.preferences, voiceChat: e.target.checked }
-                          })}
-                          className="w-5 h-5 rounded border-white/20 text-purple-600 focus:ring-purple-500"
-                        />
-                        <label htmlFor="voiceChat" className="flex items-center gap-2 cursor-pointer flex-1">
-                          <Mic className="w-5 h-5 text-purple-500" />
-                          <div>
-                            <div className={`font-medium ${getTextClass(currentTheme)}`}>
-                              Voice Chat Required
-                            </div>
-                            <div className={`text-sm ${getSecondaryTextClass(currentTheme)}`}>
-                              Members must be able to use voice communication
-                            </div>
-                          </div>
-                        </label>
-                      </div>
-
-                      {/* Language */}
-                      <div className="mt-4">
-                        <label className={`block text-sm ${getSecondaryTextClass(currentTheme)} mb-2`}>
-                          Preferred Language
-                        </label>
-                        <input
-                          type="text"
-                          value={formData.preferences.language || ''}
-                          onChange={(e) => setFormData({
-                            ...formData,
-                            preferences: { ...formData.preferences, language: e.target.value || undefined }
-                          })}
-                          placeholder="e.g., English, Spanish, French"
-                          className={`w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl ${getTextClass(currentTheme)} placeholder:${getSecondaryTextClass(currentTheme)} focus:outline-none focus:ring-2 focus:ring-purple-500/50`}
-                        />
-                      </div>
                     </div>
 
-                    {/* Scheduled Time */}
+                    {/* Voice Chat */}
+                    <div className="flex items-center gap-3 p-4 bg-[#0a1628]/30 border border-cyan-400/20 mb-4">
+                      <input
+                        type="checkbox"
+                        id="voiceChat"
+                        checked={formData.preferences.voiceChat || false}
+                        onChange={(e) => setFormData({
+                          ...formData,
+                          preferences: { ...formData.preferences, voiceChat: e.target.checked }
+                        })}
+                        className="w-5 h-5 border-cyan-400/30 text-cyan-400 focus:ring-cyan-400/50 bg-[#0a1628]/50"
+                      />
+                      <label htmlFor="voiceChat" className="flex items-center gap-2 cursor-pointer flex-1">
+                        <Mic className="w-5 h-5 text-cyan-400" />
+                        <div>
+                          <div className="font-medium text-white font-mono uppercase text-sm tracking-wider">
+                            VOICE CHAT REQUIRED
+                          </div>
+                          <div className="text-sm text-white/60 font-mono">
+                            Members must be able to use voice communication
+                          </div>
+                        </div>
+                      </label>
+                    </div>
+
+                    {/* Language */}
                     <div>
-                      <label className={`block text-sm font-medium ${getTextClass(currentTheme)} mb-2`}>
-                        Schedule for Later (Optional)
+                      <label className="block text-sm text-white/60 mb-2 font-mono uppercase text-xs tracking-wider">
+                        PREFERRED LANGUAGE
                       </label>
                       <input
-                        type="datetime-local"
-                        value={formData.scheduledFor || ''}
-                        onChange={(e) => setFormData({ ...formData, scheduledFor: e.target.value || undefined })}
-                        className={`w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl ${getTextClass(currentTheme)} focus:outline-none focus:ring-2 focus:ring-purple-500/50`}
+                        type="text"
+                        value={formData.preferences.language || ''}
+                        onChange={(e) => setFormData({
+                          ...formData,
+                          preferences: { ...formData.preferences, language: e.target.value || undefined }
+                        })}
+                        placeholder="e.g., English, Spanish, French"
+                        className="w-full px-4 py-3 bg-[#0a1628]/50 border border-cyan-400/30 text-white placeholder:text-white/40 placeholder:font-mono focus:outline-none focus:ring-2 focus:ring-cyan-400/50 focus:border-cyan-400/50 font-mono"
                       />
                     </div>
-                  </CardContent>
-                </Card>
+                  </div>
+
+                  {/* Scheduled Time */}
+                  <div>
+                    <label className="block text-sm font-bold text-cyan-400 mb-2 font-mono uppercase tracking-wider">
+                      SCHEDULE FOR LATER (OPTIONAL)
+                    </label>
+                    <input
+                      type="datetime-local"
+                      value={formData.scheduledFor || ''}
+                      onChange={(e) => setFormData({ ...formData, scheduledFor: e.target.value || undefined })}
+                      className="w-full px-4 py-3 bg-[#0a1628]/50 border border-cyan-400/30 text-white focus:outline-none focus:ring-2 focus:ring-cyan-400/50 focus:border-cyan-400/50 font-mono"
+                    />
+                  </div>
+                </div>
 
                 {/* Submit Button */}
                 <div className="flex gap-4">
-                  <Button
+                  <button
                     type="button"
                     onClick={() => router.push('/parties')}
-                    className="flex-1 bg-white/5 hover:bg-white/10 border border-white/10 py-4 text-lg"
+                    className="flex-1 bg-gradient-to-r from-red-600/20 to-red-700/20 hover:from-red-600/30 hover:to-red-700/30 border border-red-500/40 py-4 text-lg font-mono uppercase tracking-wider transition-all duration-300 relative group"
                   >
-                    Cancel
-                  </Button>
-                  <Button
+                    <div className="absolute top-0 left-0 w-2 h-2 border-t border-l border-red-400/60"></div>
+                    <div className="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-red-400/60"></div>
+                    <span className="text-white">CANCEL</span>
+                  </button>
+                  <button
                     type="submit"
                     disabled={isSubmitting || !formData.name || !formData.gameMode}
-                    className={`flex-1 py-4 text-lg font-semibold ${
+                    className={`flex-1 py-4 text-lg font-bold font-mono uppercase tracking-wider transition-all duration-300 relative group ${
                       isSubmitting || !formData.name || !formData.gameMode
-                        ? 'bg-gray-600 text-gray-400 cursor-not-allowed'
-                        : 'bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white shadow-lg shadow-purple-500/30'
-                    } transition-all duration-300`}
+                        ? 'bg-gray-600/50 text-gray-400 cursor-not-allowed border border-gray-600/50'
+                        : 'bg-gradient-to-r from-[#5383E8] to-cyan-400 hover:from-cyan-400 hover:to-[#5383E8] text-white shadow-[0_0_15px_rgba(0,255,255,0.3)] hover:shadow-[0_0_25px_rgba(0,255,255,0.5)] border border-cyan-400/50'
+                    }`}
                   >
-                    {isSubmitting ? 'Creating...' : 'Create Party'}
-                  </Button>
+                    {!(isSubmitting || !formData.name || !formData.gameMode) && (
+                      <>
+                        <div className="absolute top-0 left-0 w-2 h-2 border-t border-l border-white/50"></div>
+                        <div className="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-white/50"></div>
+                      </>
+                    )}
+                    {isSubmitting ? 'CREATING...' : 'CREATE PARTY'}
+                  </button>
                 </div>
               </form>
             </motion.div>
