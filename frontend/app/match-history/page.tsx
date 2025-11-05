@@ -67,17 +67,114 @@ interface Match {
   };
 }
 
+// Comprehensive queue mapping based on Riot API
 const QUEUE_NAMES: { [key: number]: string } = {
+  0: 'Custom',
+  2: 'Normal 5v5 Blind',
+  4: 'Ranked Solo (Old)',
+  6: 'Ranked Premade (Old)',
+  7: 'Co-op vs AI',
+  8: 'Normal 3v3',
+  9: 'Ranked 3v3',
+  14: 'Normal 5v5 Draft',
+  16: 'Dominion 5v5',
+  17: 'Dominion Draft',
+  25: 'Dominion Co-op',
+  31: 'Co-op vs AI Intro',
+  32: 'Co-op vs AI Beginner',
+  33: 'Co-op vs AI Intermediate',
+  41: 'Ranked 3v3',
+  42: 'Ranked 5v5',
+  52: 'Co-op vs AI 3v3',
+  61: 'Team Builder',
+  65: 'ARAM',
+  67: 'ARAM Co-op',
+  70: 'One for All',
+  72: '1v1 Snowdown',
+  73: '2v2 Snowdown',
+  75: 'Hexakill SR',
+  76: 'URF',
+  78: 'One For All Mirror',
+  83: 'Co-op vs AI URF',
+  91: 'Doom Bots Rank 1',
+  92: 'Doom Bots Rank 2',
+  93: 'Doom Bots Rank 5',
+  96: 'Ascension',
+  98: 'Hexakill TT',
+  100: 'Butcher\'s Bridge',
+  300: 'Legend of Poro King',
+  310: 'Nemesis',
+  313: 'Black Market',
+  315: 'Nexus Siege',
+  317: 'Definitely Not Dominion',
+  318: 'ARURF',
+  325: 'All Random',
+  400: 'Normal Draft',
+  410: 'Ranked Dynamic',
   420: 'Ranked Solo/Duo',
+  430: 'Normal Blind',
   440: 'Ranked Flex',
   450: 'ARAM',
-  400: 'Normal Draft',
-  430: 'Normal Blind',
-  490: 'Normal (Quickplay)',
-  1700: 'Arena',
-  1900: 'URF',
+  460: 'Normal 3v3',
+  470: 'Ranked 3v3 Flex',
+  490: 'Quickplay',
+  600: 'Blood Hunt',
+  610: 'Dark Star',
+  700: 'Clash',
+  720: 'ARAM Clash',
+  800: 'Co-op vs AI 3v3 Intermediate',
+  810: 'Co-op vs AI 3v3 Intro',
+  820: 'Co-op vs AI 3v3 Beginner',
+  830: 'Co-op vs AI Intro',
+  840: 'Co-op vs AI Beginner',
+  850: 'Co-op vs AI Intermediate',
   900: 'ARURF',
+  910: 'Ascension',
+  920: 'Legend of Poro King',
+  940: 'Nexus Siege',
+  950: 'Doom Bots',
+  960: 'Doom Bots',
+  980: 'Star Guardian Normal',
+  990: 'Star Guardian Onslaught',
+  1000: 'PROJECT: Hunters',
+  1010: 'Snow ARURF',
+  1020: 'One for All',
+  1030: 'Odyssey Intro',
+  1040: 'Odyssey Cadet',
+  1050: 'Odyssey Crewmember',
+  1060: 'Odyssey Captain',
+  1070: 'Odyssey Onslaught',
+  1090: 'Teamfight Tactics',
+  1100: 'Ranked TFT',
+  1110: 'TFT Tutorial',
+  1111: 'TFT Test',
+  1200: 'Nexus Blitz',
+  1300: 'Nexus Blitz',
+  1400: 'Ultimate Spellbook',
+  1700: 'Arena',
+  1710: 'Arena',
+  1900: 'URF',
+  2000: 'Tutorial 1',
+  2010: 'Tutorial 2',
+  2020: 'Tutorial 3',
 };
+
+// Game mode categories for filtering
+const GAME_MODE_CATEGORIES = [
+  { id: 'all', label: 'All Modes', queueIds: [] as number[] },
+  { id: 'ranked', label: 'Ranked', queueIds: [420, 440, 470, 4, 6, 9, 41, 42, 410, 1100] },
+  { id: 'normal', label: 'Normal', queueIds: [400, 430, 490, 2, 14, 8, 460] },
+  { id: 'aram', label: 'ARAM', queueIds: [450, 65, 100, 720] },
+  { id: 'urf', label: 'URF', queueIds: [76, 318, 900, 1010, 1900, 83] },
+  { id: 'arena', label: 'Arena', queueIds: [1700, 1710] },
+  { id: 'clash', label: 'Clash', queueIds: [700, 720] },
+  { id: 'rotating', label: 'Rotating', queueIds: [1020, 920, 910, 940, 1400, 1200, 1300, 70, 300, 96, 315] },
+  { id: 'special', label: 'Special', queueIds: [600, 610, 980, 990, 1000, 1030, 1040, 1050, 1060, 1070, 950, 960, 91, 92, 93, 75, 98, 78, 72, 73, 310, 313, 317, 325] },
+  { id: 'coop', label: 'Co-op vs AI', queueIds: [7, 31, 32, 33, 52, 67, 800, 810, 820, 830, 840, 850] },
+  { id: 'tft', label: 'TFT', queueIds: [1090, 1100, 1110, 1111] },
+  { id: 'tutorial', label: 'Tutorial', queueIds: [2000, 2010, 2020] },
+  { id: 'custom', label: 'Custom', queueIds: [0] },
+];
 
 const POSITION_NAMES: { [key: string]: string } = {
   TOP: 'Top',
@@ -105,6 +202,7 @@ export default function MatchHistoryPage() {
   const [loadingProgress, setLoadingProgress] = useState({ current: 0, total: 0 });
   const [currentCount, setCurrentCount] = useState(20);
   const [hasMore, setHasMore] = useState(true);
+  const [selectedFilter, setSelectedFilter] = useState<string>('all');
 
   useEffect(() => {
     if (status === 'unauthenticated') {
@@ -626,6 +724,16 @@ export default function MatchHistoryPage() {
     return positionQueues.includes(queueId);
   };
 
+  // Filter matches based on selected filter
+  const getFilteredMatches = (): Match[] => {
+    if (selectedFilter === 'all') return matches;
+    
+    const category = GAME_MODE_CATEGORIES.find(c => c.id === selectedFilter);
+    if (!category) return matches;
+    
+    return matches.filter(match => category.queueIds.includes(match.info.queueId));
+  };
+
   if (status === 'loading' || loading) {
     return (
       <div className="min-h-screen bg-[#050a15] relative overflow-hidden">
@@ -701,7 +809,7 @@ export default function MatchHistoryPage() {
           <div /></NavigationDrawer>
 
       {/* Header with Logo */}
-      <header className="container mx-auto px-4 pt-8 pb-4 max-w-[1400px] flex items-center justify-center" style={{ marginTop: '-820px' }}>
+      <header className="container mx-auto px-4 pt-8 pb-4 max-w-[1400px] flex items-center justify-center" style={{ marginTop: '-790px' }}>
         <AnimatedLogo size="md" variant="futuristic" />
       </header>
 
@@ -769,8 +877,8 @@ export default function MatchHistoryPage() {
                       className="relative group/btn bg-gradient-to-r from-[#5383E8] to-cyan-400 hover:from-cyan-400 hover:to-[#5383E8] text-white text-sm px-4 py-2 font-bold font-mono transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2 border border-cyan-400/50 shadow-[0_0_15px_rgba(0,255,255,0.3)] hover:shadow-[0_0_25px_rgba(0,255,255,0.5)]"
                     >
                       {/* Button corner accents */}
-                      <div className="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2 border-white/50"></div>
-                      <div className="absolute bottom-0 right-0 w-3 h-3 border-b-2 border-r-2 border-white/50"></div>
+                      <div className="absolute -top-[2px] -left-[2px] w-3 h-3 border-t-2 border-l-2 border-white/50"></div>
+                      <div className="absolute -bottom-[1px] -right-[9px] w-3 h-3 border-b-2 border-r-2 border-white/50"></div>
                       
                       {refreshing ? (
                         <>
@@ -1308,18 +1416,119 @@ export default function MatchHistoryPage() {
               </motion.div>
             )}
 
+            {/* Filter Section */}
+            {profile?.lolAccount && matches.length > 0 && (
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1 }}
+                className="relative bg-gradient-to-br from-[#0a1628] via-[#0f1f3a] to-[#0a1628] rounded-none p-4 border-2 border-cyan-400/20 shadow-[0_0_30px_rgba(83,131,232,0.2)] overflow-hidden"
+              >
+                {/* Tech lines */}
+                <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-cyan-400/50 to-transparent"></div>
+                <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-transparent via-[#5383E8] to-transparent shadow-[0_0_10px_#5383E8]"></div>
+                
+                {/* Corner brackets */}
+                <div className="absolute top-0 left-0 w-6 h-6 border-t-2 border-l-2 border-cyan-400/40"></div>
+                <div className="absolute top-0 right-0 w-6 h-6 border-t-2 border-r-2 border-cyan-400/40"></div>
+                
+                <div className="relative z-10">
+                  <div className="flex items-center justify-between mb-3">
+                    <h4 className="text-sm font-bold text-white font-mono tracking-wider uppercase drop-shadow-[0_0_10px_rgba(255,255,255,0.3)]">
+                      Filter by Game Mode
+                    </h4>
+                    <span className="text-xs text-gray-500 font-mono">
+                      {getFilteredMatches().length} / {matches.length} matches
+                    </span>
+                  </div>
+                  
+                  {/* Filter Buttons Grid */}
+                  <div className="flex flex-wrap gap-2">
+                    {GAME_MODE_CATEGORIES.map((category) => {
+                      const isSelected = selectedFilter === category.id;
+                      const matchCount = category.id === 'all' 
+                        ? matches.length 
+                        : matches.filter(m => category.queueIds.includes(m.info.queueId)).length;
+                      
+                      return (
+                        <button
+                          key={category.id}
+                          onClick={() => setSelectedFilter(category.id)}
+                          disabled={matchCount === 0}
+                          className={`relative group/filter px-4 py-2 font-mono text-xs font-bold tracking-wider uppercase transition-all duration-300 border disabled:opacity-30 disabled:cursor-not-allowed ${
+                            isSelected
+                              ? 'bg-gradient-to-r from-[#5383E8] to-cyan-400 text-white border-cyan-400/50 shadow-[0_0_20px_rgba(0,255,255,0.4)]'
+                              : 'bg-[#0a1628]/50 text-gray-400 border-cyan-400/20 hover:border-cyan-400/40 hover:text-cyan-400 hover:shadow-[0_0_15px_rgba(0,255,255,0.2)]'
+                          }`}
+                        >
+                          {/* Button corner accents */}
+                          {isSelected && (
+                            <>
+                              <div className="absolute top-0 left-0 w-2 h-2 border-t-2 border-l-2 border-white/50"></div>
+                              <div className="absolute bottom-0 right-0 w-2 h-2 border-b-2 border-r-2 border-white/50"></div>
+                            </>
+                          )}
+                          
+                          {/* Holographic effect on hover */}
+                          {!isSelected && (
+                            <div className="absolute inset-0 bg-gradient-to-r from-cyan-400/0 via-cyan-400/10 to-cyan-400/0 opacity-0 group-hover/filter:opacity-100 transition-opacity"></div>
+                          )}
+                          
+                          <span className="relative z-10 flex items-center space-x-2">
+                            <span>{category.label}</span>
+                            {matchCount > 0 && (
+                              <span className={`text-[10px] px-1.5 py-0.5 rounded-none ${
+                                isSelected
+                                  ? 'bg-white/20 text-white'
+                                  : 'bg-cyan-400/10 text-cyan-400'
+                              }`}>
+                                {matchCount}
+                              </span>
+                            )}
+                          </span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              </motion.div>
+            )}
+
             {/* Matches List */}
             {profile?.lolAccount && (
               <div className="space-y-2">
-                {matches.map((match) => {
-                  const playerData = getPlayerData(match);
-                  if (!playerData) return null;
+                {getFilteredMatches().length === 0 ? (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="relative bg-gradient-to-br from-[#0a1628] via-[#0f1f3a] to-[#0a1628] rounded-none p-8 border-2 border-cyan-400/20 shadow-[0_0_30px_rgba(83,131,232,0.2)] overflow-hidden"
+                  >
+                    {/* Corner brackets */}
+                    <div className="absolute top-0 left-0 w-8 h-8 border-t-2 border-l-2 border-cyan-400/40"></div>
+                    <div className="absolute top-0 right-0 w-8 h-8 border-t-2 border-r-2 border-cyan-400/40"></div>
+                    <div className="absolute bottom-0 left-0 w-8 h-8 border-b-2 border-l-2 border-cyan-400/40"></div>
+                    <div className="absolute bottom-0 right-0 w-8 h-8 border-b-2 border-r-2 border-cyan-400/40"></div>
+                    
+                    <div className="text-center relative z-10">
+                      <AlertCircle className="w-12 h-12 text-cyan-400 mx-auto mb-3 drop-shadow-[0_0_15px_rgba(0,255,255,0.6)]" />
+                      <p className="text-gray-400 font-mono text-sm uppercase tracking-wider">
+                        No matches found for this filter
+                      </p>
+                      <p className="text-gray-600 font-mono text-xs mt-2">
+                        Try selecting a different game mode
+                      </p>
+                    </div>
+                  </motion.div>
+                ) : (
+                  getFilteredMatches().map((match) => {
+                    const playerData = getPlayerData(match);
+                    if (!playerData) return null;
 
-                  const isExpanded = expandedMatch === match.metadata.matchId;
-                  const playerTeam = match.info.teams.find(t => t.teamId === playerData.teamId);
-                  const enemyTeam = match.info.teams.find(t => t.teamId !== playerData.teamId);
+                    const isExpanded = expandedMatch === match.metadata.matchId;
+                    const playerTeam = match.info.teams.find(t => t.teamId === playerData.teamId);
+                    const enemyTeam = match.info.teams.find(t => t.teamId !== playerData.teamId);
 
-                  return (
+                    return (
                     <motion.div
                       key={match.metadata.matchId}
                       initial={{ opacity: 0, y: 10 }}
@@ -1360,7 +1569,7 @@ export default function MatchHistoryPage() {
                             }`}></div>
                             
                             <span className="text-xs font-bold uppercase text-cyan-400 tracking-wider font-mono">
-                              {QUEUE_NAMES[match.info.queueId] || 'CUSTOM'}
+                              {QUEUE_NAMES[match.info.queueId] || `Queue ${match.info.queueId}`}
                             </span>
                             <span className="text-[10px] text-gray-500 font-mono">
                               {formatTimestamp(match.info.gameCreation)}
@@ -3555,7 +3764,8 @@ export default function MatchHistoryPage() {
                       </AnimatePresence>
                     </motion.div>
                   );
-                })}
+                })
+                )}
               </div>
             )}
 
