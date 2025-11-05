@@ -2,14 +2,14 @@
 
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { AnimatedLogo } from '@/components/ui/AnimatedLogo';
 import NavigationDrawer from '@/components/ui/NavigationDrawer';
-import { ChevronDown, ChevronUp, Loader2, Trophy, Target, Shield, Skull, Users, Clock, AlertCircle, TrendingUp, TrendingDown, Swords } from 'lucide-react';
+import { ChevronDown, ChevronUp, Loader2, Trophy, Target, Shield, Skull, Users, Clock, AlertCircle, TrendingUp, TrendingDown, Swords, Search, Home, X, RefreshCw } from 'lucide-react';
 import { lolService, type LolAccount } from '@/lib/lol-service';
 import { LOL_VERSION, getCDNUrl, getProfileIconUrl } from '@/lib/constants';
 
@@ -201,8 +201,32 @@ export default function MatchHistoryPage() {
   const [refreshing, setRefreshing] = useState(false);
   const [loadingProgress, setLoadingProgress] = useState({ current: 0, total: 0 });
   const [currentCount, setCurrentCount] = useState(20);
-  const [hasMore, setHasMore] = useState(true);
   const [selectedFilter, setSelectedFilter] = useState<string>('all');
+  const [loadMoreCooldown, setLoadMoreCooldown] = useState(0);
+  
+  // Search summoner state
+  const [searchedSummoner, setSearchedSummoner] = useState<LolAccount | null>(null);
+  const [searchForm, setSearchForm] = useState({
+    gameName: '',
+    tagline: '',
+    region: 'euw1'
+  });
+  const [isSearching, setIsSearching] = useState(false);
+  const [searchError, setSearchError] = useState('');
+  const [showRegionDropdown, setShowRegionDropdown] = useState(false);
+
+  // Use ref to track next offset to prevent race conditions with rapid clicks
+  const nextOffsetRef = useRef(0);
+
+  // Cooldown timer effect
+  useEffect(() => {
+    if (loadMoreCooldown > 0) {
+      const timer = setTimeout(() => {
+        setLoadMoreCooldown(loadMoreCooldown - 1);
+      }, 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [loadMoreCooldown]);
 
   useEffect(() => {
     if (status === 'unauthenticated') {
@@ -366,20 +390,41 @@ export default function MatchHistoryPage() {
         region: profile.lolAccount.region,
       });
 
-      // Try to load from cache first
+      // Try to load ALL cached matches first
       const cachedResponse = await fetch(
-        `http://localhost:3001/api/v1/riot/matches/${profile.lolAccount.puuid}/cached?region=${profile.lolAccount.region}&count=20`
+        `http://localhost:3001/api/v1/riot/matches/${profile.lolAccount.puuid}/cached?region=${profile.lolAccount.region}&count=1000` // Get all cached matches
       );
+
+      console.log('[Cache Check] Response status:', cachedResponse.status, 'OK:', cachedResponse.ok);
 
       if (cachedResponse.ok) {
         const cachedData = await cachedResponse.json();
+        console.log('[Cache Check] Cache data:', {
+          hasMatches: !!cachedData.matches,
+          matchCount: cachedData.matches?.length || 0,
+          fromCache: cachedData.fromCache
+        });
         
         if (cachedData.matches && cachedData.matches.length > 0) {
-          console.log('[Match History] Loaded from cache:', cachedData.matches.length, 'matches');
-          setMatches(cachedData.matches);
+          console.log('[Match History] ✅ LOADED FROM CACHE:', cachedData.matches.length, 'matches');
+          // Sort matches by game creation date (latest first)
+          const sortedMatches = [...cachedData.matches].sort((a, b) => b.info.gameCreation - a.info.gameCreation);
+          setMatches(sortedMatches);
+          // Reset offset for Load More to continue from where cache ends
+          nextOffsetRef.current = sortedMatches.length;
+          console.log('[Match History] Set next offset to:', nextOffsetRef.current);
+
+          
+          
+          // Add delay to allow images/assets to load before removing loading state
+          await new Promise(resolve => setTimeout(resolve, 2000));
           setLoading(false);
           return;
+        } else {
+          console.log('[Cache Check] ⚠️ Cache empty or no matches, fetching from API');
         }
+      } else {
+        console.log('[Cache Check] ⚠️ Cache response not OK, fetching from API');
       }
 
       // No cache or cache empty, fetch and cache
@@ -418,8 +463,16 @@ export default function MatchHistoryPage() {
       console.log('[Match History] Fetched:', data.newMatches, 'new matches');
       
       if (data.matches && data.matches.length > 0) {
-        setMatches(data.matches);
+        // Sort matches by game creation date (latest first)
+        const sortedMatches = [...data.matches].sort((a, b) => b.info.gameCreation - a.info.gameCreation);
+        setMatches(sortedMatches);
+        
+        // Set hasMore based on response or assume true if we got matches
+        console.log('[Match History] Set hasMore to:', data.hasMore !== undefined ? data.hasMore : true);
       }
+      
+      // Add delay to allow images/assets to load
+      await new Promise(resolve => setTimeout(resolve, 2000));
     } catch (error) {
       console.error('[Match History] Error fetching and caching:', error);
     } finally {
@@ -428,21 +481,49 @@ export default function MatchHistoryPage() {
   };
 
   const refreshMatches = async () => {
-    if (!profile?.lolAccount?.puuid) return;
+    const currentAccount = getCurrentAccount();
+    if (!currentAccount?.puuid) return;
 
     setRefreshing(true);
+    
     try {
-      console.log('[Match History] Refreshing matches...');
+      console.log('[FULL REFRESH] Starting complete data reload...');
       
+      // Calculate how many matches to fetch (at least current count or 50, whichever is higher)
+      const currentMatchCount = matches.length;
+      const fetchCount = Math.max(currentMatchCount, 50);
+      console.log('[FULL REFRESH] Will fetch', fetchCount, 'matches (current:', currentMatchCount, ')');
+      
+      // Step 1: Clear all local state
+      console.log('[FULL REFRESH] Clearing all state...');
+      setMatches([]);
+      setTeammateIcons({});
+      setExpandedMatch(null);
+      setActiveTab({});
+      setTimelineData({});
+      setLoadingTimeline({});
+      
+      // Step 2: Clear localStorage cache
+      console.log('[FULL REFRESH] Clearing localStorage cache...');
+      try {
+        localStorage.removeItem('teammateIcons');
+        localStorage.removeItem('teammateIconsTime');
+      } catch (e) {
+        console.warn('[FULL REFRESH] Could not clear localStorage:', e);
+      }
+      
+      // Step 3: Force backend to re-fetch from Riot API (bypass cache)
+      console.log('[FULL REFRESH] Forcing fresh data from Riot API...');
       const response = await fetch(
-        `http://localhost:3001/api/v1/riot/matches/${profile.lolAccount.puuid}/fetch-and-cache`,
+        `http://localhost:3001/api/v1/riot/matches/${currentAccount.puuid}/fetch-and-cache`,
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            region: profile.lolAccount.region,
+            region: currentAccount.region,
             start: 0,
-            count: 20,
+            count: fetchCount, // Fetch enough to replace what we had
+            forceRefresh: true, // Signal to backend to bypass cache
           }),
         }
       );
@@ -452,73 +533,100 @@ export default function MatchHistoryPage() {
       }
 
       const data = await response.json();
-      console.log('[Match History] Refresh complete:', data);
+      console.log('[FULL REFRESH] Received fresh data:', {
+        totalMatches: data.matches?.length || 0,
+        newMatches: data.newMatches || 0
+      });
       
+      // Step 4: Sort and set matches
       if (data.matches && data.matches.length > 0) {
-        // Remove duplicates by matchId
-        const uniqueMatches = Array.from(
-          new Map(data.matches.map((m: Match) => [m.metadata.matchId, m])).values()
-        ) as Match[];
-        setMatches(uniqueMatches);
-      }
-
-      // Show success message
-      if (data.newMatches > 0) {
-        alert(`Found ${data.newMatches} new match${data.newMatches > 1 ? 'es' : ''}!`);
+        const sortedMatches = [...data.matches].sort((a, b) => b.info.gameCreation - a.info.gameCreation);
+        setMatches(sortedMatches);
+        console.log('[FULL REFRESH] Loaded', sortedMatches.length, 'matches');
       } else {
-        alert('No new matches found. Your match history is up to date!');
+        console.warn('[FULL REFRESH] No matches returned');
       }
+      
+      // Step 5: Add delay for assets to load
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      
+      // Success notification
+      const message = data.newMatches > 0 
+        ? `✅ Refresh complete! Found ${data.newMatches} new match${data.newMatches > 1 ? 'es' : ''}. Total: ${data.matches?.length || 0}`
+        : `✅ Refresh complete! Reloaded ${data.matches?.length || 0} matches`;
+      console.log('[FULL REFRESH]', message);
+      alert(message);
+      
     } catch (error) {
-      console.error('[Match History] Error refreshing matches:', error);
-      alert('Failed to refresh matches');
+      console.error('[FULL REFRESH] Error during refresh:', error);
+      alert('❌ Failed to refresh. Please try again.');
     } finally {
       setRefreshing(false);
     }
   };
 
   const loadMoreMatches = async () => {
-    if (!profile?.lolAccount?.puuid || loadingMore) return;
+    const currentAccount = getCurrentAccount();
+    if (!currentAccount?.puuid || loadingMore || loadMoreCooldown > 0) return;
 
     setLoadingMore(true);
     try {
-      const offset = matches.length;
-      console.log(`[Match History] Loading 5 more matches from offset ${offset}`);
+      // Use ref to get current offset (updated immediately, not after state update)
+      const offset = nextOffsetRef.current;
+      console.log(`[Load More Frontend] Loading from offset ${offset}`);
 
       const response = await fetch(
-        `http://localhost:3001/api/v1/riot/matches/${profile.lolAccount.puuid}/load-more`,
+        `http://localhost:3001/api/v1/riot/matches/${currentAccount.puuid}/load-more`,
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            region: profile.lolAccount.region,
+            region: currentAccount.region,
             offset,
           }),
         }
       );
 
       if (!response.ok) {
-        throw new Error('Failed to load more matches');
+        const errorText = await response.text();
+        console.error('[Load More Frontend] Error response:', response.status, errorText);
+        throw new Error(`Failed to load more matches: ${response.status} - ${errorText}`);
       }
 
       const data = await response.json();
-      console.log('[Match History] Loaded', data.matches.length, 'more matches');
+      console.log('[Load More Frontend] Got', data.matches?.length || 0, 'matches');
 
       if (data.matches && data.matches.length > 0) {
-        // Prevent duplicates by filtering out matches that already exist
+        // Filter duplicates and add new matches
         const existingIds = new Set(matches.map(m => m.metadata.matchId));
         const newMatches = data.matches.filter(
           (m: Match) => !existingIds.has(m.metadata.matchId)
         );
         
         if (newMatches.length > 0) {
-          setMatches(prev => [...prev, ...newMatches]);
+          const allMatches = [...matches, ...newMatches].sort((a, b) => b.info.gameCreation - a.info.gameCreation);
+          setMatches(allMatches);
+          console.log('[Load More Frontend] ✅ Added', newMatches.length, 'matches. Total:', allMatches.length);
+          
+          // Update offset for next request
+          nextOffsetRef.current = offset + data.matches.length;
+          console.log('[Load More Frontend] Next offset will be:', nextOffsetRef.current);
+        } else {
+          // All matches were duplicates, still increment offset
+          nextOffsetRef.current = offset + data.matches.length;
+          console.log('[Load More Frontend] All duplicates, incrementing offset to:', nextOffsetRef.current);
         }
-        setHasMore(data.hasMore);
+        
+        // Start 10-second cooldown
+        setLoadMoreCooldown(10);
       } else {
-        setHasMore(false);
+        // No more matches available
+        alert('No more matches available for this season');
+        console.log('[Load More Frontend] No more matches from Riot API');
       }
     } catch (error) {
-      console.error('[Match History] Error loading more matches:', error);
+      console.error('[Load More Frontend] Error:', error);
+      alert('Failed to load more matches. Please try again.');
     } finally {
       setLoadingMore(false);
     }
@@ -555,9 +663,157 @@ export default function MatchHistoryPage() {
     }
   };
 
+  // Get currently displayed account (searched summoner or logged-in user)
+  const getCurrentAccount = (): LolAccount | undefined => {
+    return searchedSummoner || profile?.lolAccount;
+  };
+
+  // Search for a summoner
+  const handleSearchSummoner = async () => {
+    if (!searchForm.gameName.trim() || !searchForm.tagline.trim()) {
+      setSearchError('Please enter both game name and tagline');
+      return;
+    }
+
+    setIsSearching(true);
+    setSearchError('');
+    setLoading(true);
+
+    try {
+      // Search for summoner
+      const result = await lolService.searchSummoner({
+        gameName: searchForm.gameName.trim(),
+        tagline: searchForm.tagline.trim(),
+        region: searchForm.region
+      });
+
+      // Convert to LolAccount format
+      const summonerAccount: LolAccount = {
+        puuid: result.account.puuid,
+        gameName: result.account.gameName,
+        tagLine: result.account.tagLine,
+        summonerLevel: result.summoner.summonerLevel,
+        profileIconId: result.summoner.profileIconId,
+        region: searchForm.region,
+        rankedData: result.rankedData,
+        lastUpdated: new Date().toISOString()
+      };
+
+      setSearchedSummoner(summonerAccount);
+      
+      // Fetch matches for this summoner
+      await fetchSummonerMatches(summonerAccount);
+      
+    } catch (err: any) {
+      setSearchError(err.message || 'Failed to find summoner. Please check your details and try again.');
+      setLoading(false);
+    } finally {
+      setIsSearching(false);
+    }
+  };
+
+  // Fetch matches for a summoner (searched or logged-in user)
+  const fetchSummonerMatches = async (account: LolAccount, count: number = 50) => {
+    try {
+      setLoading(true);
+      // Reset matches to ensure clean slate
+      setMatches([]);
+      console.log('[Match History] Fetching matches for summoner:', account.gameName, 'Count:', count);
+
+      // Try cache first - get ALL cached matches
+      const cachedResponse = await fetch(
+        `http://localhost:3001/api/v1/riot/matches/${account.puuid}/cached?region=${account.region}&count=1000` // Get all cached matches
+      );
+
+      console.log('[Cache Check] Response status:', cachedResponse.status, 'OK:', cachedResponse.ok);
+
+      if (cachedResponse.ok) {
+        const cachedData = await cachedResponse.json();
+        console.log('[Cache Check] Cache data:', {
+          hasMatches: !!cachedData.matches,
+          matchCount: cachedData.matches?.length || 0,
+          fromCache: cachedData.fromCache
+        });
+        
+        if (cachedData.matches && cachedData.matches.length > 0) {
+          console.log('[Match History] ✅ LOADED FROM CACHE:', cachedData.matches.length, 'matches');
+          // Sort matches by game creation date (latest first)
+          const sortedMatches = [...cachedData.matches].sort((a, b) => b.info.gameCreation - a.info.gameCreation);
+          setMatches(sortedMatches);
+          // Reset offset for Load More to continue from where cache ends
+          nextOffsetRef.current = sortedMatches.length;
+          console.log('[Match History] Set next offset to:', nextOffsetRef.current);
+
+          
+          
+          // Add delay to allow images/assets to load before removing loading state
+          await new Promise(resolve => setTimeout(resolve, 2000));
+          setLoading(false);
+          return;
+        } else {
+          console.log('[Cache Check] ⚠️ Cache empty or no matches, fetching from API');
+        }
+      } else {
+        console.log('[Cache Check] ⚠️ Cache response not OK, fetching from API');
+      }
+
+      // Fetch and cache if no cache - fetch initial batch
+      const response = await fetch(
+        `http://localhost:3001/api/v1/riot/matches/${account.puuid}/fetch-and-cache`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            region: account.region,
+            start: 0,
+            count: 20, // Start with 20 matches for new summoners
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch matches');
+      }
+
+      const data = await response.json();
+      console.log('[Match History] Fetched:', data.newMatches || data.matches?.length, 'matches from API');
+      
+      if (data.matches && data.matches.length > 0) {
+        // Sort matches by game creation date (latest first)
+        const sortedMatches = [...data.matches].sort((a, b) => b.info.gameCreation - a.info.gameCreation);
+        setMatches(sortedMatches);
+        console.log('[Match History] Total matches loaded:', sortedMatches.length);
+        
+        // Set hasMore based on response or assume true if we got matches
+        console.log('[Match History] Set hasMore to:', data.hasMore !== undefined ? data.hasMore : true);
+      }
+      
+      // Add delay to allow images/assets to load
+      await new Promise(resolve => setTimeout(resolve, 2000));
+    } catch (error) {
+      console.error('[Match History] Error fetching matches:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Return to logged-in user's profile
+  const handleReturnToMyProfile = () => {
+    setSearchedSummoner(null);
+    setSearchForm({ gameName: '', tagline: '', region: 'euw1' });
+    setSearchError('');
+    setSelectedFilter('all');
+    setMatches([]); // Clear matches before reloading
+    
+    if (profile?.lolAccount) {
+      loadCachedMatches(); // Use the original function that was working
+    }
+  };
+
   const getPlayerData = (match: Match): MatchParticipant | undefined => {
+    const currentAccount = getCurrentAccount();
     return match.info.participants.find(
-      (p) => p.puuid === profile?.lolAccount?.puuid
+      (p) => p.puuid === currentAccount?.puuid
     );
   };
 
@@ -808,10 +1064,187 @@ export default function MatchHistoryPage() {
         <NavigationDrawer>
           <div /></NavigationDrawer>
 
-      {/* Header with Logo */}
-      <header className="container mx-auto px-4 pt-8 pb-4 max-w-[1400px] flex items-center justify-center" style={{ marginTop: '-790px' }}>
+      {/* Header with Logo and Home Icon */}
+      <header className="container mx-auto px-4 pt-8 pb-4 max-w-[1400px] flex items-center justify-between" style={{ marginTop: '-790px' }}>
+        <div className="flex items-center space-x-4">
+          {searchedSummoner && (
+            <motion.button
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              onClick={handleReturnToMyProfile}
+              className="relative group/home bg-gradient-to-r from-[#5383E8] to-cyan-400 hover:from-cyan-400 hover:to-[#5383E8] p-3 border border-cyan-400/50 shadow-[0_0_15px_rgba(0,255,255,0.3)] hover:shadow-[0_0_25px_rgba(0,255,255,0.5)] transition-all"
+              title="Return to My Profile"
+            >
+              <div className="absolute -top-[2px] -left-[2px] w-3 h-3 border-t-2 border-l-2 border-white/50"></div>
+              <div className="absolute -bottom-[2px] -right-[2px] w-3 h-3 border-b-2 border-r-2 border-white/50"></div>
+              <Home className="w-5 h-5 text-white drop-shadow-[0_0_5px_rgba(255,255,255,0.8)]" />
+            </motion.button>
+          )}
+        </div>
         <AnimatedLogo size="md" variant="futuristic" />
+        <div className="w-16"></div> {/* Spacer for alignment */}
       </header>
+
+      {/* Search Section */}
+      <div className="container mx-auto px-4 pb-6 max-w-[1400px]">
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="relative bg-gradient-to-br from-[#0a1628] via-[#0f1f3a] to-[#0a1628] rounded-none p-5 border-2 border-cyan-400/20 shadow-[0_0_30px_rgba(83,131,232,0.2)] overflow-hidden mb-4"
+        >
+          {/* Tech lines */}
+          <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-cyan-400/50 to-transparent"></div>
+          <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-transparent via-[#5383E8] to-transparent shadow-[0_0_10px_#5383E8]"></div>
+          
+          {/* Corner brackets */}
+          <div className="absolute top-0 left-0 w-8 h-8 border-t-2 border-l-2 border-cyan-400/40"></div>
+          <div className="absolute top-0 right-0 w-8 h-8 border-t-2 border-r-2 border-cyan-400/40"></div>
+          
+          <div className="relative z-10">
+            <h3 className="text-sm font-bold text-white font-mono tracking-wider uppercase drop-shadow-[0_0_10px_rgba(255,255,255,0.3)] mb-4">
+              Search Summoner
+            </h3>
+            
+            <div className="flex items-end space-x-3">
+              {/* Region Dropdown */}
+              <div className="flex-shrink-0 w-48">
+                <label className="block text-xs text-gray-400 font-mono uppercase tracking-wider mb-2">Region</label>
+                <div className="relative">
+                  <button
+                    onClick={() => setShowRegionDropdown(!showRegionDropdown)}
+                    className="w-full bg-[#0a1628] border border-cyan-400/30 px-4 py-2.5 text-left text-white font-mono text-sm hover:border-cyan-400/50 transition-colors relative group"
+                  >
+                    <div className="absolute -top-[1px] -left-[1px] w-2 h-2 border-t border-l border-cyan-400/40"></div>
+                    <div className="absolute -bottom-[1px] -right-[1px] w-2 h-2 border-b border-r border-cyan-400/40"></div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-cyan-400">
+                        {lolService.getAvailableRegions().find(r => r.value === searchForm.region)?.label || 'Select Region'}
+                      </span>
+                      <ChevronDown className="w-4 h-4 text-gray-500" />
+                    </div>
+                  </button>
+                  
+                  {showRegionDropdown && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="absolute z-50 w-full mt-1 bg-[#0a1628] border-2 border-cyan-400/30 shadow-[0_0_30px_rgba(0,255,255,0.3)] max-h-64 overflow-y-auto"
+                    >
+                      {lolService.getAvailableRegions().map((region) => (
+                        <button
+                          key={region.value}
+                          onClick={() => {
+                            setSearchForm({ ...searchForm, region: region.value });
+                            setShowRegionDropdown(false);
+                          }}
+                          className={`w-full px-4 py-2 text-left font-mono text-sm transition-colors ${
+                            searchForm.region === region.value
+                              ? 'bg-gradient-to-r from-[#5383E8] to-cyan-400 text-white'
+                              : 'text-gray-400 hover:bg-cyan-400/10 hover:text-cyan-400'
+                          }`}
+                        >
+                          {region.label}
+                        </button>
+                      ))}
+                    </motion.div>
+                  )}
+                </div>
+              </div>
+              
+              {/* Game Name Input */}
+              <div className="flex-1">
+                <label className="block text-xs text-gray-400 font-mono uppercase tracking-wider mb-2">Game Name</label>
+                <div className="relative">
+                  <input
+                    type="text"
+                    value={searchForm.gameName}
+                    onChange={(e) => setSearchForm({ ...searchForm, gameName: e.target.value })}
+                    onKeyDown={(e) => e.key === 'Enter' && handleSearchSummoner()}
+                    placeholder="Enter game name"
+                    className="w-full bg-[#0a1628] border border-cyan-400/30 px-4 py-2.5 text-white font-mono text-sm placeholder-gray-600 focus:border-cyan-400/50 focus:outline-none transition-colors"
+                  />
+                  <div className="absolute -top-[1px] -left-[1px] w-2 h-2 border-t border-l border-cyan-400/40"></div>
+                  <div className="absolute -bottom-[1px] -right-[1px] w-2 h-2 border-b border-r border-cyan-400/40"></div>
+                </div>
+              </div>
+              
+              {/* Tagline Input */}
+              <div className="flex-1">
+                <label className="block text-xs text-gray-400 font-mono uppercase tracking-wider mb-2">Tagline</label>
+                <div className="relative">
+                  <input
+                    type="text"
+                    value={searchForm.tagline}
+                    onChange={(e) => setSearchForm({ ...searchForm, tagline: e.target.value })}
+                    onKeyDown={(e) => e.key === 'Enter' && handleSearchSummoner()}
+                    placeholder="Enter tagline"
+                    className="w-full bg-[#0a1628] border border-cyan-400/30 px-4 py-2.5 text-white font-mono text-sm placeholder-gray-600 focus:border-cyan-400/50 focus:outline-none transition-colors"
+                  />
+                  <div className="absolute -top-[1px] -left-[1px] w-2 h-2 border-t border-l border-cyan-400/40"></div>
+                  <div className="absolute -bottom-[1px] -right-[1px] w-2 h-2 border-b border-r border-cyan-400/40"></div>
+                </div>
+              </div>
+              
+              {/* Search Button */}
+              <button
+                onClick={handleSearchSummoner}
+                disabled={isSearching}
+                className="relative bg-gradient-to-r from-[#5383E8] to-cyan-400 hover:from-cyan-400 hover:to-[#5383E8] text-white px-6 py-2.5 font-bold font-mono transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2 border border-cyan-400/50 shadow-[0_0_15px_rgba(0,255,255,0.3)] hover:shadow-[0_0_25px_rgba(0,255,255,0.5)]"
+              >
+                <div className="absolute -top-[2px] -left-[2px] w-3 h-3 border-t-2 border-l-2 border-white/50"></div>
+                <div className="absolute -bottom-[2px] -right-[2px] w-3 h-3 border-b-2 border-r-2 border-white/50"></div>
+                {isSearching ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    <span>SEARCHING...</span>
+                  </>
+                ) : (
+                  <>
+                    <Search className="w-4 h-4" />
+                    <span>SEARCH</span>
+                  </>
+                )}
+              </button>
+              
+              {/* Clear Button (only show when there's a searched summoner) */}
+              {searchedSummoner && (
+                <button
+                  onClick={handleReturnToMyProfile}
+                  className="relative bg-[#0a1628] border border-red-400/50 text-red-400 px-4 py-2.5 font-bold font-mono hover:bg-red-400/10 transition-all flex items-center space-x-2 shadow-[0_0_15px_rgba(248,113,113,0.3)] hover:shadow-[0_0_25px_rgba(248,113,113,0.5)]"
+                >
+                  <div className="absolute -top-[2px] -left-[2px] w-3 h-3 border-t-2 border-l-2 border-red-400/50"></div>
+                  <div className="absolute -bottom-[2px] -right-[2px] w-3 h-3 border-b-2 border-r-2 border-red-400/50"></div>
+                  <X className="w-4 h-4" />
+                </button>
+              )}
+            </div>
+            
+            {/* Error Message */}
+            {searchError && (
+              <motion.div
+                initial={{ opacity: 0, y: -5 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="mt-3 flex items-center space-x-2 text-red-400 text-sm font-mono"
+              >
+                <AlertCircle className="w-4 h-4" />
+                <span>{searchError}</span>
+              </motion.div>
+            )}
+            
+            {/* Currently Viewing Indicator */}
+            {searchedSummoner && (
+              <motion.div
+                initial={{ opacity: 0, y: -5 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="mt-3 flex items-center space-x-2 text-cyan-400 text-sm font-mono"
+              >
+                <Search className="w-4 h-4" />
+                <span>Viewing: {searchedSummoner.gameName}#{searchedSummoner.tagLine}</span>
+              </motion.div>
+            )}
+          </div>
+        </motion.div>
+      </div>
 
       <div className="container mx-auto px-4 pb-6 max-w-[1400px]">
         {/* Main Grid Layout */}
@@ -819,7 +1252,7 @@ export default function MatchHistoryPage() {
           {/* Left Sidebar - Profile & Stats */}
           <div className="col-span-3 space-y-4">
             {/* Profile Card */}
-            {profile?.lolAccount && (
+            {getCurrentAccount() && (
               <motion.div
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
@@ -848,11 +1281,13 @@ export default function MatchHistoryPage() {
                     
                     <div className="relative w-24 h-24 overflow-hidden border-2 border-cyan-400/50 bg-gradient-to-br from-[#0a1628] to-[#1a2f4a]">
                       <Image
-                        src={lolService.getSummonerIconUrl(profile.lolAccount.profileIconId)}
+                        src={lolService.getSummonerIconUrl(getCurrentAccount()?.profileIconId || 0)}
                         alt="Profile Icon"
                         width={96}
                         height={96}
                         className="w-full h-full object-cover"
+                        unoptimized
+                        priority
                       />
                       {/* Holographic overlay */}
                       <div className="absolute inset-0 bg-gradient-to-tr from-cyan-400/10 via-transparent to-transparent"></div>
@@ -863,18 +1298,19 @@ export default function MatchHistoryPage() {
                     
                     {/* Level badge with glow */}
                     <div className="absolute -top-2 -right-2 bg-gradient-to-br from-[#5383E8] to-cyan-400 border-2 border-cyan-400/50 px-2.5 py-1 shadow-[0_0_15px_rgba(0,255,255,0.6)]">
-                      <span className="text-xs font-bold font-mono text-white drop-shadow-[0_0_5px_rgba(255,255,255,0.8)]">{profile.lolAccount.summonerLevel}</span>
+                      <span className="text-xs font-bold font-mono text-white drop-shadow-[0_0_5px_rgba(255,255,255,0.8)]">{getCurrentAccount()?.summonerLevel || 0}</span>
                     </div>
                   </div>
                   <div className="flex-1">
                     <h2 className="text-xl font-bold text-white mb-2 drop-shadow-[0_0_10px_rgba(255,255,255,0.3)]">
-                      {profile.lolAccount.gameName}
-                      <span className="text-gray-500 font-mono">#{profile.lolAccount.tagLine}</span>
+                      {getCurrentAccount()?.gameName || 'Unknown'}
+                      <span className="text-gray-500 font-mono">#{getCurrentAccount()?.tagLine || 'NA'}</span>
                     </h2>
                     <button 
                       onClick={refreshMatches}
                       disabled={refreshing}
                       className="relative group/btn bg-gradient-to-r from-[#5383E8] to-cyan-400 hover:from-cyan-400 hover:to-[#5383E8] text-white text-sm px-4 py-2 font-bold font-mono transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2 border border-cyan-400/50 shadow-[0_0_15px_rgba(0,255,255,0.3)] hover:shadow-[0_0_25px_rgba(0,255,255,0.5)]"
+                      title="Full refresh: Clears cache and reloads all data from Riot API"
                     >
                       {/* Button corner accents */}
                       <div className="absolute -top-[2px] -left-[2px] w-3 h-3 border-t-2 border-l-2 border-white/50"></div>
@@ -883,10 +1319,13 @@ export default function MatchHistoryPage() {
                       {refreshing ? (
                         <>
                           <Loader2 className="w-4 h-4 animate-spin" />
-                          <span>UPDATING...</span>
+                          <span>REFRESHING...</span>
                         </>
                       ) : (
-                        <span>UPDATE</span>
+                        <>
+                          <RefreshCw className="w-4 h-4" />
+                          <span>REFRESH</span>
+                        </>
                       )}
                     </button>
                   </div>
@@ -910,7 +1349,7 @@ export default function MatchHistoryPage() {
                   </div>
                   
                   {(() => {
-                    const soloQueue = profile.lolAccount.rankedData?.find(r => r.queueType === 'RANKED_SOLO_5x5');
+                    const soloQueue = getCurrentAccount()?.rankedData?.find(r => r.queueType === 'RANKED_SOLO_5x5');
                     return soloQueue ? (
                       <div className="flex items-center space-x-3 relative z-10">
                         <div className="relative w-16 h-16 flex items-center justify-center group/emblem">
@@ -972,7 +1411,7 @@ export default function MatchHistoryPage() {
                   </div>
                   
                   {(() => {
-                    const flexQueue = profile.lolAccount.rankedData?.find(r => r.queueType === 'RANKED_FLEX_SR');
+                    const flexQueue = getCurrentAccount()?.rankedData?.find(r => r.queueType === 'RANKED_FLEX_SR');
                     return flexQueue ? (
                       <div className="flex items-center space-x-3 relative z-10">
                         <div className="relative w-16 h-16 flex items-center justify-center group/emblem">
@@ -1019,7 +1458,7 @@ export default function MatchHistoryPage() {
             )}
 
             {/* Recently Played With Card */}
-            {profile?.lolAccount && matches.length > 0 && (
+            {getCurrentAccount() && matches.length > 0 && (
               <motion.div
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
@@ -1058,13 +1497,14 @@ export default function MatchHistoryPage() {
                   }>();
                   
                   // Process matches to find teammates
+                  const currentAcc = getCurrentAccount();
                   matches.forEach(match => {
-                    const playerData = match.info.participants.find(p => p.puuid === profile.lolAccount?.puuid);
+                    const playerData = match.info.participants.find(p => p.puuid === currentAcc?.puuid);
                     if (!playerData) return;
                     
                     // Find teammates (same team)
                     match.info.participants
-                      .filter(p => p.teamId === playerData.teamId && p.puuid !== profile.lolAccount?.puuid)
+                      .filter(p => p.teamId === playerData.teamId && p.puuid !== currentAcc?.puuid)
                       .forEach(teammate => {
                         const key = teammate.puuid;
                         const existing = teammateStats.get(key);
@@ -1178,7 +1618,7 @@ export default function MatchHistoryPage() {
               </motion.div>
             )}
 
-            {!profile?.lolAccount && (
+            {!getCurrentAccount() && (
               <motion.div
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
@@ -1212,7 +1652,7 @@ export default function MatchHistoryPage() {
           {/* Right Content - Match History */}
           <div className="col-span-9 space-y-4">
             {/* Match History Header with Stats */}
-            {profile?.lolAccount && matches.length > 0 && (
+            {getCurrentAccount() && matches.length > 0 && (
               <motion.div
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -1417,7 +1857,7 @@ export default function MatchHistoryPage() {
             )}
 
             {/* Filter Section */}
-            {profile?.lolAccount && matches.length > 0 && (
+            {getCurrentAccount() && matches.length > 0 && (
               <motion.div
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -1495,7 +1935,7 @@ export default function MatchHistoryPage() {
             )}
 
             {/* Matches List */}
-            {profile?.lolAccount && (
+            {getCurrentAccount() && (
               <div className="space-y-2">
                 {getFilteredMatches().length === 0 ? (
                   <motion.div
@@ -1643,6 +2083,10 @@ export default function MatchHistoryPage() {
                                       width={20}
                                       height={20}
                                       className="relative w-full h-full object-cover"
+                                      unoptimized
+                                      onError={(e) => {
+                                        (e.target as HTMLImageElement).src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="20" height="20"%3E%3Crect fill="%230a1628" width="20" height="20"/%3E%3C/svg%3E';
+                                      }}
                                     />
                                   </div>
                                   <div className="relative group/spell w-5 h-5 overflow-hidden bg-[#0a1628] border border-cyan-400/20 hover:border-cyan-400/50 transition-colors">
@@ -1653,6 +2097,10 @@ export default function MatchHistoryPage() {
                                       width={20}
                                       height={20}
                                       className="relative w-full h-full object-cover"
+                                      unoptimized
+                                      onError={(e) => {
+                                        (e.target as HTMLImageElement).src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="20" height="20"%3E%3Crect fill="%230a1628" width="20" height="20"/%3E%3C/svg%3E';
+                                      }}
                                     />
                                   </div>
                                 </div>
@@ -1982,7 +2430,7 @@ export default function MatchHistoryPage() {
                                 <button 
                                   onClick={() => {
                                     setActiveTab({ ...activeTab, [match.metadata.matchId]: 'item-build' });
-                                    fetchTimeline(match.metadata.matchId, profile?.lolAccount?.region);
+                                    fetchTimeline(match.metadata.matchId, getCurrentAccount()?.region);
                                   }}
                                   className={`relative flex-1 px-4 py-2.5 text-sm font-bold font-mono tracking-wider uppercase transition-all group ${
                                     activeTab[match.metadata.matchId] === 'item-build'
@@ -2001,7 +2449,7 @@ export default function MatchHistoryPage() {
                                 <button 
                                   onClick={() => {
                                     setActiveTab({ ...activeTab, [match.metadata.matchId]: 'timeline' });
-                                    fetchTimeline(match.metadata.matchId, profile?.lolAccount?.region);
+                                    fetchTimeline(match.metadata.matchId, getCurrentAccount()?.region);
                                   }}
                                   className={`relative flex-1 px-4 py-2.5 text-sm font-bold font-mono tracking-wider uppercase transition-all group ${
                                     activeTab[match.metadata.matchId] === 'timeline'
@@ -2020,7 +2468,7 @@ export default function MatchHistoryPage() {
                                 <button 
                                   onClick={() => {
                                     setActiveTab({ ...activeTab, [match.metadata.matchId]: 'metrics' });
-                                    fetchTimeline(match.metadata.matchId, profile?.lolAccount?.region);
+                                    fetchTimeline(match.metadata.matchId, getCurrentAccount()?.region);
                                   }}
                                   className={`relative flex-1 px-4 py-2.5 text-sm font-bold font-mono tracking-wider uppercase transition-all group ${
                                     activeTab[match.metadata.matchId] === 'metrics'
@@ -3770,7 +4218,7 @@ export default function MatchHistoryPage() {
             )}
 
             {/* Load More Button */}
-            {profile?.lolAccount && matches.length > 0 && hasMore && (
+            {getCurrentAccount() && matches.length > 0 && (
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
@@ -3778,7 +4226,7 @@ export default function MatchHistoryPage() {
               >
                 <button
                   onClick={loadMoreMatches}
-                  disabled={loadingMore}
+                  disabled={loadingMore || loadMoreCooldown > 0}
                   className="relative bg-gradient-to-r from-[#0a1628] to-[#1a2f4a] hover:from-[#1a2f4a] hover:to-[#0a1628] border-2 border-cyan-400/30 hover:border-cyan-400/50 text-cyan-400 px-8 py-3 rounded-none font-bold font-mono uppercase tracking-wider transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-[0_0_20px_rgba(0,255,255,0.2)] hover:shadow-[0_0_30px_rgba(0,255,255,0.4)] overflow-hidden group"
                 >
                   {/* Corner brackets */}
@@ -3795,8 +4243,10 @@ export default function MatchHistoryPage() {
                       <Loader2 className="w-5 h-5 animate-spin" />
                       <span>Loading...</span>
                     </div>
+                  ) : loadMoreCooldown > 0 ? (
+                    <span className="relative z-10">Wait {loadMoreCooldown}s</span>
                   ) : (
-                    <span className="relative z-10">Load 5 More</span>
+                    <span className="relative z-10">Load 10 More</span>
                   )}
                 </button>
               </motion.div>

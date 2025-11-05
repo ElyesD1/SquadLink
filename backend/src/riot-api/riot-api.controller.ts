@@ -404,56 +404,88 @@ export class RiotApiController {
     }
 
     const { region = 'americas', offset = 0 } = body;
-    const count = 5; // Load 5 matches at a time
+    const count = 10; // Load 10 matches at a time
 
+    console.log(`[Load More Backend] Fetching matches from offset ${offset}`);
+
+    // Fetch match IDs from Riot API
     return this.riotApiService.getMatchHistory(puuid, region, offset, count).pipe(
       switchMap(matchIds => {
+        console.log(`[Load More Backend] Riot API returned ${matchIds?.length || 0} match IDs`);
+        
         if (!matchIds || matchIds.length === 0) {
-          return of({ matches: [], hasMore: false, fromCache: false });
+          console.log('[Load More Backend] ✅ No more matches available');
+          return of({ matches: [] });
         }
 
-        // Check which matches are already cached
-        return from(this.matchCacheService.getExistingMatchIds(matchIds)).pipe(
-          switchMap(existingIds => {
-            const newMatchIds = matchIds.filter(id => !existingIds.includes(id));
+        // Check which matches are already cached for this PUUID
+        return from(
+          this.matchCacheService.getCachedMatches(puuid, region, 10000)
+        ).pipe(
+          switchMap(cachedMatches => {
+            const cachedMatchIds = new Set(cachedMatches.map(m => m.metadata.matchId));
+            const newMatchIds = matchIds.filter(id => !cachedMatchIds.has(id));
+            
+            console.log(`[Load More Backend] ${matchIds.length} requested, ${cachedMatchIds.size} total in cache, ${newMatchIds.length} new to fetch`);
 
             if (newMatchIds.length === 0) {
-              // All matches are cached, get from cache
-              return from(
-                this.matchCacheService.getCachedMatches(puuid, region, offset + count)
-              ).pipe(
-                map(allMatches => ({
-                  matches: allMatches.slice(offset, offset + count),
-                  hasMore: matchIds.length === count,
-                  fromCache: true,
-                }))
-              );
+              // All matches already cached, return them in Riot's order
+              const matchMap = new Map(cachedMatches.map(m => [m.metadata.matchId, m]));
+              const orderedMatches = matchIds
+                .map(id => matchMap.get(id))
+                .filter(m => m !== undefined);
+              
+              console.log(`[Load More Backend] ✅ All ${matchIds.length} matches already cached`);
+              return of({ matches: orderedMatches });
             }
 
             // Fetch only new matches
-            console.log(`[Load More] Fetching ${newMatchIds.length} new matches`);
+            console.log(`[Load More Backend] Fetching ${newMatchIds.length} new matches from Riot API`);
             const matchRequests = newMatchIds.map(matchId =>
               this.riotApiService.getMatchDetails(matchId, region).pipe(
-                catchError(() => of(null))
+                catchError(error => {
+                  console.error(`[Load More Backend] Error fetching match ${matchId}:`, error.message);
+                  return of(null);
+                })
               )
             );
 
             return forkJoin(matchRequests).pipe(
               switchMap(matches => {
                 const validMatches = matches.filter(m => m !== null);
+                console.log(`[Load More Backend] Fetched ${validMatches.length}/${newMatchIds.length} matches successfully`);
                 
+                if (validMatches.length === 0) {
+                  // Failed to fetch any new matches, return cached ones
+                  const matchMap = new Map(cachedMatches.map(m => [m.metadata.matchId, m]));
+                  const orderedMatches = matchIds
+                    .map(id => matchMap.get(id))
+                    .filter(m => m !== undefined);
+                  
+                  return of({ matches: orderedMatches });
+                }
+
                 // Cache the new matches
                 return from(
                   this.matchCacheService.cacheMatches(puuid, region, validMatches)
                 ).pipe(
-                  switchMap(() =>
-                    from(this.matchCacheService.getCachedMatches(puuid, region, offset + count))
-                  ),
-                  map(allMatches => ({
-                    matches: allMatches.slice(offset, offset + count),
-                    hasMore: matchIds.length === count,
-                    fromCache: false,
-                  }))
+                  switchMap(() => {
+                    console.log(`[Load More Backend] ✅ Cached ${validMatches.length} new matches`);
+                    
+                    // Get updated cache and return matches in Riot's order
+                    return from(
+                      this.matchCacheService.getCachedMatches(puuid, region, 10000)
+                    ).pipe(
+                      map(allCached => {
+                        const matchMap = new Map(allCached.map(m => [m.metadata.matchId, m]));
+                        const orderedMatches = matchIds
+                          .map(id => matchMap.get(id))
+                          .filter(m => m !== undefined);
+                        
+                        return { matches: orderedMatches };
+                      })
+                    );
+                  })
                 );
               })
             );
