@@ -641,7 +641,7 @@ export default function MatchHistoryPage() {
         
         <div className="relative z-10 flex items-center justify-center min-h-screen">
           <div className="text-center">
-            <AnimatedLogo size="lg" />
+            <AnimatedLogo size="lg" variant="futuristic" />
             <p className="text-cyan-400 mt-4 font-mono tracking-wider drop-shadow-[0_0_10px_rgba(0,255,255,0.5)]">LOADING MATCH HISTORY...</p>
             {loadingProgress.total > 0 && (
               <div className="mt-4">
@@ -702,7 +702,7 @@ export default function MatchHistoryPage() {
 
       {/* Header with Logo */}
       <header className="container mx-auto px-4 pt-8 pb-4 max-w-[1400px] flex items-center justify-center" style={{ marginTop: '-840px' }}>
-        <AnimatedLogo size="md" />
+        <AnimatedLogo size="md" variant="futuristic" />
       </header>
 
       <div className="container mx-auto px-4 pb-6 max-w-[1400px]">

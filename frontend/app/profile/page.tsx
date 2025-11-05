@@ -196,10 +196,19 @@ export default function ProfilePage() {
   };
 
   const handleLolAccountRefresh = (accountData: LolAccount) => {
-    setUserProfile(prev => prev ? {
-      ...prev,
-      lolAccount: accountData
-    } : null);
+    // Update the user profile with the refreshed LoL account data
+    console.log('[Profile] Updating profile with refreshed account data:', accountData);
+    setUserProfile(prev => {
+      const updated = prev ? {
+        ...prev,
+        lolAccount: accountData
+      } : null;
+      console.log('[Profile] Updated profile state:', updated);
+      return updated;
+    });
+    
+    // Show a success notification
+    console.log('LoL account data refreshed successfully!', accountData);
   };
 
   const handleLolAccountUnlink = () => {

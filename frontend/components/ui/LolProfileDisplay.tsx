@@ -37,6 +37,7 @@ export default function LolProfileDisplay({
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [isUnlinking, setIsUnlinking] = useState(false);
   const [error, setError] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
 
   const getTextClass = (theme: string) => theme === 'light' ? 'text-gray-900' : 'text-white';
   const getSecondaryTextClass = (theme: string) => theme === 'light' ? 'text-gray-600' : 'text-white/60';
@@ -48,11 +49,21 @@ export default function LolProfileDisplay({
   const handleRefresh = async () => {
     setIsRefreshing(true);
     setError('');
+    setSuccessMessage('');
 
     try {
+      console.log('[LolProfileDisplay] Starting refresh for:', userEmail);
       const refreshedData = await lolService.refreshLolAccount(userEmail);
+      console.log('[LolProfileDisplay] Refresh response:', refreshedData);
+      console.log('[LolProfileDisplay] Updated LoL account:', refreshedData.lolAccount);
+      
       onRefresh(refreshedData.lolAccount);
+      setSuccessMessage('Account data refreshed successfully!');
+      
+      // Clear success message after 3 seconds
+      setTimeout(() => setSuccessMessage(''), 3000);
     } catch (err: any) {
+      console.error('[LolProfileDisplay] Refresh error:', err);
       setError(err.message || 'Failed to refresh account data');
     } finally {
       setIsRefreshing(false);
@@ -207,6 +218,21 @@ export default function LolProfileDisplay({
         </CardHeader>
 
         <CardContent className="space-y-4">
+          {/* Success Message */}
+          {successMessage && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0 }}
+              className="flex items-center gap-2 p-3 rounded-lg bg-green-500/10 border border-green-500/30"
+            >
+              <svg className="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+              </svg>
+              <span className="text-green-500 text-sm font-medium">{successMessage}</span>
+            </motion.div>
+          )}
+
           {/* Error Message */}
           {error && (
             <motion.div

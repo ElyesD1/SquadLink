@@ -156,6 +156,9 @@ export class UsersService {
     }
 
     try {
+      console.log('[UsersService] Refreshing LoL account for:', email);
+      console.log('[UsersService] Current account data:', user.lolAccount);
+      
       // Re-fetch the summoner data using stored account info
       const summonerProfile = await firstValueFrom(
         this.riotApiService.searchSummoner(
@@ -169,9 +172,14 @@ export class UsersService {
         throw new NotFoundException('Summoner not found during refresh');
       }
 
+      console.log('[UsersService] Fetched summoner profile:', summonerProfile);
+
       // Update the LoL account data
       const updatedLolAccount = {
-        ...user.lolAccount,
+        puuid: user.lolAccount.puuid,
+        gameName: user.lolAccount.gameName,
+        tagLine: user.lolAccount.tagLine,
+        region: user.lolAccount.region,
         summonerLevel: summonerProfile.summoner.summonerLevel,
         profileIconId: summonerProfile.summoner.profileIconId,
         rankedData: summonerProfile.rankedData.map(rank => ({
@@ -185,13 +193,20 @@ export class UsersService {
         lastUpdated: new Date(),
       };
 
-      return this.userModel.findOneAndUpdate(
+      console.log('[UsersService] Updated account data:', updatedLolAccount);
+
+      const updatedUser = await this.userModel.findOneAndUpdate(
         { email },
         { lolAccount: updatedLolAccount },
         { new: true }
       ).select('-password').exec();
 
+      console.log('[UsersService] User after update:', updatedUser?.lolAccount);
+
+      return updatedUser;
+
     } catch (error) {
+      console.error('[UsersService] Refresh error:', error);
       throw new BadRequestException(`Failed to refresh LoL account: ${error.message}`);
     }
   }
