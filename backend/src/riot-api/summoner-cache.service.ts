@@ -256,4 +256,55 @@ export class SummonerCacheService {
       return [];
     }
   }
+
+  /**
+   * Update player tags for a summoner
+   */
+  async updatePlayerTags(
+    puuid: string,
+    region: string,
+    tags: string[],
+    metadata: any,
+  ): Promise<void> {
+    try {
+      await this.summonerCacheModel.updateOne(
+        { puuid, region },
+        { 
+          $set: { 
+            tags,
+            tagMetadata: metadata,
+            tagsLastUpdated: new Date(),
+          } 
+        },
+      );
+      this.logger.log(`Updated tags for summoner ${puuid}: ${tags.join(', ')}`);
+    } catch (error) {
+      this.logger.error(`Error updating player tags: ${error.message}`);
+    }
+  }
+
+  /**
+   * Get player tags for a summoner
+   */
+  async getPlayerTags(puuid: string, region: string): Promise<{ tags: string[]; metadata: any } | null> {
+    try {
+      const cached = await this.summonerCacheModel
+        .findOne({ puuid, region })
+        .select('tags tagMetadata tagsLastUpdated')
+        .exec();
+
+      if (cached && cached.tags && cached.tags.length > 0) {
+        return {
+          tags: cached.tags,
+          metadata: cached.tagMetadata || {},
+        };
+      }
+
+      return null;
+    } catch (error) {
+      this.logger.error(`Error getting player tags: ${error.message}`);
+      return null;
+    }
+  }
 }
+

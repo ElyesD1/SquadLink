@@ -205,6 +205,10 @@ export default function MatchHistoryPage() {
   const [selectedFilter, setSelectedFilter] = useState<string>('all');
   const [loadMoreCooldown, setLoadMoreCooldown] = useState(0);
   
+  // Player tags state
+  const [playerTags, setPlayerTags] = useState<string[]>([]);
+  const [tagsLoading, setTagsLoading] = useState(false);
+  
   // Search summoner state
   const [searchedSummoner, setSearchedSummoner] = useState<LolAccount | null>(null);
   const [searchQuery, setSearchQuery] = useState(''); // Single unified search input
@@ -274,6 +278,17 @@ export default function MatchHistoryPage() {
       setLoading(false);
     }
   }, [profile]);
+
+  // Fetch player tags when matches are loaded and account changes
+  useEffect(() => {
+    if (matches.length > 0) {
+      const currentAccount = searchedSummoner || profile?.lolAccount;
+      if (currentAccount) {
+        console.log('[Player Tags] Fetching tags for account:', currentAccount.gameName);
+        fetchPlayerTags(currentAccount);
+      }
+    }
+  }, [matches.length, searchedSummoner?.puuid, profile?.lolAccount?.puuid]);
 
   // Fetch teammate profile icons when matches change
   useEffect(() => {
@@ -384,6 +399,49 @@ export default function MatchHistoryPage() {
     }
   };
 
+  const fetchPlayerTags = async (account: LolAccount | null) => {
+    if (!account?.puuid) return;
+
+    setTagsLoading(true);
+    try {
+      const response = await fetch(
+        `http://localhost:3001/api/v1/riot/player-tags/${account.puuid}?region=${account.region}`
+      );
+
+      if (response.ok) {
+        const data = await response.json();
+        setPlayerTags(data.tags || []);
+        console.log('[Player Tags] Loaded tags:', data.tags);
+      }
+    } catch (error) {
+      console.error('[Player Tags] Error fetching tags:', error);
+    } finally {
+      setTagsLoading(false);
+    }
+  };
+
+  const refreshPlayerTags = async (account: LolAccount | null) => {
+    if (!account?.puuid) return;
+
+    setTagsLoading(true);
+    try {
+      const response = await fetch(
+        `http://localhost:3001/api/v1/riot/player-tags/${account.puuid}/refresh?region=${account.region}`,
+        { method: 'POST' }
+      );
+
+      if (response.ok) {
+        const data = await response.json();
+        setPlayerTags(data.tags || []);
+        console.log('[Player Tags] Refreshed tags:', data.tags);
+      }
+    } catch (error) {
+      console.error('[Player Tags] Error refreshing tags:', error);
+    } finally {
+      setTagsLoading(false);
+    }
+  };
+
   const loadCachedMatches = async () => {
     if (!profile?.lolAccount?.puuid) return;
 
@@ -418,7 +476,8 @@ export default function MatchHistoryPage() {
           nextOffsetRef.current = sortedMatches.length;
           console.log('[Match History] Set next offset to:', nextOffsetRef.current);
 
-          
+          // Fetch player tags after loading matches
+          fetchPlayerTags(searchedSummoner || profile.lolAccount);
           
           // Add delay to allow images/assets to load before removing loading state
           await new Promise(resolve => setTimeout(resolve, 2000));
@@ -612,6 +671,12 @@ export default function MatchHistoryPage() {
           setMatches(allMatches);
           console.log('[Load More Frontend] ✅ Added', newMatches.length, 'matches. Total:', allMatches.length);
           
+          // Refresh player tags with updated match count
+          const currentAccount = getCurrentAccount();
+          if (currentAccount) {
+            refreshPlayerTags(currentAccount);
+          }
+          
           // Update offset for next request
           nextOffsetRef.current = offset + data.matches.length;
           console.log('[Load More Frontend] Next offset will be:', nextOffsetRef.current);
@@ -785,6 +850,9 @@ export default function MatchHistoryPage() {
     setSearchError('');
     setLoading(true);
     setShowAutocomplete(false); // Hide autocomplete when searching
+    
+    // Reset tags when switching summoners
+    setPlayerTags([]);
 
     try {
       // Search for summoner
@@ -825,6 +893,8 @@ export default function MatchHistoryPage() {
       setLoading(true);
       // Reset matches to ensure clean slate
       setMatches([]);
+      // Reset tags when loading new summoner
+      setPlayerTags([]);
       console.log('[Match History] Fetching matches for summoner:', account.gameName, 'Count:', count);
 
       // Try cache first - get ALL cached matches
@@ -851,7 +921,8 @@ export default function MatchHistoryPage() {
           nextOffsetRef.current = sortedMatches.length;
           console.log('[Match History] Set next offset to:', nextOffsetRef.current);
 
-          
+          // Fetch player tags for this summoner
+          fetchPlayerTags(account);
           
           // Add delay to allow images/assets to load before removing loading state
           await new Promise(resolve => setTimeout(resolve, 2000));
@@ -891,6 +962,9 @@ export default function MatchHistoryPage() {
         setMatches(sortedMatches);
         console.log('[Match History] Total matches loaded:', sortedMatches.length);
         
+        // Fetch player tags for this summoner
+        fetchPlayerTags(account);
+        
         // Set hasMore based on response or assume true if we got matches
         console.log('[Match History] Set hasMore to:', data.hasMore !== undefined ? data.hasMore : true);
       }
@@ -912,6 +986,7 @@ export default function MatchHistoryPage() {
     setSearchError('');
     setSelectedFilter('all');
     setMatches([]); // Clear matches before reloading
+    setPlayerTags([]); // Clear tags when returning to own profile
     
     if (profile?.lolAccount) {
       loadCachedMatches(); // Use the original function that was working
@@ -1920,6 +1995,57 @@ export default function MatchHistoryPage() {
                     </div>
                   </div>
                   </div>
+                
+                  {/* Player Tags Section */}
+                  {playerTags.length > 0 && (
+                    <div className="flex items-center justify-center gap-2 mt-4 pt-4 border-t border-cyan-400/10 flex-wrap">
+                      {playerTags.map((tag, index) => {
+                        // Determine tag style based on content
+                        const isPositive = ['Winner', 'KDA King', 'Good Laner', 'Deathless', 'Team Player', '1v1 Master', 'Consistent', 'Vision Expert', 'Good with', 'Pentakiller', 'Damage Dealer'].some(keyword => tag.includes(keyword));
+                        const isNegative = ['Bad Laner', 'Needs Practice', 'Risky Player', 'Struggling', 'Lacking Laner', 'Bad Duelist', 'Coinflip'].some(keyword => tag.includes(keyword));
+                        const isNeutral = !isPositive && !isNegative;
+                        
+                        let tagStyles = '';
+                        if (isPositive) {
+                          tagStyles = 'bg-green-500/10 border-green-400/30 text-green-400 shadow-[0_0_10px_rgba(74,222,128,0.15)]';
+                        } else if (isNegative) {
+                          tagStyles = 'bg-red-500/10 border-red-400/30 text-red-400 shadow-[0_0_10px_rgba(248,113,113,0.15)]';
+                        } else {
+                          tagStyles = 'bg-yellow-500/10 border-yellow-400/30 text-yellow-400 shadow-[0_0_10px_rgba(250,204,21,0.15)]';
+                        }
+
+                        return (
+                          <div
+                            key={index}
+                            className={`relative px-3 py-1.5 border text-xs font-bold font-mono uppercase tracking-wider ${tagStyles}`}
+                          >
+                            {tag}
+                            {/* Corner accents */}
+                            <div className="absolute top-0 left-0 w-1.5 h-1.5 border-t border-l border-current opacity-50"></div>
+                            <div className="absolute bottom-0 right-0 w-1.5 h-1.5 border-b border-r border-current opacity-50"></div>
+                          </div>
+                        );
+                      })}
+                      
+                      {/* Refresh tags button */}
+                      {tagsLoading ? (
+                        <div className="px-3 py-1.5 border border-cyan-400/30 text-xs font-mono text-cyan-400 animate-pulse">
+                          Analyzing...
+                        </div>
+                      ) : (
+                        <button
+                          onClick={() => {
+                            const account = getCurrentAccount();
+                            if (account) refreshPlayerTags(account);
+                          }}
+                          className="px-3 py-1.5 border border-cyan-400/30 text-xs font-mono text-cyan-400 hover:bg-cyan-400/10 transition-colors"
+                          title="Refresh player tags based on all loaded matches"
+                        >
+                          ↻
+                        </button>
+                      )}
+                    </div>
+                  )}
                 
                   {/* Top 3 Most Played Champions */}
                   <div className="flex items-center justify-center space-x-6 mt-4 pt-4 border-t border-cyan-400/10">

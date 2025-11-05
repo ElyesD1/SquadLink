@@ -6,6 +6,7 @@ import { RiotApiController } from './riot-api.controller';
 import { RiotApiService } from './riot-api.service';
 import { MatchCacheService } from './match-cache.service';
 import { SummonerCacheService } from './summoner-cache.service';
+import { PlayerTagsService } from './player-tags.service';
 import { MatchCache, MatchCacheSchema } from './entities/match-cache.entity';
 import { SummonerCache, SummonerCacheSchema } from './entities/summoner-cache.entity';
 
@@ -22,7 +23,7 @@ import { SummonerCache, SummonerCacheSchema } from './entities/summoner-cache.en
     ]),
   ],
   controllers: [RiotApiController],
-  providers: [RiotApiService, MatchCacheService, SummonerCacheService],
-  exports: [RiotApiService, MatchCacheService, SummonerCacheService],
+  providers: [RiotApiService, MatchCacheService, SummonerCacheService, PlayerTagsService],
+  exports: [RiotApiService, MatchCacheService, SummonerCacheService, PlayerTagsService],
 })
 export class RiotApiModule {}

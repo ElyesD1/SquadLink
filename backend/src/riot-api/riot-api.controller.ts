@@ -13,6 +13,7 @@ import { map, switchMap, catchError } from 'rxjs/operators';
 import { RiotApiService } from './riot-api.service';
 import { MatchCacheService } from './match-cache.service';
 import { SummonerCacheService } from './summoner-cache.service';
+import { PlayerTagsService } from './player-tags.service';
 import { SearchSummonerDto } from './dto/search-summoner.dto';
 import { 
   RiotAccount, 
@@ -29,6 +30,7 @@ export class RiotApiController {
     private readonly riotApiService: RiotApiService,
     private readonly matchCacheService: MatchCacheService,
     private readonly summonerCacheService: SummonerCacheService,
+    private readonly playerTagsService: PlayerTagsService,
   ) {}
 
   /**
@@ -710,4 +712,84 @@ export class RiotApiController {
     const seconds = Math.floor((ms % 60000) / 1000);
     return `${minutes}:${seconds.toString().padStart(2, '0')}`;
   }
+
+  /**
+   * GET /api/v1/riot/player-tags/:puuid
+   * Get or generate player tags based on match history
+   */
+  @Get('player-tags/:puuid')
+  async getPlayerTags(
+    @Param('puuid') puuid: string,
+    @Query('region') region: string = 'americas',
+  ): Promise<{ tags: string[]; metadata: any }> {
+    if (!puuid) {
+      throw new BadRequestException('PUUID is required');
+    }
+
+    // First check if we have cached tags
+    const cachedTags = await this.summonerCacheService.getPlayerTags(puuid, region);
+    
+    // If tags were updated less than 1 hour ago, return them
+    if (cachedTags && cachedTags.metadata?.analyzedAt) {
+      const lastUpdate = new Date(cachedTags.metadata.analyzedAt);
+      const hoursSinceUpdate = (Date.now() - lastUpdate.getTime()) / (1000 * 60 * 60);
+      
+      if (hoursSinceUpdate < 1) {
+        return cachedTags;
+      }
+    }
+
+    // Otherwise, analyze matches and generate new tags
+    const matches = await this.matchCacheService.getCachedMatches(puuid, region, 1000);
+    
+    if (!matches || matches.length === 0) {
+      return { tags: [], metadata: {} };
+    }
+
+    const analysis = await this.playerTagsService.analyzeTags(matches, puuid);
+    
+    // Save tags to cache
+    await this.summonerCacheService.updatePlayerTags(
+      puuid,
+      region,
+      analysis.tags,
+      analysis.metadata,
+    );
+
+    return analysis;
+  }
+
+  /**
+   * POST /api/v1/riot/player-tags/:puuid/refresh
+   * Force refresh player tags
+   */
+  @Post('player-tags/:puuid/refresh')
+  async refreshPlayerTags(
+    @Param('puuid') puuid: string,
+    @Query('region') region: string = 'americas',
+  ): Promise<{ tags: string[]; metadata: any }> {
+    if (!puuid) {
+      throw new BadRequestException('PUUID is required');
+    }
+
+    // Get matches from cache
+    const matches = await this.matchCacheService.getCachedMatches(puuid, region, 1000);
+    
+    if (!matches || matches.length === 0) {
+      return { tags: [], metadata: {} };
+    }
+
+    const analysis = await this.playerTagsService.analyzeTags(matches, puuid);
+    
+    // Save tags to cache
+    await this.summonerCacheService.updatePlayerTags(
+      puuid,
+      region,
+      analysis.tags,
+      analysis.metadata,
+    );
+
+    return analysis;
+  }
 }
+

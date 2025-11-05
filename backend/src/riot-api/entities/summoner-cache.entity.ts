@@ -18,11 +18,20 @@ export class SummonerCache extends Document {
   @Prop({ type: Object, required: true })
   summonerData: any; // Full summoner data from Riot API
 
+  @Prop({ type: [String], default: [] })
+  tags: string[]; // Player insights tags (e.g., "Good Laner", "Pacifist", etc.)
+
+  @Prop({ type: Object, default: {} })
+  tagMetadata: any; // Additional metadata for tags (stats used to generate them)
+
   @Prop({ default: Date.now })
   cachedAt: Date;
 
   @Prop({ default: Date.now })
   lastAccessed: Date;
+
+  @Prop({ default: Date.now })
+  tagsLastUpdated: Date;
 }
 
 export const SummonerCacheSchema = SchemaFactory.createForClass(SummonerCache);
