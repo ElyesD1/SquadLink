@@ -93,33 +93,73 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden bg-background">
+    <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden bg-gradient-to-br from-[#0a1628] via-[#050a15] to-[#0f1f3a]">
       {/* Animated Background Elements */}
-      <div className="fixed inset-0 -z-10 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 via-transparent to-blue-500/10 dark:from-purple-900/20 dark:to-blue-900/20" />
+      <div className="fixed inset-0 pointer-events-none">
+        {/* Grid Pattern - Behind everything */}
+        <div 
+          className="absolute inset-0 opacity-50"
+          style={{
+            backgroundImage: 'linear-gradient(to right, rgba(0,255,255,0.1) 1px, transparent 1px), linear-gradient(to bottom, rgba(0,255,255,0.1) 1px, transparent 1px)',
+            backgroundSize: '40px 40px'
+          }}
+        />
         
         {/* Floating Orbs */}
         <motion.div 
-          className="absolute top-20 -left-20 w-96 h-96 bg-purple-500/20 rounded-full blur-3xl"
+          className="absolute top-20 -left-20 w-[600px] h-[600px] bg-cyan-400/10 rounded-full blur-[120px]"
           animate={{
             scale: [1, 1.2, 1],
-            x: [0, 50, 0],
-            y: [0, 30, 0],
+            x: [0, 100, 0],
+            y: [0, 50, 0],
           }}
           transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }}
         />
         <motion.div 
-          className="absolute bottom-20 -right-20 w-[500px] h-[500px] bg-blue-500/20 rounded-full blur-3xl"
+          className="absolute bottom-20 -right-20 w-[500px] h-[500px] bg-blue-500/10 rounded-full blur-[120px]"
           animate={{
             scale: [1.2, 1, 1.2],
-            x: [0, -50, 0],
-            y: [0, -30, 0],
+            x: [0, -80, 0],
+            y: [0, -40, 0],
           }}
           transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
         />
         
-        {/* Grid Pattern */}
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808008_1px,transparent_1px),linear-gradient(to_bottom,#80808008_1px,transparent_1px)] bg-[size:32px_32px]" />
+        {/* Scan lines */}
+        <div className="absolute inset-0 bg-[linear-gradient(to_bottom,transparent_0%,rgba(0,255,255,0.03)_50%,transparent_100%)] bg-[length:100%_4px]" />
+        
+        {/* Floating Particles */}
+        {[...Array(15)].map((_, i) => (
+          <motion.div
+            key={i}
+            className="absolute w-1 h-1 bg-cyan-400/30"
+            style={{
+              left: `${Math.random() * 100}%`,
+              top: `${Math.random() * 100}%`,
+            }}
+            animate={{
+              y: [0, -30, 0],
+              opacity: [0.3, 0.6, 0.3],
+            }}
+            transition={{
+              duration: 3 + Math.random() * 2,
+              repeat: Infinity,
+              delay: Math.random() * 2,
+            }}
+          />
+        ))}
+        
+        {/* Tech Lines */}
+        <motion.div
+          className="absolute top-1/4 left-0 w-64 h-px bg-gradient-to-r from-transparent via-cyan-400/30 to-transparent"
+          animate={{ x: [-100, 1000] }}
+          transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
+        />
+        <motion.div
+          className="absolute bottom-1/3 right-0 w-96 h-px bg-gradient-to-r from-transparent via-blue-500/30 to-transparent"
+          animate={{ x: [1000, -100] }}
+          transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
+        />
       </div>
 
       {/* Content */}
@@ -134,17 +174,17 @@ export default function LoginPage() {
           {/* Logo and Branding */}
           <div className="space-y-6">
             <Link href="/" className="flex items-center gap-3 group">
-              <AnimatedLogo size="lg" />
+              <AnimatedLogo size="lg" variant="futuristic" />
             </Link>
 
             <div className="space-y-4">
-              <h1 className="text-5xl font-black leading-tight">
+              <h1 className="text-5xl font-black font-mono leading-tight uppercase tracking-wider">
                 Welcome <br />
-                <span className="bg-gradient-to-r from-purple-600 to-blue-500 bg-clip-text text-transparent">
+                <span className="bg-gradient-to-r from-cyan-400 via-blue-500 to-cyan-400 bg-clip-text text-transparent drop-shadow-[0_0_30px_rgba(0,255,255,0.3)]">
                   Back!
                 </span>
               </h1>
-              <p className="text-xl text-muted-foreground leading-relaxed">
+              <p className="text-xl text-gray-400 leading-relaxed">
                 Connect with gamers who share your passion. Form squads, make friends, and elevate your gameplay.
               </p>
             </div>
@@ -152,25 +192,25 @@ export default function LoginPage() {
 
           {/* Supported Games */}
           <div className="space-y-6">
-            <h3 className="text-lg font-black text-foreground">Supported Games</h3>
+            <h3 className="text-lg font-black font-mono uppercase tracking-wider text-cyan-400">Supported Games</h3>
             <div className="grid grid-cols-3 gap-4">
               {[
                 {
                   name: 'League of Legends',
                   description: 'Find your perfect team composition',
-                  gradient: 'from-blue-600 to-gold-400',
+                  gradient: 'from-cyan-400 to-blue-500',
                   icon: '/league.png'
                 },
                 {
                   name: 'Valorant',
                   description: 'Tactical squad coordination',
-                  gradient: 'from-red-500 to-orange-400',
+                  gradient: 'from-blue-500 to-cyan-400',
                   icon: '/valorant.png'
                 },
                 {
                   name: 'Fortnite',
                   description: 'Build and battle together',
-                  gradient: 'from-purple-500 to-pink-400',
+                  gradient: 'from-cyan-500 to-blue-400',
                   icon: '/fortnite.png'
                 }
               ].map((game, index) => (
@@ -179,24 +219,32 @@ export default function LoginPage() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.3 + index * 0.1 }}
-                  className="relative group"
+                  whileHover={{ scale: 1.05, y: -5 }}
+                  className="relative group cursor-pointer"
                 >
-                  <div className={`h-24 rounded-2xl bg-gradient-to-br ${game.gradient} p-1`}>
-                    <div className="h-full w-full bg-card/90 rounded-xl flex flex-col items-center justify-center gap-1 group-hover:bg-card/70 transition-colors">
+                  {/* Glow effect on hover */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-cyan-400/20 to-blue-500/20 rounded blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  
+                  <div className={`relative h-24 bg-gradient-to-br ${game.gradient} p-[2px]`}
+                    style={{ clipPath: 'polygon(4px 0, 100% 0, 100% calc(100% - 4px), calc(100% - 4px) 100%, 0 100%, 0 4px)' }}
+                  >
+                    <div className="h-full w-full bg-[#0a1628] flex flex-col items-center justify-center gap-1 group-hover:bg-[#0a1628]/90 transition-all duration-300"
+                      style={{ clipPath: 'polygon(3px 0, 100% 0, 100% calc(100% - 3px), calc(100% - 3px) 100%, 0 100%, 0 3px)' }}
+                    >
                       <Image
                         src={game.icon}
                         alt={game.name}
                         width={32}
                         height={32}
-                        className="w-8 h-8 object-contain"
+                        className="w-8 h-8 object-contain group-hover:scale-110 transition-transform duration-300"
                       />
-                      <span className="text-xs font-bold text-center leading-tight">{game.name}</span>
+                      <span className="text-xs font-bold font-mono text-center leading-tight text-cyan-400 group-hover:text-cyan-300 transition-colors">{game.name}</span>
                     </div>
                   </div>
                 </motion.div>
               ))}
             </div>
-            <p className="text-sm text-muted-foreground text-center">
+            <p className="text-sm text-gray-400 text-center">
               Connect with players who share your gaming passion
             </p>
           </div>
@@ -204,15 +252,58 @@ export default function LoginPage() {
           {/* Join the Community */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
+            animate={{ 
+              opacity: 1, 
+              y: 0,
+            }}
             transition={{ delay: 0.7 }}
-            className="relative overflow-hidden rounded-3xl border-2 border-purple-500/20 bg-gradient-to-br from-purple-500/10 to-blue-500/10 p-6 text-center"
+            className="relative overflow-hidden border-2 border-cyan-400/30 p-6 text-center group cursor-pointer"
+            style={{ clipPath: 'polygon(6px 0, 100% 0, 100% calc(100% - 6px), calc(100% - 6px) 100%, 0 100%, 0 6px)' }}
           >
-            <div className="absolute inset-0 bg-gradient-to-br from-purple-600/5 to-blue-600/5" />
-            <div className="relative space-y-3">
-              <div className="text-3xl">🎮</div>
-              <h3 className="text-lg font-black text-foreground">Ready to Squad Up?</h3>
-              <p className="text-sm text-muted-foreground leading-relaxed">
+            {/* Solid background to hide grid */}
+            <div className="absolute inset-0 bg-[#0a1628]/95 backdrop-blur-sm" />
+            
+            {/* Animated gradient overlay */}
+            <motion.div 
+              className="absolute inset-0 bg-gradient-to-br from-cyan-400/10 to-blue-500/10"
+              animate={{
+                opacity: [0.5, 1, 0.5],
+              }}
+              transition={{ duration: 3, repeat: Infinity }}
+            />
+            
+            {/* Corner brackets with glow */}
+            <motion.div 
+              className="absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-cyan-400/60"
+              animate={{ opacity: [0.6, 1, 0.6] }}
+              transition={{ duration: 2, repeat: Infinity }}
+            />
+            <motion.div 
+              className="absolute top-0 right-0 w-4 h-4 border-t-2 border-r-2 border-cyan-400/60"
+              animate={{ opacity: [0.6, 1, 0.6] }}
+              transition={{ duration: 2, repeat: Infinity, delay: 0.5 }}
+            />
+            <motion.div 
+              className="absolute bottom-0 left-0 w-4 h-4 border-b-2 border-l-2 border-cyan-400/60"
+              animate={{ opacity: [0.6, 1, 0.6] }}
+              transition={{ duration: 2, repeat: Infinity, delay: 1 }}
+            />
+            <motion.div 
+              className="absolute bottom-0 right-0 w-4 h-4 border-b-2 border-r-2 border-cyan-400/60"
+              animate={{ opacity: [0.6, 1, 0.6] }}
+              transition={{ duration: 2, repeat: Infinity, delay: 1.5 }}
+            />
+            
+            <div className="relative space-y-3 z-10">
+              <motion.div 
+                className="text-3xl"
+                animate={{ rotate: [0, 10, -10, 0] }}
+                transition={{ duration: 2, repeat: Infinity }}
+              >
+                🎮
+              </motion.div>
+              <h3 className="text-lg font-black font-mono uppercase tracking-wider text-cyan-400">Ready to Squad Up?</h3>
+              <p className="text-sm text-gray-400 leading-relaxed">
                 Join fellow gamers, form lasting friendships, and dominate your favorite games together.
               </p>
             </div>
@@ -224,19 +315,53 @@ export default function LoginPage() {
           initial={{ opacity: 0, x: 50 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.6 }}
-          className="w-full max-w-md mx-auto"
+          className="w-full max-w-md mx-auto relative"
         >
-          <Card className="border-2 border-border shadow-2xl shadow-purple-500/10 backdrop-blur-sm bg-card/95">
+          {/* Pulsing glow behind card */}
+          <motion.div
+            className="absolute inset-0 bg-cyan-400/10 blur-3xl rounded-lg"
+            animate={{
+              opacity: [0.3, 0.6, 0.3],
+              scale: [1, 1.05, 1],
+            }}
+            transition={{ duration: 4, repeat: Infinity }}
+          />
+          
+          <Card className="relative border-2 border-cyan-400/30 shadow-[0_0_50px_rgba(0,255,255,0.15)] backdrop-blur-sm bg-gradient-to-br from-[#0a1628]/95 to-[#0f1f3a]/95"
+            style={{ clipPath: 'polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px)' }}
+          >
+            {/* Corner brackets with animation */}
+            <motion.div 
+              className="absolute top-0 left-0 w-6 h-6 border-t-2 border-l-2 border-cyan-400 z-10"
+              animate={{ opacity: [0.7, 1, 0.7] }}
+              transition={{ duration: 2, repeat: Infinity }}
+            />
+            <motion.div 
+              className="absolute top-0 right-0 w-6 h-6 border-t-2 border-r-2 border-cyan-400 z-10"
+              animate={{ opacity: [0.7, 1, 0.7] }}
+              transition={{ duration: 2, repeat: Infinity, delay: 0.5 }}
+            />
+            <motion.div 
+              className="absolute bottom-0 left-0 w-6 h-6 border-b-2 border-l-2 border-cyan-400 z-10"
+              animate={{ opacity: [0.7, 1, 0.7] }}
+              transition={{ duration: 2, repeat: Infinity, delay: 1 }}
+            />
+            <motion.div 
+              className="absolute bottom-0 right-0 w-6 h-6 border-b-2 border-r-2 border-cyan-400 z-10"
+              animate={{ opacity: [0.7, 1, 0.7] }}
+              transition={{ duration: 2, repeat: Infinity, delay: 1.5 }}
+            />
+            
             <CardHeader className="space-y-1 pb-6">
               {/* Mobile Logo */}
               <div className="flex items-center justify-center lg:hidden mb-4">
                 <Link href="/">
-                  <AnimatedLogo size="md" />
+                  <AnimatedLogo size="md" variant="futuristic" />
                 </Link>
               </div>
               
-              <CardTitle className="text-3xl font-black text-center">Sign In</CardTitle>
-              <CardDescription className="text-center text-base">
+              <CardTitle className="text-3xl font-black font-mono text-center uppercase tracking-wider bg-gradient-to-r from-cyan-400 via-blue-500 to-cyan-400 bg-clip-text text-transparent">Sign In</CardTitle>
+              <CardDescription className="text-center text-base text-gray-400">
                 Welcome back! Enter your credentials to continue
               </CardDescription>
             </CardHeader>
@@ -246,7 +371,8 @@ export default function LoginPage() {
                 <motion.div
                   initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="flex items-center gap-2 p-4 rounded-xl bg-destructive/10 border border-destructive/20 text-destructive"
+                  className="flex items-center gap-2 p-4 bg-red-500/10 border border-red-500/30 text-red-400"
+                  style={{ clipPath: 'polygon(4px 0, 100% 0, 100% calc(100% - 4px), calc(100% - 4px) 100%, 0 100%, 0 4px)' }}
                 >
                   <AlertCircle className="w-5 h-5 flex-shrink-0" />
                   <p className="text-sm font-medium">{error}</p>
@@ -257,7 +383,8 @@ export default function LoginPage() {
                 type="button"
                 variant="outline"
                 size="lg"
-                className="w-full text-base font-semibold h-12 border-2 hover:border-purple-500/30 hover:bg-purple-500/5 transition-all duration-300"
+                className="w-full text-base font-semibold h-12 border-2 border-cyan-400/30 bg-gradient-to-r from-cyan-400/5 to-blue-500/5 hover:border-cyan-400/50 hover:shadow-[0_0_20px_rgba(0,255,255,0.2)] transition-all duration-300 text-gray-300"
+                style={{ clipPath: 'polygon(4px 0, 100% 0, 100% calc(100% - 4px), calc(100% - 4px) 100%, 0 100%, 0 4px)' }}
                 onClick={handleGoogleSignIn}
               >
                 <FcGoogle className="w-6 h-6" />
@@ -266,25 +393,26 @@ export default function LoginPage() {
 
               <div className="relative">
                 <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-border"></div>
+                  <div className="w-full border-t border-cyan-400/20"></div>
                 </div>
                 <div className="relative flex justify-center text-sm">
-                  <span className="px-4 bg-card text-muted-foreground font-medium">Or continue with email</span>
+                  <span className="px-4 bg-[#0a1628] text-gray-400 font-medium font-mono uppercase tracking-wider">Or continue with email</span>
                 </div>
               </div>
 
               {/* Login Form */}
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="space-y-2">
-                  <label className="text-sm font-semibold text-foreground">Email Address</label>
+                  <label className="text-sm font-semibold font-mono uppercase tracking-wider text-cyan-400">Email Address</label>
                   <div className="relative">
-                    <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                    <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                     <Input
                       type="email"
                       placeholder="your@email.com"
                       value={formData.email}
                       onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                      className="pl-12 h-12 border-2 focus:border-purple-500 transition-colors"
+                      className="pl-12 h-12 border-2 border-cyan-400/30 bg-[#0f1f3a]/50 text-gray-200 focus:border-cyan-400 transition-colors"
+                      style={{ clipPath: 'polygon(3px 0, 100% 0, 100% calc(100% - 3px), calc(100% - 3px) 100%, 0 100%, 0 3px)' }}
                       required
                     />
                   </div>
@@ -292,32 +420,33 @@ export default function LoginPage() {
 
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
-                    <label className="text-sm font-semibold text-foreground">Password</label>
+                    <label className="text-sm font-semibold font-mono uppercase tracking-wider text-cyan-400">Password</label>
                     <Link 
                       href="#" 
                       onClick={(e) => {
                         e.preventDefault();
                         setShowPasswordReset(true);
                       }}
-                      className="text-sm text-purple-600 hover:text-purple-700 dark:text-purple-400 dark:hover:text-purple-300 font-medium"
+                      className="text-sm text-cyan-400 hover:text-cyan-300 font-medium"
                     >
                       Forgot?
                     </Link>
                   </div>
                   <div className="relative">
-                    <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                    <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                     <Input
                       type={showPassword ? "text" : "password"}
                       placeholder="••••••••"
                       value={formData.password}
                       onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                      className="pl-12 pr-12 h-12 border-2 focus:border-purple-500 transition-colors"
+                      className="pl-12 pr-12 h-12 border-2 border-cyan-400/30 bg-[#0f1f3a]/50 text-gray-200 focus:border-cyan-400 transition-colors"
+                      style={{ clipPath: 'polygon(3px 0, 100% 0, 100% calc(100% - 3px), calc(100% - 3px) 100%, 0 100%, 0 3px)' }}
                       required
                     />
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                      className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-cyan-400 transition-colors"
                     >
                       {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                     </button>
@@ -337,9 +466,9 @@ export default function LoginPage() {
 
                 <Button
                   type="submit"
-                  variant="premium"
                   size="lg"
-                  className="w-full text-base font-semibold h-12 shadow-lg shadow-purple-500/25"
+                  className="w-full text-base font-mono font-semibold h-12 bg-gradient-to-r from-cyan-400 via-blue-500 to-cyan-400 hover:shadow-[0_0_30px_rgba(0,255,255,0.4)] transition-all duration-300 uppercase tracking-wider text-black border-0"
+                  style={{ clipPath: 'polygon(4px 0, 100% 0, 100% calc(100% - 4px), calc(100% - 4px) 100%, 0 100%, 0 4px)' }}
                   disabled={loading}
                 >
                   {loading ? (
@@ -347,7 +476,7 @@ export default function LoginPage() {
                       animate={{ rotate: 360 }}
                       transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
                     >
-                      <Zap className="w-5 h-5" />
+                      <Zap className="w-5 h-5 text-black" />
                     </motion.div>
                   ) : (
                     <>
@@ -359,19 +488,19 @@ export default function LoginPage() {
               </form>
             </CardContent>
 
-            <CardFooter className="flex flex-col space-y-4 pt-6 border-t border-border/50">
-              <p className="text-center text-sm text-muted-foreground">
+            <CardFooter className="flex flex-col space-y-4 pt-6 border-t border-cyan-400/20">
+              <p className="text-center text-sm text-gray-400">
                 Don't have an account?{' '}
                 <Link 
                   href="/auth/register" 
-                  className="font-semibold text-purple-600 hover:text-purple-700 dark:text-purple-400 dark:hover:text-purple-300 transition-colors"
+                  className="font-semibold text-cyan-400 hover:text-cyan-300 transition-colors"
                 >
                   Create one now
                 </Link>
               </p>
               <Link 
                 href="/" 
-                className="text-center text-sm text-muted-foreground hover:text-foreground transition-colors"
+                className="text-center text-sm text-gray-400 hover:text-cyan-400 transition-colors"
               >
                 ← Back to home
               </Link>
