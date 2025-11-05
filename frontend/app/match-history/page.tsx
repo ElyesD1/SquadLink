@@ -394,7 +394,7 @@ export default function MatchHistoryPage() {
         region: profile.lolAccount.region,
       });
 
-      // Try to load ALL cached matches first
+      // Try to load ALL cached matches from backend
       const cachedResponse = await fetch(
         `http://localhost:3001/api/v1/riot/matches/${profile.lolAccount.puuid}/cached?region=${profile.lolAccount.region}&count=1000` // Get all cached matches
       );
@@ -410,7 +410,7 @@ export default function MatchHistoryPage() {
         });
         
         if (cachedData.matches && cachedData.matches.length > 0) {
-          console.log('[Match History] ✅ LOADED FROM CACHE:', cachedData.matches.length, 'matches');
+          console.log('[Match History] ✅ LOADED FROM SERVER CACHE:', cachedData.matches.length, 'matches');
           // Sort matches by game creation date (latest first)
           const sortedMatches = [...cachedData.matches].sort((a, b) => b.info.gameCreation - a.info.gameCreation);
           setMatches(sortedMatches);
@@ -727,6 +727,21 @@ export default function MatchHistoryPage() {
     setAutocompleteSuggestions([]);
     // Auto-trigger search
     setTimeout(() => handleSearchSummoner(suggestion.gameName, suggestion.tagLine, suggestion.region), 100);
+  };
+
+  // Navigate to any summoner (reusable function for clicking on summoners anywhere)
+  const navigateToSummoner = async (gameName: string, tagLine: string, region?: string) => {
+    // Update search query to show what we're searching for
+    setSearchQuery(`${gameName}#${tagLine}`);
+    if (region) {
+      setSelectedRegion(region);
+    }
+    
+    // Trigger search with the summoner's data
+    await handleSearchSummoner(gameName, tagLine, region || selectedRegion);
+    
+    // Scroll to top smoothly
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   // Parse search query (GameName#TAG format)
@@ -1696,9 +1711,10 @@ export default function MatchHistoryPage() {
                           const winRate = (teammate.wins / teammate.gamesPlayed * 100).toFixed(0);
                           
                           return (
-                            <div 
+                            <button 
                               key={teammate.puuid}
-                              className="grid grid-cols-12 gap-2 items-center py-2 border-b border-cyan-400/10 hover:bg-cyan-400/5 transition-colors group"
+                              onClick={() => navigateToSummoner(teammate.gameName, teammate.tagLine, getCurrentAccount()?.region)}
+                              className="grid grid-cols-12 gap-2 items-center py-2 border-b border-cyan-400/10 hover:bg-cyan-400/5 transition-colors group w-full text-left cursor-pointer"
                             >
                               {/* Summoner Info */}
                               <div className="col-span-5 flex items-center space-x-2">
@@ -1745,7 +1761,7 @@ export default function MatchHistoryPage() {
                                   {winRate}%
                                 </span>
                               </div>
-                            </div>
+                            </button>
                           );
                         })
                       ) : (
@@ -2773,11 +2789,22 @@ export default function MatchHistoryPage() {
 
                                               {/* Player Name & Position */}
                                               <div className="flex-1 min-w-0">
-                                                <div className={`text-xs font-medium truncate ${
-                                                  isPlayer ? 'text-cyan-400 font-bold drop-shadow-[0_0_5px_rgba(0,255,255,0.5)]' : 'text-white'
-                                                }`}>
+                                                <button
+                                                  onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    navigateToSummoner(
+                                                      participant.riotIdGameName,
+                                                      participant.riotIdTagline,
+                                                      getCurrentAccount()?.region
+                                                    );
+                                                  }}
+                                                  className={`text-xs font-medium truncate text-left hover:underline transition-all ${
+                                                    isPlayer ? 'text-cyan-400 font-bold drop-shadow-[0_0_5px_rgba(0,255,255,0.5)] hover:text-cyan-300' : 'text-white hover:text-cyan-400'
+                                                  }`}
+                                                  title={`View ${participant.riotIdGameName}#${participant.riotIdTagline}'s profile`}
+                                                >
                                                   {participant.riotIdGameName}
-                                                </div>
+                                                </button>
                                                 <div className="flex items-center space-x-1.5">
                                                   {hasPositions(match.info.queueId) && getPlayerPosition(participant) && getRoleIconUrl(getPlayerPosition(participant)) && (
                                                     <div className="w-3 h-3 relative flex-shrink-0">
@@ -3038,11 +3065,22 @@ export default function MatchHistoryPage() {
 
                                               {/* Player Name & Position */}
                                               <div className="flex-1 min-w-0">
-                                                <div className={`text-xs font-medium truncate ${
-                                                  isPlayer ? 'text-red-400 font-bold drop-shadow-[0_0_5px_rgba(232,64,87,0.5)]' : 'text-white'
-                                                }`}>
+                                                <button
+                                                  onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    navigateToSummoner(
+                                                      participant.riotIdGameName,
+                                                      participant.riotIdTagline,
+                                                      getCurrentAccount()?.region
+                                                    );
+                                                  }}
+                                                  className={`text-xs font-medium truncate text-left hover:underline transition-all ${
+                                                    isPlayer ? 'text-red-400 font-bold drop-shadow-[0_0_5px_rgba(232,64,87,0.5)] hover:text-red-300' : 'text-white hover:text-cyan-400'
+                                                  }`}
+                                                  title={`View ${participant.riotIdGameName}#${participant.riotIdTagline}'s profile`}
+                                                >
                                                   {participant.riotIdGameName}
-                                                </div>
+                                                </button>
                                                 <div className="flex items-center space-x-1.5">
                                                   {hasPositions(match.info.queueId) && getPlayerPosition(participant) && getRoleIconUrl(getPlayerPosition(participant)) && (
                                                     <div className="w-3 h-3 relative flex-shrink-0">
