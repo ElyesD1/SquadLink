@@ -56,6 +56,61 @@ body {
   border-color: hsl(var(--border));
 }
 
+/* Futuristic Scrollbar - Global Styles */
+::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+
+::-webkit-scrollbar-track {
+  background: linear-gradient(to bottom, #0a1628, #0f1f3a, #0a1628);
+  border-left: 1px solid rgba(0, 255, 255, 0.1);
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(to bottom, #5383E8, #00ffff, #5383E8);
+  border-radius: 2px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+  box-shadow: 
+    0 0 10px rgba(0, 255, 255, 0.3),
+    inset 0 0 5px rgba(0, 255, 255, 0.2);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(to bottom, #00ffff, #5383E8, #00ffff);
+  box-shadow: 
+    0 0 15px rgba(0, 255, 255, 0.6),
+    inset 0 0 8px rgba(0, 255, 255, 0.4);
+}
+
+::-webkit-scrollbar-thumb:active {
+  background: linear-gradient(to bottom, #00ffff, #0ea5e9, #00ffff);
+  box-shadow: 
+    0 0 20px rgba(0, 255, 255, 0.8),
+    inset 0 0 10px rgba(0, 255, 255, 0.6);
+}
+
+::-webkit-scrollbar-corner {
+  background: #0a1628;
+}
+
+/* Horizontal scrollbar styling */
+::-webkit-scrollbar:horizontal {
+  height: 12px;
+}
+
+::-webkit-scrollbar-track:horizontal {
+  background: linear-gradient(to right, #0a1628, #0f1f3a, #0a1628);
+  border-top: 1px solid rgba(0, 255, 255, 0.1);
+}
+
+/* Firefox scrollbar */
+html {
+  scrollbar-width: thin;
+  scrollbar-color: #00ffff #0a1628;
+}
+
 @layer utilities {
   .bg-grid-pattern {
     background-image: 
@@ -78,24 +133,6 @@ body {
 
   .shadow-3xl {
     box-shadow: 0 35px 60px -12px rgba(0, 0, 0, 0.25);
-  }
-
-  /* Enhanced scrollbar */
-  ::-webkit-scrollbar {
-    width: 8px;
-  }
-
-  ::-webkit-scrollbar-track {
-    background: rgba(0, 0, 0, 0.1);
-  }
-
-  ::-webkit-scrollbar-thumb {
-    background: linear-gradient(to bottom, #8b5cf6, #a855f7);
-    border-radius: 4px;
-  }
-
-  ::-webkit-scrollbar-thumb:hover {
-    background: linear-gradient(to bottom, #7c3aed, #9333ea);
   }
 
   /* Glass morphism utilities */

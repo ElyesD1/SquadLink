@@ -220,16 +220,29 @@ export default function ProfilePage() {
 
   if (!mounted || status === 'loading' || isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-[#0A0118] via-[#1A0B2E] to-[#0A0118] flex items-center justify-center">
-        <div className={`${getTextClass(currentTheme)} text-2xl`}>Loading profile...</div>
+      <div className="min-h-screen bg-[#050a15] relative overflow-hidden flex items-center justify-center">
+        {/* Tech background */}
+        <div className="fixed inset-0 bg-[linear-gradient(rgba(0,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(0,255,255,0.03)_1px,transparent_1px)] bg-[size:50px_50px]"></div>
+        <div className="absolute inset-0 bg-[linear-gradient(transparent_50%,rgba(0,255,255,0.02)_50%)] bg-[length:100%_4px]"></div>
+        
+        <div className="relative z-10 text-center">
+          <AnimatedLogo size="lg" variant="futuristic" />
+          <p className="text-cyan-400 mt-4 font-mono tracking-wider drop-shadow-[0_0_10px_rgba(0,255,255,0.5)]">LOADING PROFILE...</p>
+        </div>
       </div>
     );
   }
 
   if (!userProfile) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-[#0A0118] via-[#1A0B2E] to-[#0A0118] flex items-center justify-center">
-        <div className={`${getTextClass(currentTheme)} text-2xl`}>Profile not found</div>
+      <div className="min-h-screen bg-[#050a15] relative overflow-hidden flex items-center justify-center">
+        {/* Tech background */}
+        <div className="fixed inset-0 bg-[linear-gradient(rgba(0,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(0,255,255,0.03)_1px,transparent_1px)] bg-[size:50px_50px]"></div>
+        <div className="absolute inset-0 bg-[linear-gradient(transparent_50%,rgba(0,255,255,0.02)_50%)] bg-[length:100%_4px]"></div>
+        
+        <div className="relative z-10 text-center">
+          <p className="text-cyan-400 text-2xl font-mono tracking-wider drop-shadow-[0_0_10px_rgba(0,255,255,0.5)]">PROFILE NOT FOUND</p>
+        </div>
       </div>
     );
   }
@@ -254,46 +267,39 @@ export default function ProfilePage() {
   return (
     <NavigationDrawer>
       <OfflineBanner />
-      <div className="min-h-screen bg-background relative overflow-hidden">
-      {/* Animated Background Elements */}
-      <div className="fixed inset-0 -z-10 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 via-transparent to-blue-500/10 dark:from-purple-900/20 dark:to-blue-900/20" />
-        
-        {/* Floating Orbs */}
-        <motion.div 
-          className="absolute top-20 -left-20 w-96 h-96 bg-purple-500/20 rounded-full blur-3xl"
-          animate={{
-            scale: [1, 1.2, 1],
-            x: [0, 50, 0],
-            y: [0, 30, 0],
-          }}
-          transition={{
-            duration: 12,
-            repeat: Infinity,
-            ease: "easeInOut",
-          }}
-        />
-        
-        <motion.div 
-          className="absolute bottom-20 -right-20 w-80 h-80 bg-blue-500/20 rounded-full blur-3xl"
-          animate={{
-            scale: [1.2, 1, 1.2],
-            x: [0, -30, 0],
-            y: [0, -50, 0],
-          }}
-          transition={{
-            duration: 10,
-            repeat: Infinity,
-            ease: "easeInOut",
-          }}
-        />
+      <div className="min-h-screen bg-[#050a15] relative overflow-hidden">
+      {/* Futuristic Background Layers */}
+      
+      {/* Animated grid pattern */}
+      <div className="fixed inset-0 bg-[linear-gradient(rgba(0,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(0,255,255,0.03)_1px,transparent_1px)] bg-[size:50px_50px] [mask-image:radial-gradient(ellipse_80%_50%_at_50%_0%,black,transparent)]"></div>
+      
+      {/* Large glowing orbs */}
+      <div className="fixed top-0 left-1/4 w-[600px] h-[600px] bg-[#5383E8]/10 rounded-full blur-[120px] animate-pulse"></div>
+      <div className="fixed bottom-0 right-1/4 w-[600px] h-[600px] bg-cyan-400/10 rounded-full blur-[120px] animate-pulse" style={{ animationDelay: '2s' }}></div>
+      
+      {/* Scan lines effect */}
+      <div className="fixed inset-0 bg-[linear-gradient(transparent_50%,rgba(0,255,255,0.02)_50%)] bg-[length:100%_4px] pointer-events-none"></div>
+      
+      {/* Diagonal tech lines */}
+      <div className="fixed inset-0 opacity-10">
+        <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-cyan-400/50 to-transparent"></div>
+        <div className="absolute top-20 left-0 w-full h-px bg-gradient-to-r from-transparent via-[#5383E8]/30 to-transparent"></div>
+        <div className="absolute bottom-20 left-0 w-full h-px bg-gradient-to-r from-transparent via-cyan-400/30 to-transparent"></div>
+      </div>
+      
+      {/* Circuit pattern overlay */}
+      <div className="fixed inset-0 opacity-5">
+        <div className="absolute top-10 left-10 w-20 h-20 border-l-2 border-t-2 border-cyan-400"></div>
+        <div className="absolute top-10 right-10 w-20 h-20 border-r-2 border-t-2 border-cyan-400"></div>
+        <div className="absolute bottom-10 left-10 w-20 h-20 border-l-2 border-b-2 border-cyan-400"></div>
+        <div className="absolute bottom-10 right-10 w-20 h-20 border-r-2 border-b-2 border-cyan-400"></div>
       </div>
 
       {/* Content */}
       <div className="relative z-10 min-h-screen p-6">
         {/* Header */}
         <header className="max-w-7xl mx-auto flex items-center justify-center mb-12">
-          <AnimatedLogo size="md" />
+          <AnimatedLogo size="md" variant="futuristic" />
         </header>
 
         <OfflineDataMessage dataType="profile" className="max-w-6xl mx-auto mb-6" />
@@ -302,15 +308,35 @@ export default function ProfilePage() {
         <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Profile Picture & Basic Info */}
           <div className="lg:col-span-1">
-            <Card className="border-2 border-border shadow-2xl shadow-purple-500/10 backdrop-blur-sm bg-card/95">
-              <CardHeader>
-                <CardTitle className={`${getTextClass(currentTheme)} text-center`}>Profile</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-6">
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              className="bg-gradient-to-br from-[#0a1628] via-[#0f1f3a] to-[#0a1628] rounded-none p-6 border-2 border-cyan-400/20 shadow-[0_0_30px_rgba(83,131,232,0.2)] relative overflow-hidden"
+            >
+              {/* Top tech line */}
+              <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-cyan-400/50 to-transparent"></div>
+              
+              {/* Side accent */}
+              <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-transparent via-[#5383E8] to-transparent shadow-[0_0_10px_#5383E8]"></div>
+              
+              {/* Corner brackets */}
+              <div className="absolute top-0 left-0 w-8 h-8 border-t-2 border-l-2 border-cyan-400/40"></div>
+              <div className="absolute top-0 right-0 w-8 h-8 border-t-2 border-r-2 border-cyan-400/40"></div>
+              <div className="absolute bottom-0 left-0 w-8 h-8 border-b-2 border-l-2 border-cyan-400/40"></div>
+              <div className="absolute bottom-0 right-0 w-8 h-8 border-b-2 border-r-2 border-cyan-400/40"></div>
+
+              <h3 className="text-sm font-bold text-cyan-400 font-mono tracking-wider uppercase mb-6 text-center drop-shadow-[0_0_10px_rgba(0,255,255,0.3)]">
+                PROFILE
+              </h3>
+
+              <div className="space-y-6 relative z-10">
                 {/* Profile Picture */}
                 <div className="text-center">
-                  <div className="relative inline-block">
-                    <div className="w-32 h-32 rounded-full overflow-hidden bg-gradient-to-br from-purple-600/20 to-blue-600/20 flex items-center justify-center border-4 border-white/20">
+                  <div className="relative inline-block group">
+                    {/* Outer glow ring */}
+                    <div className="absolute inset-0 bg-gradient-to-br from-cyan-400 via-[#5383E8] to-cyan-400 opacity-40 blur-lg rounded-full"></div>
+                    
+                    <div className="relative w-32 h-32 rounded-full overflow-hidden bg-gradient-to-br from-[#0a1628] to-[#1a2f4a] flex items-center justify-center border-2 border-cyan-400/50 shadow-[0_0_20px_rgba(0,255,255,0.4)]">
                       {userProfile.profilePicture ? (
                         <Image
                           src={userProfile.profilePicture}
@@ -320,89 +346,132 @@ export default function ProfilePage() {
                           className="w-full h-full object-cover"
                         />
                       ) : (
-                        <div className={`${getTextClass(currentTheme)} text-4xl font-bold`}>
+                        <div className="text-cyan-400 text-4xl font-bold font-mono drop-shadow-[0_0_10px_rgba(0,255,255,0.6)]">
                           {userProfile.firstName[0]}{userProfile.lastName[0]}
                         </div>
                       )}
+                      {/* Holographic overlay */}
+                      <div className="absolute inset-0 bg-gradient-to-tr from-cyan-400/10 via-transparent to-transparent"></div>
                     </div>
+                    
                     <button
                       onClick={() => setShowAvatarSelector(true)}
-                      className="absolute -bottom-2 -right-2 bg-purple-600 hover:bg-purple-700 text-white p-2 rounded-full transition-colors"
+                      className="absolute -bottom-2 -right-2 bg-gradient-to-br from-[#5383E8] to-cyan-400 hover:from-cyan-400 hover:to-[#5383E8] text-white p-2 border border-cyan-400/50 shadow-[0_0_15px_rgba(0,255,255,0.4)] hover:shadow-[0_0_25px_rgba(0,255,255,0.6)] transition-all group"
                     >
-                      <FiEdit className="w-4 h-4" />
+                      <div className="absolute top-0 left-0 w-2 h-2 border-t border-l border-white/50"></div>
+                      <div className="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-white/50"></div>
+                      <FiEdit className="w-4 h-4 relative z-10" />
                     </button>
                   </div>
                 </div>
 
                 {/* User Info */}
                 <div className="text-center space-y-2">
-                  <h2 className={`${getTextClass(currentTheme)} text-xl font-bold`}>
+                  <h2 className="text-xl font-black text-white font-mono tracking-wide drop-shadow-[0_0_10px_rgba(255,255,255,0.3)]">
                     {userProfile.firstName} {userProfile.lastName}
                   </h2>
-                  <p className={`${getSecondaryTextClass(currentTheme)}`}>{userProfile.email}</p>
+                  <p className="text-sm text-gray-400 font-mono">{userProfile.email}</p>
                 </div>
 
                 {/* Theme Preference */}
-                <div className="space-y-3">
-                  <span className={`${getTextClass(currentTheme)} font-medium`}>Theme</span>
+                <div className="space-y-3 pt-4 border-t border-cyan-400/20">
+                  <span className="text-white font-mono font-bold text-sm tracking-wider uppercase">Theme</span>
                   
                   <motion.div
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
                   >
-                    <Button
-                      variant="ghost"
-                      size="sm"
+                    <button
                       onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-                      className="w-full border border-border/50 shadow-md shadow-purple-500/5 backdrop-blur-sm bg-card/80 hover:shadow-purple-500/10 hover:border-purple-500/20 transition-all duration-300 flex items-center justify-center gap-3 p-4"
+                      className="w-full bg-gradient-to-r from-[#0a1628]/80 to-[#1a2f4a]/80 border border-cyan-400/30 shadow-[0_0_15px_rgba(83,131,232,0.2)] hover:shadow-[0_0_25px_rgba(0,255,255,0.4)] hover:border-cyan-400/50 transition-all duration-300 flex items-center justify-center gap-3 p-4 relative overflow-hidden group"
                     >
+                      {/* Hover effect */}
+                      <div className="absolute inset-0 bg-gradient-to-r from-cyan-400/0 via-cyan-400/10 to-cyan-400/0 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                      
+                      {/* Corner brackets */}
+                      <div className="absolute top-0 left-0 w-3 h-3 border-t border-l border-cyan-400/50"></div>
+                      <div className="absolute bottom-0 right-0 w-3 h-3 border-b border-r border-cyan-400/50"></div>
+                      
                       <motion.div
                         initial={false}
                         animate={{ rotate: theme === 'dark' ? 0 : 180 }}
                         transition={{ duration: 0.5 }}
+                        className="relative z-10"
                       >
                         {theme === 'dark' ? 
-                          <Sun className="w-5 h-5 text-yellow-400" /> : 
-                          <Moon className="w-5 h-5 text-purple-400" />
+                          <Sun className="w-5 h-5 text-cyan-400 drop-shadow-[0_0_8px_rgba(0,255,255,0.6)]" /> : 
+                          <Moon className="w-5 h-5 text-cyan-400 drop-shadow-[0_0_8px_rgba(0,255,255,0.6)]" />
                         }
                       </motion.div>
-                      <span className={`${getTextClass(currentTheme)} font-medium`}>
-                        {theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+                      <span className="text-white font-mono font-bold text-sm relative z-10">
+                        {theme === 'dark' ? 'LIGHT MODE' : 'DARK MODE'}
                       </span>
-                    </Button>
+                    </button>
                   </motion.div>
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </motion.div>
           </div>
 
           {/* Game Preferences */}
           <div className="lg:col-span-2">
-            <Card className="border-2 border-border shadow-2xl shadow-purple-500/10 backdrop-blur-sm bg-card/95">
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <CardTitle className={`${getTextClass(currentTheme)}`}>Game Preferences</CardTitle>
-                  <Button
-                    onClick={() => setShowGameSelector(true)}
-                    disabled={availableGamesToAdd.length === 0}
-                    className="bg-purple-600 hover:bg-purple-700 text-white"
-                  >
-                    <FiPlus className="w-4 h-4 mr-2" />
-                    Add Game
-                  </Button>
-                </div>
-              </CardHeader>
-              <CardContent>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 }}
+              className="bg-gradient-to-br from-[#0a1628] via-[#0f1f3a] to-[#0a1628] rounded-none p-6 border-2 border-cyan-400/20 shadow-[0_0_30px_rgba(83,131,232,0.2)] relative overflow-hidden"
+            >
+              {/* Top tech line */}
+              <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-cyan-400/50 to-transparent"></div>
+              
+              {/* Side accent */}
+              <div className="absolute right-0 top-0 bottom-0 w-1 bg-gradient-to-b from-transparent via-[#5383E8] to-transparent shadow-[0_0_10px_#5383E8]"></div>
+              
+              {/* Corner brackets */}
+              <div className="absolute top-0 left-0 w-8 h-8 border-t-2 border-l-2 border-cyan-400/40"></div>
+              <div className="absolute top-0 right-0 w-8 h-8 border-t-2 border-r-2 border-cyan-400/40"></div>
+              <div className="absolute bottom-0 left-0 w-8 h-8 border-b-2 border-l-2 border-cyan-400/40"></div>
+              <div className="absolute bottom-0 right-0 w-8 h-8 border-b-2 border-r-2 border-cyan-400/40"></div>
+
+              <div className="flex items-center justify-between mb-6 relative z-10">
+                <h3 className="text-sm font-bold text-cyan-400 font-mono tracking-wider uppercase drop-shadow-[0_0_10px_rgba(0,255,255,0.3)]">
+                  GAME PREFERENCES
+                </h3>
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => setShowGameSelector(true)}
+                  disabled={availableGamesToAdd.length === 0}
+                  className="bg-gradient-to-r from-[#5383E8] to-cyan-400 hover:from-cyan-400 hover:to-[#5383E8] disabled:from-gray-600 disabled:to-gray-700 disabled:cursor-not-allowed text-white px-4 py-2 border border-cyan-400/50 disabled:border-gray-500/50 shadow-[0_0_15px_rgba(0,255,255,0.3)] hover:shadow-[0_0_25px_rgba(0,255,255,0.5)] disabled:shadow-none transition-all duration-300 relative overflow-hidden group"
+                >
+                  {/* Corner accents */}
+                  <div className="absolute top-0 left-0 w-2 h-2 border-t border-l border-white/50"></div>
+                  <div className="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-white/50"></div>
+                  
+                  <div className="flex items-center gap-2 text-xs font-bold font-mono tracking-wider uppercase relative z-10">
+                    <FiPlus className="w-3 h-3" />
+                    ADD GAME
+                  </div>
+                </motion.button>
+              </div>
+
+              <div className="relative z-10">
                 {userProfile.gamePreferences.length === 0 ? (
                   <div className="text-center py-12">
-                    <div className={`${getSecondaryTextClass(currentTheme)} text-lg mb-4`}>No games selected yet</div>
-                    <Button
+                    <div className="text-gray-400 font-mono text-sm mb-4">NO GAMES SELECTED YET</div>
+                    <motion.button
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
                       onClick={() => setShowGameSelector(true)}
-                      className="bg-purple-600 hover:bg-purple-700 text-white"
+                      className="bg-gradient-to-r from-[#5383E8] to-cyan-400 hover:from-cyan-400 hover:to-[#5383E8] text-white px-6 py-3 border border-cyan-400/50 shadow-[0_0_15px_rgba(0,255,255,0.3)] hover:shadow-[0_0_25px_rgba(0,255,255,0.5)] transition-all duration-300 relative overflow-hidden group"
                     >
-                      <FiPlus className="w-4 h-4 mr-2" />
-                      Add Your First Game
-                    </Button>
+                      <div className="absolute top-0 left-0 w-2 h-2 border-t border-l border-white/50"></div>
+                      <div className="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-white/50"></div>
+                      <div className="flex items-center gap-2 text-sm font-bold font-mono tracking-wider uppercase relative z-10">
+                        <FiPlus className="w-4 h-4" />
+                        ADD YOUR FIRST GAME
+                      </div>
+                    </motion.button>
                   </div>
                 ) : (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -415,23 +484,32 @@ export default function ProfilePage() {
                           key={gameId}
                           initial={{ opacity: 0, scale: 0.9 }}
                           animate={{ opacity: 1, scale: 1 }}
-                          className="border border-border/50 shadow-lg shadow-purple-500/5 backdrop-blur-sm bg-card/80 rounded-xl p-4 flex items-center justify-between group hover:shadow-purple-500/10 hover:border-purple-500/20 transition-all duration-300"
+                          className="bg-gradient-to-br from-[#0f1f3a]/60 to-[#0a1628]/60 border border-cyan-400/20 p-4 flex items-center justify-between group hover:border-cyan-400/40 hover:shadow-[0_0_20px_rgba(0,255,255,0.2)] transition-all duration-300 relative overflow-hidden"
                         >
-                          <div className="flex items-center gap-3">
-                            <div className={`w-12 h-12 ${currentTheme === 'light' ? 'bg-purple-100' : 'bg-purple-500/20'} rounded-lg flex items-center justify-center`}>
+                          {/* Hover glow */}
+                          <div className="absolute inset-0 bg-gradient-to-br from-cyan-400/5 via-[#5383E8]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                          
+                          {/* Small corner brackets */}
+                          <div className="absolute top-0 left-0 w-3 h-3 border-t border-l border-cyan-400/30"></div>
+                          <div className="absolute bottom-0 right-0 w-3 h-3 border-b border-r border-cyan-400/30"></div>
+                          
+                          <div className="flex items-center gap-3 relative z-10">
+                            <div className="w-12 h-12 bg-gradient-to-br from-cyan-400/10 to-[#5383E8]/10 border border-cyan-400/30 flex items-center justify-center relative">
+                              <div className="absolute top-0 left-0 w-2 h-2 border-t border-l border-cyan-400/50"></div>
+                              <div className="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-cyan-400/50"></div>
                               <Image
                                 src={game.icon}
                                 alt={game.name}
                                 width={32}
                                 height={32}
-                                className="w-8 h-8"
+                                className="w-8 h-8 relative z-10"
                               />
                             </div>
-                            <span className={`${getTextClass(currentTheme)} font-medium`}>{game.name}</span>
+                            <span className="text-white font-mono font-semibold tracking-wide drop-shadow-[0_0_5px_rgba(255,255,255,0.2)]">{game.name}</span>
                           </div>
                           <button
                             onClick={() => removeGamePreference(gameId)}
-                            className="text-red-400 hover:text-red-300 hover:bg-red-400/20 p-2 rounded-lg transition-all"
+                            className="text-red-400 hover:text-red-300 hover:bg-red-400/20 p-2 border border-transparent hover:border-red-400/30 transition-all relative z-10"
                             title="Remove game"
                           >
                             <FiTrash2 className="w-4 h-4" />
@@ -444,17 +522,17 @@ export default function ProfilePage() {
 
                 {/* League of Legends Account Section */}
                 {userProfile.gamePreferences.includes('league-of-legends') && (
-                  <div className="mt-6 pt-6 border-t border-border/20">
+                  <div className="mt-6 pt-6 border-t border-cyan-400/20">
                     <div className="flex items-center justify-between mb-4">
-                      <h3 className={`${getTextClass(currentTheme)} text-lg font-semibold flex items-center gap-2`}>
+                      <h3 className="text-white font-mono font-bold tracking-wider uppercase text-sm flex items-center gap-2 drop-shadow-[0_0_10px_rgba(255,255,255,0.3)]">
                         <Image
                           src="/logo.png"
                           alt="League of Legends"
                           width={24}
                           height={24}
-                          className="w-6 h-6"
+                          className="w-6 h-6 drop-shadow-[0_0_8px_rgba(0,255,255,0.4)]"
                         />
-                        League of Legends Account
+                        LEAGUE OF LEGENDS ACCOUNT
                       </h3>
                     </div>
 
@@ -468,86 +546,121 @@ export default function ProfilePage() {
                       />
                     ) : (
                       <div className="text-center py-8">
-                        <div className={`${getSecondaryTextClass(currentTheme)} text-sm mb-4`}>
+                        <div className="text-gray-400 font-mono text-sm mb-4">
                           Link your League of Legends account to show your rank and stats
                         </div>
-                        <Button
+                        <motion.button
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
                           onClick={() => setShowLolLinking(true)}
-                          className="bg-blue-600 hover:bg-blue-700 text-white"
+                          className="bg-gradient-to-r from-[#5383E8] to-cyan-400 hover:from-cyan-400 hover:to-[#5383E8] text-white px-6 py-3 border border-cyan-400/50 shadow-[0_0_15px_rgba(0,255,255,0.3)] hover:shadow-[0_0_25px_rgba(0,255,255,0.5)] transition-all duration-300 relative overflow-hidden group"
                         >
-                          <FiLink className="w-4 h-4 mr-2" />
-                          Link LoL Account
-                        </Button>
+                          <div className="absolute top-0 left-0 w-2 h-2 border-t border-l border-white/50"></div>
+                          <div className="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-white/50"></div>
+                          <div className="flex items-center gap-2 text-sm font-bold font-mono tracking-wider uppercase relative z-10">
+                            <FiLink className="w-4 h-4" />
+                            LINK LOL ACCOUNT
+                          </div>
+                        </motion.button>
                       </div>
                     )}
                   </div>
                 )}
-              </CardContent>
-            </Card>
+              </div>
+            </motion.div>
           </div>
         </div>
         
         {/* Logout Section */}
         <div className="max-w-6xl mx-auto mt-8">
-          <Card className="border-2 border-red-500/20 shadow-2xl shadow-red-500/10 backdrop-blur-sm bg-card/95">
-            <CardHeader>
-              <CardTitle className={`${getTextClass(currentTheme)} text-center flex items-center justify-center gap-2`}>
-                <FiLogOut className="w-5 h-5 text-red-500" />
-                Account Actions
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="text-center">
-                <p className={`${getSecondaryTextClass(currentTheme)} mb-4`}>
-                  Ready to take a break? You can sign out of your account here.
-                </p>
-                <Button
-                  onClick={handleLogout}
-                  variant="destructive"
-                  className="bg-red-600 hover:bg-red-700 text-white px-8 py-2 rounded-xl transition-all duration-300 hover:shadow-lg hover:shadow-red-500/30"
-                >
-                  <FiLogOut className="w-4 h-4 mr-2" />
-                  Sign Out
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="bg-gradient-to-br from-[#0a1628] via-[#0f1f3a] to-[#0a1628] rounded-none p-6 border-2 border-red-400/30 shadow-[0_0_30px_rgba(239,68,68,0.2)] relative overflow-hidden"
+          >
+            {/* Top tech line */}
+            <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-red-400/50 to-transparent"></div>
+            
+            {/* Side accent */}
+            <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-transparent via-red-500 to-transparent shadow-[0_0_10px_#ef4444]"></div>
+            
+            {/* Corner brackets */}
+            <div className="absolute top-0 left-0 w-8 h-8 border-t-2 border-l-2 border-red-400/40"></div>
+            <div className="absolute top-0 right-0 w-8 h-8 border-t-2 border-r-2 border-red-400/40"></div>
+            <div className="absolute bottom-0 left-0 w-8 h-8 border-b-2 border-l-2 border-red-400/40"></div>
+            <div className="absolute bottom-0 right-0 w-8 h-8 border-b-2 border-r-2 border-red-400/40"></div>
+
+            <div className="text-center space-y-4 relative z-10">
+              <h3 className="text-sm font-bold text-red-400 font-mono tracking-wider uppercase flex items-center justify-center gap-2 drop-shadow-[0_0_10px_rgba(239,68,68,0.4)]">
+                <FiLogOut className="w-4 h-4" />
+                ACCOUNT ACTIONS
+              </h3>
+              
+              <p className="text-gray-400 font-mono text-sm">
+                Ready to take a break? You can sign out of your account here.
+              </p>
+              
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={handleLogout}
+                className="bg-gradient-to-r from-red-600 to-red-500 hover:from-red-500 hover:to-red-400 text-white px-8 py-3 border border-red-400/50 shadow-[0_0_15px_rgba(239,68,68,0.3)] hover:shadow-[0_0_25px_rgba(239,68,68,0.5)] transition-all duration-300 relative overflow-hidden group"
+              >
+                <div className="absolute top-0 left-0 w-2 h-2 border-t border-l border-white/50"></div>
+                <div className="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-white/50"></div>
+                <div className="flex items-center gap-2 text-sm font-bold font-mono tracking-wider uppercase relative z-10">
+                  <FiLogOut className="w-4 h-4" />
+                  SIGN OUT
+                </div>
+              </motion.button>
+            </div>
+          </motion.div>
         </div>
       </div>
 
       {/* Avatar Selector Modal */}
       {showAvatarSelector && (
-        <div className={`fixed inset-0 ${currentTheme === 'light' ? 'bg-black/30' : 'bg-black/50'} backdrop-blur-sm z-50 flex items-center justify-center p-4`}>
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-md z-50 flex items-center justify-center p-4">
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="border-2 border-border shadow-2xl shadow-purple-500/10 backdrop-blur-xl bg-card/95 rounded-2xl p-6 max-w-md w-full"
+            className="bg-gradient-to-br from-[#0a1628] via-[#0f1f3a] to-[#0a1628] rounded-none p-6 border-2 border-cyan-400/30 shadow-[0_0_40px_rgba(0,255,255,0.3)] max-w-md w-full relative overflow-hidden"
           >
-            <div className="flex items-center justify-between mb-6">
-              <h3 className={`${getTextClass(currentTheme)} text-xl font-bold`}>Choose Avatar</h3>
+            {/* Corner brackets */}
+            <div className="absolute top-0 left-0 w-8 h-8 border-t-2 border-l-2 border-cyan-400/50"></div>
+            <div className="absolute top-0 right-0 w-8 h-8 border-t-2 border-r-2 border-cyan-400/50"></div>
+            <div className="absolute bottom-0 left-0 w-8 h-8 border-b-2 border-l-2 border-cyan-400/50"></div>
+            <div className="absolute bottom-0 right-0 w-8 h-8 border-b-2 border-r-2 border-cyan-400/50"></div>
+            
+            <div className="flex items-center justify-between mb-6 relative z-10">
+              <h3 className="text-lg font-bold text-cyan-400 font-mono tracking-wider uppercase drop-shadow-[0_0_10px_rgba(0,255,255,0.4)]">CHOOSE AVATAR</h3>
               <button
                 onClick={() => setShowAvatarSelector(false)}
-                className={`${getSecondaryTextClass(currentTheme)} hover:${getTextClass(currentTheme)}`}
+                className="text-gray-400 hover:text-cyan-400 transition-colors p-2 hover:bg-cyan-400/10 border border-transparent hover:border-cyan-400/30"
               >
-                <FiX className="w-6 h-6" />
+                <FiX className="w-5 h-5" />
               </button>
             </div>
             
-            <div className="grid grid-cols-4 gap-4">
+            <div className="grid grid-cols-4 gap-4 relative z-10">
               {avatars.map((avatar, index) => (
-                <button
+                <motion.button
                   key={index}
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.95 }}
                   onClick={() => updateProfilePicture(avatar)}
-                  className={`w-16 h-16 rounded-full overflow-hidden border-2 ${currentTheme === 'light' ? 'border-gray-300 hover:border-purple-500' : 'border-white/20 hover:border-purple-500'} transition-colors`}
+                  className="w-16 h-16 rounded-full overflow-hidden border-2 border-cyan-400/30 hover:border-cyan-400 hover:shadow-[0_0_15px_rgba(0,255,255,0.5)] transition-all relative group"
                 >
+                  <div className="absolute inset-0 bg-gradient-to-br from-cyan-400/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
                   <Image
                     src={avatar}
                     alt={`Avatar ${index + 1}`}
                     width={64}
                     height={64}
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-cover relative z-10"
                   />
-                </button>
+                </motion.button>
               ))}
             </div>
           </motion.div>
@@ -556,35 +669,52 @@ export default function ProfilePage() {
 
       {/* Game Selector Modal */}
       {showGameSelector && (
-        <div className={`fixed inset-0 ${currentTheme === 'light' ? 'bg-black/30' : 'bg-black/50'} backdrop-blur-sm z-50 flex items-center justify-center p-4`}>
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-md z-50 flex items-center justify-center p-4">
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="border-2 border-border shadow-2xl shadow-purple-500/10 backdrop-blur-xl bg-card/95 rounded-2xl p-6 max-w-md w-full"
+            className="bg-gradient-to-br from-[#0a1628] via-[#0f1f3a] to-[#0a1628] rounded-none p-6 border-2 border-cyan-400/30 shadow-[0_0_40px_rgba(0,255,255,0.3)] max-w-md w-full relative overflow-hidden"
           >
-            <div className="flex items-center justify-between mb-6">
-              <h3 className={`${getTextClass(currentTheme)} text-xl font-bold`}>Add Game</h3>
+            {/* Corner brackets */}
+            <div className="absolute top-0 left-0 w-8 h-8 border-t-2 border-l-2 border-cyan-400/50"></div>
+            <div className="absolute top-0 right-0 w-8 h-8 border-t-2 border-r-2 border-cyan-400/50"></div>
+            <div className="absolute bottom-0 left-0 w-8 h-8 border-b-2 border-l-2 border-cyan-400/50"></div>
+            <div className="absolute bottom-0 right-0 w-8 h-8 border-b-2 border-r-2 border-cyan-400/50"></div>
+            
+            <div className="flex items-center justify-between mb-6 relative z-10">
+              <h3 className="text-lg font-bold text-cyan-400 font-mono tracking-wider uppercase drop-shadow-[0_0_10px_rgba(0,255,255,0.4)]">ADD GAME</h3>
               <button
                 onClick={() => setShowGameSelector(false)}
-                className={`${getSecondaryTextClass(currentTheme)} hover:${getTextClass(currentTheme)}`}
+                className="text-gray-400 hover:text-cyan-400 transition-colors p-2 hover:bg-cyan-400/10 border border-transparent hover:border-cyan-400/30"
               >
-                <FiX className="w-6 h-6" />
+                <FiX className="w-5 h-5" />
               </button>
             </div>
             
-            <div className="space-y-3">
+            <div className="space-y-3 relative z-10">
               {availableGamesToAdd.length === 0 ? (
-                <div className={`${getSecondaryTextClass(currentTheme)} text-center py-4`}>
+                <div className="text-gray-400 font-mono text-sm text-center py-4">
                   All available games have been added!
                 </div>
               ) : (
                 availableGamesToAdd.map((game) => (
-                  <button
+                  <motion.button
                     key={game.id}
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
                     onClick={() => addGamePreference(game.id)}
-                    className="w-full border border-border/50 shadow-md shadow-purple-500/5 backdrop-blur-sm bg-card/80 hover:shadow-purple-500/10 hover:border-purple-500/20 rounded-xl p-4 flex items-center gap-3 transition-all duration-300"
+                    className="w-full bg-gradient-to-br from-[#0f1f3a]/60 to-[#0a1628]/60 border border-cyan-400/20 hover:border-cyan-400/40 hover:shadow-[0_0_20px_rgba(0,255,255,0.2)] p-4 flex items-center gap-3 transition-all duration-300 relative overflow-hidden group"
                   >
-                    <div className={`w-12 h-12 ${currentTheme === 'light' ? 'bg-purple-100' : 'bg-purple-500/20'} rounded-lg flex items-center justify-center`}>
+                    {/* Hover glow */}
+                    <div className="absolute inset-0 bg-gradient-to-br from-cyan-400/5 via-[#5383E8]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                    
+                    {/* Small corner brackets */}
+                    <div className="absolute top-0 left-0 w-3 h-3 border-t border-l border-cyan-400/30"></div>
+                    <div className="absolute bottom-0 right-0 w-3 h-3 border-b border-r border-cyan-400/30"></div>
+                    
+                    <div className="w-12 h-12 bg-gradient-to-br from-cyan-400/10 to-[#5383E8]/10 border border-cyan-400/30 flex items-center justify-center relative z-10">
+                      <div className="absolute top-0 left-0 w-2 h-2 border-t border-l border-cyan-400/50"></div>
+                      <div className="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-cyan-400/50"></div>
                       <Image
                         src={game.icon}
                         alt={game.name}
@@ -593,8 +723,8 @@ export default function ProfilePage() {
                         className="w-8 h-8"
                       />
                     </div>
-                    <span className={`${getTextClass(currentTheme)} font-medium`}>{game.name}</span>
-                  </button>
+                    <span className="text-white font-mono font-semibold tracking-wide relative z-10">{game.name}</span>
+                  </motion.button>
                 ))
               )}
             </div>

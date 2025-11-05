@@ -2,9 +2,6 @@
 
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { 
   Trophy, 
   Star, 
@@ -118,17 +115,20 @@ export default function LolProfileDisplay({
   const RankCard = ({ rankData, queueName }: { rankData: any, queueName: string }) => {
     if (!rankData) {
       return (
-        <div className="flex items-center gap-3 p-4 rounded-lg bg-card/30 border border-border/20">
+        <div className="flex items-center gap-3 p-4 bg-gradient-to-br from-[#0f1f3a]/60 to-[#0a1628]/60 border border-cyan-400/20 relative overflow-hidden group">
+          <div className="absolute top-0 left-0 w-3 h-3 border-t border-l border-cyan-400/30"></div>
+          <div className="absolute bottom-0 right-0 w-3 h-3 border-b border-r border-cyan-400/30"></div>
+          
           <img
             src="/Rank=Iron.png"
             alt="Unranked"
-            className="w-12 h-12"
+            className="w-12 h-12 relative z-10"
           />
-          <div className="flex-1">
-            <div className={`${getTextClass(currentTheme)} font-semibold`}>
+          <div className="flex-1 relative z-10">
+            <div className="text-white font-mono font-semibold tracking-wide drop-shadow-[0_0_5px_rgba(255,255,255,0.2)]">
               {queueName}
             </div>
-            <div className={`${getSecondaryTextClass(currentTheme)} text-sm`}>
+            <div className="text-gray-400 font-mono text-sm">
               Unranked
             </div>
           </div>
@@ -140,31 +140,36 @@ export default function LolProfileDisplay({
     const total = rankData.wins + rankData.losses;
 
     return (
-      <div className="flex items-center gap-3 p-4 rounded-lg bg-card/50 border border-border/30">
+      <div className="flex items-center gap-3 p-4 bg-gradient-to-br from-[#0f1f3a]/60 to-[#0a1628]/60 border border-cyan-400/20 hover:border-cyan-400/40 hover:shadow-[0_0_20px_rgba(0,255,255,0.2)] transition-all duration-300 relative overflow-hidden group">
+        <div className="absolute inset-0 bg-gradient-to-br from-cyan-400/5 via-[#5383E8]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+        
+        <div className="absolute top-0 left-0 w-3 h-3 border-t border-l border-cyan-400/30"></div>
+        <div className="absolute bottom-0 right-0 w-3 h-3 border-b border-r border-cyan-400/30"></div>
+        
         <img
           src={lolService.getRankImageUrl(rankData.tier)}
           alt={rankData.tier}
-          className="w-12 h-12"
+          className="w-12 h-12 relative z-10 drop-shadow-[0_0_10px_rgba(0,255,255,0.3)]"
         />
-        <div className="flex-1">
-          <div className={`${getTextClass(currentTheme)} font-semibold`}>
+        <div className="flex-1 relative z-10">
+          <div className="text-white font-mono font-semibold tracking-wide drop-shadow-[0_0_5px_rgba(255,255,255,0.2)]">
             {queueName}
           </div>
-          <div className={`${getTextClass(currentTheme)} text-sm font-medium`}>
+          <div className="text-cyan-400 text-sm font-mono font-medium drop-shadow-[0_0_5px_rgba(0,255,255,0.3)]">
             {lolService.getRankDisplayString(rankData.tier, rankData.rank)}
           </div>
-          <div className={`${getSecondaryTextClass(currentTheme)} text-xs`}>
+          <div className="text-gray-400 font-mono text-xs">
             {rankData.leaguePoints} LP
           </div>
         </div>
-        <div className="text-right">
-          <div className={`${getWinRateColor(winRate)} font-semibold text-sm`}>
+        <div className="text-right relative z-10">
+          <div className={`${getWinRateColor(winRate)} font-semibold text-sm font-mono drop-shadow-[0_0_8px_currentColor]`}>
             {winRate}% WR
           </div>
-          <div className={`${getSecondaryTextClass(currentTheme)} text-xs`}>
+          <div className="text-gray-400 font-mono text-xs">
             {rankData.wins}W / {rankData.losses}L
           </div>
-          <div className={`${getSecondaryTextClass(currentTheme)} text-xs`}>
+          <div className="text-gray-500 font-mono text-xs">
             {total} games
           </div>
         </div>
@@ -179,57 +184,73 @@ export default function LolProfileDisplay({
       className="space-y-4"
     >
       {/* Main Profile Card */}
-      <Card className={`border-2 border-purple-500/30 shadow-xl shadow-purple-500/10 backdrop-blur-sm ${getCardClass(currentTheme)}`}>
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <CardTitle className={`${getTextClass(currentTheme)} text-xl flex items-center gap-2`}>
-              <Trophy className="w-5 h-5 text-purple-500" />
-              League of Legends Account
-            </CardTitle>
-            <div className="flex gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleRefresh}
-                disabled={isRefreshing}
-                className="hover:bg-blue-500/10"
-              >
-                {isRefreshing ? (
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                ) : (
-                  <RefreshCw className="w-4 h-4" />
-                )}
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleUnlink}
-                disabled={isUnlinking}
-                className="hover:bg-red-500/10 text-red-500 border-red-500/30"
-              >
-                {isUnlinking ? (
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                ) : (
-                  <Unlink className="w-4 h-4" />
-                )}
-              </Button>
-            </div>
-          </div>
-        </CardHeader>
+      <div className="bg-gradient-to-br from-[#0f1f3a]/60 to-[#0a1628]/60 rounded-none p-6 border-2 border-cyan-400/20 shadow-[0_0_30px_rgba(0,255,255,0.2)] relative overflow-hidden">
+        {/* Top tech line */}
+        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-cyan-400/50 to-transparent"></div>
+        
+        {/* Corner brackets */}
+        <div className="absolute top-0 left-0 w-8 h-8 border-t-2 border-l-2 border-cyan-400/40"></div>
+        <div className="absolute top-0 right-0 w-8 h-8 border-t-2 border-r-2 border-cyan-400/40"></div>
+        <div className="absolute bottom-0 left-0 w-8 h-8 border-b-2 border-l-2 border-cyan-400/40"></div>
+        <div className="absolute bottom-0 right-0 w-8 h-8 border-b-2 border-r-2 border-cyan-400/40"></div>
 
-        <CardContent className="space-y-4">
+        {/* Header */}
+        <div className="flex items-center justify-between mb-6 relative z-10">
+          <div className="flex items-center gap-2">
+            <Trophy className="w-5 h-5 text-cyan-400 drop-shadow-[0_0_8px_rgba(0,255,255,0.6)]" />
+            <h3 className="text-sm font-bold text-cyan-400 font-mono tracking-wider uppercase drop-shadow-[0_0_10px_rgba(0,255,255,0.3)]">
+              LEAGUE OF LEGENDS ACCOUNT
+            </h3>
+          </div>
+          <div className="flex gap-2">
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={handleRefresh}
+              disabled={isRefreshing}
+              className="bg-gradient-to-r from-[#5383E8] to-cyan-400 hover:from-cyan-400 hover:to-[#5383E8] disabled:from-gray-600 disabled:to-gray-700 disabled:cursor-not-allowed text-white p-2 border border-cyan-400/50 disabled:border-gray-500/50 shadow-[0_0_15px_rgba(0,255,255,0.3)] hover:shadow-[0_0_25px_rgba(0,255,255,0.5)] disabled:shadow-none transition-all duration-300 relative overflow-hidden group"
+            >
+              <div className="absolute top-0 left-0 w-1.5 h-1.5 border-t border-l border-white/50"></div>
+              <div className="absolute bottom-0 right-0 w-1.5 h-1.5 border-b border-r border-white/50"></div>
+              {isRefreshing ? (
+                <Loader2 className="w-4 h-4 animate-spin relative z-10" />
+              ) : (
+                <RefreshCw className="w-4 h-4 relative z-10" />
+              )}
+            </motion.button>
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={handleUnlink}
+              disabled={isUnlinking}
+              className="bg-gradient-to-r from-red-600 to-red-500 hover:from-red-500 hover:to-red-400 disabled:from-gray-600 disabled:to-gray-700 disabled:cursor-not-allowed text-white p-2 border border-red-400/50 disabled:border-gray-500/50 shadow-[0_0_15px_rgba(239,68,68,0.3)] hover:shadow-[0_0_25px_rgba(239,68,68,0.5)] disabled:shadow-none transition-all duration-300 relative overflow-hidden group"
+            >
+              <div className="absolute top-0 left-0 w-1.5 h-1.5 border-t border-l border-white/50"></div>
+              <div className="absolute bottom-0 right-0 w-1.5 h-1.5 border-b border-r border-white/50"></div>
+              {isUnlinking ? (
+                <Loader2 className="w-4 h-4 animate-spin relative z-10" />
+              ) : (
+                <Unlink className="w-4 h-4 relative z-10" />
+              )}
+            </motion.button>
+          </div>
+        </div>
+
+        <div className="space-y-4 relative z-10">
           {/* Success Message */}
           {successMessage && (
             <motion.div
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0 }}
-              className="flex items-center gap-2 p-3 rounded-lg bg-green-500/10 border border-green-500/30"
+              className="flex items-center gap-2 p-3 bg-green-500/10 border border-green-500/30 relative overflow-hidden"
             >
-              <svg className="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="absolute top-0 left-0 w-2 h-2 border-t border-l border-green-400/50"></div>
+              <div className="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-green-400/50"></div>
+              <svg className="w-4 h-4 text-green-400 drop-shadow-[0_0_6px_rgba(34,197,94,0.6)] relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
               </svg>
-              <span className="text-green-500 text-sm font-medium">{successMessage}</span>
+              <span className="text-green-400 text-sm font-mono font-medium relative z-10">{successMessage}</span>
             </motion.div>
           )}
 
@@ -238,33 +259,41 @@ export default function LolProfileDisplay({
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              className="flex items-center gap-2 p-3 rounded-lg bg-red-500/10 border border-red-500/30"
+              className="flex items-center gap-2 p-3 bg-red-500/10 border border-red-500/30 relative overflow-hidden"
             >
-              <AlertCircle className="w-4 h-4 text-red-500" />
-              <span className="text-red-500 text-sm">{error}</span>
+              <div className="absolute top-0 left-0 w-2 h-2 border-t border-l border-red-400/50"></div>
+              <div className="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-red-400/50"></div>
+              <AlertCircle className="w-4 h-4 text-red-400 drop-shadow-[0_0_6px_rgba(239,68,68,0.6)] relative z-10" />
+              <span className="text-red-400 text-sm font-mono relative z-10">{error}</span>
             </motion.div>
           )}
 
           {/* Summoner Info */}
-          <div className="flex items-center gap-4 p-4 rounded-lg bg-card/50 border border-border/30">
-            <img
-              src={lolService.getSummonerIconUrl(lolAccount.profileIconId)}
-              alt="Summoner Icon"
-              className="w-16 h-16 rounded-full border-2 border-purple-500"
-            />
-            <div className="flex-1">
-              <div className={`${getTextClass(currentTheme)} font-bold text-lg`}>
+          <div className="flex items-center gap-4 p-4 bg-gradient-to-br from-[#0f1f3a]/60 to-[#0a1628]/60 border border-cyan-400/20 relative overflow-hidden group">
+            <div className="absolute top-0 left-0 w-3 h-3 border-t border-l border-cyan-400/30"></div>
+            <div className="absolute bottom-0 right-0 w-3 h-3 border-b border-r border-cyan-400/30"></div>
+            
+            <div className="relative">
+              <div className="absolute inset-0 bg-gradient-to-br from-cyan-400 via-[#5383E8] to-cyan-400 opacity-40 blur-md rounded-full"></div>
+              <img
+                src={lolService.getSummonerIconUrl(lolAccount.profileIconId)}
+                alt="Summoner Icon"
+                className="w-16 h-16 rounded-full border-2 border-cyan-400/50 shadow-[0_0_20px_rgba(0,255,255,0.4)] relative z-10"
+              />
+            </div>
+            <div className="flex-1 relative z-10">
+              <div className="text-white font-mono font-bold text-lg tracking-wide drop-shadow-[0_0_8px_rgba(255,255,255,0.3)]">
                 {lolAccount.gameName}#{lolAccount.tagLine}
               </div>
-              <div className={`${getSecondaryTextClass(currentTheme)} text-sm flex items-center gap-2`}>
-                <Star className="w-4 h-4" />
+              <div className="text-gray-400 font-mono text-sm flex items-center gap-2">
+                <Star className="w-4 h-4 text-cyan-400" />
                 Level {lolAccount.summonerLevel}
               </div>
               <div className="flex items-center gap-2 mt-1">
-                <Badge variant="secondary">
+                <div className="bg-gradient-to-r from-[#5383E8]/20 to-cyan-400/20 border border-cyan-400/30 px-2 py-0.5 text-cyan-400 font-mono text-xs font-semibold tracking-wider">
                   {regionName}
-                </Badge>
-                <div className={`${getSecondaryTextClass(currentTheme)} text-xs flex items-center gap-1`}>
+                </div>
+                <div className="text-gray-500 font-mono text-xs flex items-center gap-1">
                   <Calendar className="w-3 h-3" />
                   Updated {formatLastUpdated(lolAccount.lastUpdated)}
                 </div>
@@ -274,9 +303,9 @@ export default function LolProfileDisplay({
 
           {/* Ranked Information */}
           <div className="space-y-3">
-            <h4 className={`${getTextClass(currentTheme)} font-semibold flex items-center gap-2`}>
-              <Trophy className="w-4 h-4" />
-              Ranked Statistics
+            <h4 className="text-white font-mono font-bold tracking-wider uppercase text-sm flex items-center gap-2 drop-shadow-[0_0_10px_rgba(255,255,255,0.3)]">
+              <Trophy className="w-4 h-4 text-cyan-400" />
+              RANKED STATISTICS
             </h4>
             
             <div className="space-y-3">
@@ -297,14 +326,16 @@ export default function LolProfileDisplay({
               {lolAccount.rankedData.map((rank, index) => {
                 const winRate = getWinRate(rank.wins, rank.losses);
                 return (
-                  <div key={index} className="text-center p-3 rounded-lg bg-card/30 border border-border/20">
-                    <div className={`${getTextClass(currentTheme)} font-semibold text-sm`}>
+                  <div key={index} className="text-center p-3 bg-gradient-to-br from-[#0f1f3a]/60 to-[#0a1628]/60 border border-cyan-400/20 relative overflow-hidden group">
+                    <div className="absolute top-0 left-0 w-2 h-2 border-t border-l border-cyan-400/30"></div>
+                    <div className="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-cyan-400/30"></div>
+                    <div className="text-white font-mono font-semibold text-sm tracking-wide relative z-10">
                       {lolService.formatQueueType(rank.queueType)}
                     </div>
-                    <div className={`${getWinRateColor(winRate)} font-bold text-lg`}>
+                    <div className={`${getWinRateColor(winRate)} font-bold text-lg font-mono drop-shadow-[0_0_8px_currentColor] relative z-10`}>
                       {winRate}%
                     </div>
-                    <div className={`${getSecondaryTextClass(currentTheme)} text-xs`}>
+                    <div className="text-gray-400 font-mono text-xs relative z-10">
                       Win Rate
                     </div>
                   </div>
@@ -312,8 +343,8 @@ export default function LolProfileDisplay({
               })}
             </div>
           )}
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </motion.div>
   );
 }

@@ -2,9 +2,7 @@
 
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
 import { 
   Search, 
   Loader2, 
@@ -126,20 +124,23 @@ export default function LolAccountLinking({
     if (!rankData || rankData.length === 0) return null;
 
     return rankData.map((rank: any, index: number) => (
-      <div key={index} className="flex items-center gap-3 p-3 rounded-lg bg-card/50 border border-border/30">
+      <div key={index} className="flex items-center gap-3 p-3 bg-gradient-to-br from-[#0f1f3a]/60 to-[#0a1628]/60 border border-cyan-400/20 relative overflow-hidden group">
+        <div className="absolute top-0 left-0 w-2 h-2 border-t border-l border-cyan-400/30"></div>
+        <div className="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-cyan-400/30"></div>
+        
         <img
           src={lolService.getRankImageUrl(rank.tier)}
           alt={rank.tier}
-          className="w-8 h-8"
+          className="w-8 h-8 relative z-10 drop-shadow-[0_0_8px_rgba(0,255,255,0.3)]"
         />
-        <div className="flex-1">
-          <div className={`${getTextClass(currentTheme)} font-medium`}>
+        <div className="flex-1 relative z-10">
+          <div className="text-white font-mono font-medium tracking-wide">
             {lolService.formatQueueType(rank.queueType)}
           </div>
-          <div className={`${getSecondaryTextClass(currentTheme)} text-sm`}>
+          <div className="text-cyan-400 text-sm font-mono">
             {lolService.getRankDisplayString(rank.tier, rank.rank)} • {rank.leaguePoints} LP
           </div>
-          <div className={`${getSecondaryTextClass(currentTheme)} text-xs`}>
+          <div className="text-gray-400 text-xs font-mono">
             {rank.wins}W / {rank.losses}L
           </div>
         </div>
@@ -148,42 +149,48 @@ export default function LolAccountLinking({
   };
 
   return (
-    <div className={`fixed inset-0 ${currentTheme === 'light' ? 'bg-black/30' : 'bg-black/50'} backdrop-blur-sm z-50 flex items-center justify-center p-4`}>
+    <div className="fixed inset-0 bg-black/70 backdrop-blur-md z-50 flex items-center justify-center p-4">
       {/* Step 1: Search Form */}
       {step === 1 && (
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="border-2 border-border shadow-2xl shadow-purple-500/10 backdrop-blur-xl bg-card/95 rounded-2xl p-6 max-w-md w-full"
+          className="bg-gradient-to-br from-[#0a1628] via-[#0f1f3a] to-[#0a1628] rounded-none p-6 border-2 border-cyan-400/30 shadow-[0_0_40px_rgba(0,255,255,0.3)] max-w-md w-full relative overflow-hidden"
         >
-          <div className="flex items-center justify-between mb-6">
-            <h3 className={`${getTextClass(currentTheme)} text-xl font-bold flex items-center gap-2`}>
-              <Gamepad2 className="w-6 h-6 text-purple-500" />
-              Link LoL Account
+          {/* Corner brackets */}
+          <div className="absolute top-0 left-0 w-8 h-8 border-t-2 border-l-2 border-cyan-400/50"></div>
+          <div className="absolute top-0 right-0 w-8 h-8 border-t-2 border-r-2 border-cyan-400/50"></div>
+          <div className="absolute bottom-0 left-0 w-8 h-8 border-b-2 border-l-2 border-cyan-400/50"></div>
+          <div className="absolute bottom-0 right-0 w-8 h-8 border-b-2 border-r-2 border-cyan-400/50"></div>
+          
+          <div className="flex items-center justify-between mb-6 relative z-10">
+            <h3 className="text-lg font-bold text-cyan-400 font-mono tracking-wider uppercase drop-shadow-[0_0_10px_rgba(0,255,255,0.4)] flex items-center gap-2">
+              <Gamepad2 className="w-5 h-5" />
+              LINK LOL ACCOUNT
             </h3>
             <button
               onClick={onBack}
-              className={`${getSecondaryTextClass(currentTheme)} hover:${getTextClass(currentTheme)} transition-colors`}
+              className="text-gray-400 hover:text-cyan-400 transition-colors p-2 hover:bg-cyan-400/10 border border-transparent hover:border-cyan-400/30"
             >
-              <ArrowLeft className="w-6 h-6" />
+              <ArrowLeft className="w-5 h-5" />
             </button>
           </div>
           
-          <p className={`${getSecondaryTextClass(currentTheme)} text-sm mb-6 text-center`}>
+          <p className="text-gray-400 font-mono text-sm mb-6 text-center relative z-10">
             Enter your Riot ID to connect your League account
           </p>
 
-          <div className="space-y-4">
+          <div className="space-y-4 relative z-10">
             {/* Region Selection */}
             <div>
-              <label className={`${getTextClass(currentTheme)} text-sm font-medium block mb-2`}>
-                Region
+              <label className="text-white font-mono text-sm font-semibold block mb-2 tracking-wide">
+                REGION
               </label>
               <div className="relative">
                 <select
                   value={formData.region}
                   onChange={(e) => setFormData({ ...formData, region: e.target.value })}
-                  className={`w-full border border-border/50 shadow-md shadow-purple-500/5 backdrop-blur-sm bg-card/80 hover:shadow-purple-500/10 hover:border-purple-500/20 rounded-xl p-4 ${getTextClass(currentTheme)} focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 appearance-none pr-10`}
+                  className="w-full bg-gradient-to-r from-[#0a1628]/80 to-[#1a2f4a]/80 border border-cyan-400/30 shadow-[0_0_15px_rgba(83,131,232,0.2)] hover:shadow-[0_0_25px_rgba(0,255,255,0.4)] hover:border-cyan-400/50 p-4 text-white font-mono focus:ring-2 focus:ring-cyan-400 focus:border-transparent transition-all duration-300 appearance-none pr-10"
                 >
                   {regions.map((region) => (
                     <option key={region.value} value={region.value}>
@@ -191,35 +198,35 @@ export default function LolAccountLinking({
                     </option>
                   ))}
                 </select>
-                <ChevronDown className={`absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 ${getSecondaryTextClass(currentTheme)} pointer-events-none`} />
+                <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-cyan-400 pointer-events-none" />
               </div>
             </div>
 
             {/* Game Name */}
             <div>
-              <label className={`${getTextClass(currentTheme)} text-sm font-medium block mb-2`}>
-                Game Name
+              <label className="text-white font-mono text-sm font-semibold block mb-2 tracking-wide">
+                GAME NAME
               </label>
               <Input
                 type="text"
                 placeholder="e.g., summoner"
                 value={formData.gameName}
                 onChange={(e) => setFormData({ ...formData, gameName: e.target.value })}
-                className={`border border-border/50 shadow-md shadow-purple-500/5 backdrop-blur-sm bg-card/80 hover:shadow-purple-500/10 hover:border-purple-500/20 rounded-xl p-4 ${getTextClass(currentTheme)} focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300`}
+                className="w-full bg-gradient-to-r from-[#0a1628]/80 to-[#1a2f4a]/80 border border-cyan-400/30 shadow-[0_0_15px_rgba(83,131,232,0.2)] hover:shadow-[0_0_25px_rgba(0,255,255,0.4)] hover:border-cyan-400/50 p-4 text-white font-mono placeholder:text-gray-500 focus:ring-2 focus:ring-cyan-400 focus:border-transparent transition-all duration-300"
               />
             </div>
 
             {/* Tagline */}
             <div>
-              <label className={`${getTextClass(currentTheme)} text-sm font-medium block mb-2`}>
-                Tagline
+              <label className="text-white font-mono text-sm font-semibold block mb-2 tracking-wide">
+                TAGLINE
               </label>
               <Input
                 type="text"
                 placeholder="e.g., 1234"
                 value={formData.tagline}
                 onChange={(e) => setFormData({ ...formData, tagline: e.target.value })}
-                className={`border border-border/50 shadow-md shadow-purple-500/5 backdrop-blur-sm bg-card/80 hover:shadow-purple-500/10 hover:border-purple-500/20 rounded-xl p-4 ${getTextClass(currentTheme)} focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300`}
+                className="w-full bg-gradient-to-r from-[#0a1628]/80 to-[#1a2f4a]/80 border border-cyan-400/30 shadow-[0_0_15px_rgba(83,131,232,0.2)] hover:shadow-[0_0_25px_rgba(0,255,255,0.4)] hover:border-cyan-400/50 p-4 text-white font-mono placeholder:text-gray-500 focus:ring-2 focus:ring-cyan-400 focus:border-transparent transition-all duration-300"
               />
             </div>
 
@@ -228,31 +235,39 @@ export default function LolAccountLinking({
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                className="flex items-center gap-2 p-3 rounded-lg bg-red-500/10 border border-red-500/30"
+                className="flex items-center gap-2 p-3 bg-red-500/10 border border-red-500/30 relative overflow-hidden"
               >
-                <AlertCircle className="w-4 h-4 text-red-500" />
-                <span className="text-red-500 text-sm">{error}</span>
+                <div className="absolute top-0 left-0 w-2 h-2 border-t border-l border-red-400/50"></div>
+                <div className="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-red-400/50"></div>
+                <AlertCircle className="w-4 h-4 text-red-400 drop-shadow-[0_0_6px_rgba(239,68,68,0.6)] relative z-10" />
+                <span className="text-red-400 text-sm font-mono relative z-10">{error}</span>
               </motion.div>
             )}
 
             {/* Search Button */}
-            <Button
+            <motion.button
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
               onClick={handleSearch}
               disabled={isSearching || !formData.gameName.trim() || !formData.tagline.trim()}
-              className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white"
+              className="w-full bg-gradient-to-r from-[#5383E8] to-cyan-400 hover:from-cyan-400 hover:to-[#5383E8] disabled:from-gray-600 disabled:to-gray-700 disabled:cursor-not-allowed text-white px-6 py-4 border border-cyan-400/50 disabled:border-gray-500/50 shadow-[0_0_15px_rgba(0,255,255,0.3)] hover:shadow-[0_0_25px_rgba(0,255,255,0.5)] disabled:shadow-none transition-all duration-300 relative overflow-hidden group"
             >
-              {isSearching ? (
-                <>
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  Searching...
-                </>
-              ) : (
-                <>
-                  <Search className="w-4 h-4 mr-2" />
-                  Search Summoner
-                </>
-              )}
-            </Button>
+              <div className="absolute top-0 left-0 w-2 h-2 border-t border-l border-white/50"></div>
+              <div className="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-white/50"></div>
+              <div className="flex items-center justify-center gap-2 text-sm font-bold font-mono tracking-wider uppercase relative z-10">
+                {isSearching ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    SEARCHING...
+                  </>
+                ) : (
+                  <>
+                    <Search className="w-4 h-4" />
+                    SEARCH SUMMONER
+                  </>
+                )}
+              </div>
+            </motion.button>
           </div>
         </motion.div>
       )}
@@ -262,39 +277,51 @@ export default function LolAccountLinking({
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="border-2 border-border shadow-2xl shadow-purple-500/10 backdrop-blur-xl bg-card/95 rounded-2xl p-6 max-w-md w-full"
+          className="bg-gradient-to-br from-[#0a1628] via-[#0f1f3a] to-[#0a1628] rounded-none p-6 border-2 border-cyan-400/30 shadow-[0_0_40px_rgba(0,255,255,0.3)] max-w-md w-full relative overflow-hidden"
         >
-          <div className="flex items-center justify-between mb-6">
-            <h3 className={`${getTextClass(currentTheme)} text-xl font-bold flex items-center gap-2`}>
-              <Trophy className="w-6 h-6 text-purple-500" />
-              Confirm Account
+          {/* Corner brackets */}
+          <div className="absolute top-0 left-0 w-8 h-8 border-t-2 border-l-2 border-cyan-400/50"></div>
+          <div className="absolute top-0 right-0 w-8 h-8 border-t-2 border-r-2 border-cyan-400/50"></div>
+          <div className="absolute bottom-0 left-0 w-8 h-8 border-b-2 border-l-2 border-cyan-400/50"></div>
+          <div className="absolute bottom-0 right-0 w-8 h-8 border-b-2 border-r-2 border-cyan-400/50"></div>
+          
+          <div className="flex items-center justify-between mb-6 relative z-10">
+            <h3 className="text-lg font-bold text-cyan-400 font-mono tracking-wider uppercase drop-shadow-[0_0_10px_rgba(0,255,255,0.4)] flex items-center gap-2">
+              <Trophy className="w-5 h-5" />
+              CONFIRM ACCOUNT
             </h3>
             <button
               onClick={() => setStep(1)}
-              className={`${getSecondaryTextClass(currentTheme)} hover:${getTextClass(currentTheme)} transition-colors`}
+              className="text-gray-400 hover:text-cyan-400 transition-colors p-2 hover:bg-cyan-400/10 border border-transparent hover:border-cyan-400/30"
             >
-              <ArrowLeft className="w-6 h-6" />
+              <ArrowLeft className="w-5 h-5" />
             </button>
           </div>
           
-          <p className={`${getSecondaryTextClass(currentTheme)} text-sm mb-6 text-center`}>
+          <p className="text-gray-400 font-mono text-sm mb-6 text-center relative z-10">
             Is this your League of Legends account?
           </p>
 
-          <div className="space-y-4">
+          <div className="space-y-4 relative z-10">
             {/* Summoner Info */}
-            <div className="flex items-center gap-4 p-4 rounded-lg bg-card/50 border border-border/30">
-              <img
-                src={lolService.getSummonerIconUrl(searchResult.summoner.profileIconId)}
-                alt="Summoner Icon"
-                className="w-16 h-16 rounded-full border-2 border-purple-500"
-              />
-              <div className="flex-1">
-                <div className={`${getTextClass(currentTheme)} font-bold text-lg`}>
+            <div className="flex items-center gap-4 p-4 bg-gradient-to-br from-[#0f1f3a]/60 to-[#0a1628]/60 border border-cyan-400/20 relative overflow-hidden">
+              <div className="absolute top-0 left-0 w-3 h-3 border-t border-l border-cyan-400/30"></div>
+              <div className="absolute bottom-0 right-0 w-3 h-3 border-b border-r border-cyan-400/30"></div>
+              
+              <div className="relative">
+                <div className="absolute inset-0 bg-gradient-to-br from-cyan-400 via-[#5383E8] to-cyan-400 opacity-40 blur-md rounded-full"></div>
+                <img
+                  src={lolService.getSummonerIconUrl(searchResult.summoner.profileIconId)}
+                  alt="Summoner Icon"
+                  className="w-16 h-16 rounded-full border-2 border-cyan-400/50 shadow-[0_0_20px_rgba(0,255,255,0.4)] relative z-10"
+                />
+              </div>
+              <div className="flex-1 relative z-10">
+                <div className="text-white font-mono font-bold text-lg tracking-wide drop-shadow-[0_0_8px_rgba(255,255,255,0.3)]">
                   {searchResult.account.gameName}#{searchResult.account.tagLine}
                 </div>
-                <div className={`${getSecondaryTextClass(currentTheme)} text-sm flex items-center gap-2`}>
-                  <Star className="w-4 h-4" />
+                <div className="text-gray-400 font-mono text-sm flex items-center gap-2">
+                  <Star className="w-4 h-4 text-cyan-400" />
                   Level {searchResult.summoner.summonerLevel}
                   <span className="mx-2">•</span>
                   {regions.find((r: any) => r.value === searchResult.region)?.label}
@@ -305,11 +332,13 @@ export default function LolAccountLinking({
             {/* Ranked Information */}
             {searchResult.rankedData && searchResult.rankedData.length > 0 && (
               <div>
-                <div className={`${getTextClass(currentTheme)} font-medium flex items-center gap-2`}>
-                  <Trophy className="w-4 h-4 text-yellow-500" />
-                  Ranked Information
+                <div className="text-white font-mono font-semibold flex items-center gap-2 mb-3 tracking-wide">
+                  <Trophy className="w-4 h-4 text-yellow-400 drop-shadow-[0_0_8px_rgba(250,204,21,0.6)]" />
+                  RANKED INFORMATION
                 </div>
-                {getRankDisplay(searchResult.rankedData)}
+                <div className="space-y-2">
+                  {getRankDisplay(searchResult.rankedData)}
+                </div>
               </div>
             )}
 
@@ -318,40 +347,51 @@ export default function LolAccountLinking({
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                className="flex items-center gap-2 p-3 rounded-lg bg-red-500/10 border border-red-500/30"
+                className="flex items-center gap-2 p-3 bg-red-500/10 border border-red-500/30 relative overflow-hidden"
               >
-                <AlertCircle className="w-4 h-4 text-red-500" />
-                <span className="text-red-500 text-sm">{error}</span>
+                <div className="absolute top-0 left-0 w-2 h-2 border-t border-l border-red-400/50"></div>
+                <div className="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-red-400/50"></div>
+                <AlertCircle className="w-4 h-4 text-red-400 drop-shadow-[0_0_6px_rgba(239,68,68,0.6)] relative z-10" />
+                <span className="text-red-400 text-sm font-mono relative z-10">{error}</span>
               </motion.div>
             )}
 
             {/* Action Buttons */}
             <div className="flex gap-3">
-              <Button
-                variant="outline"
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
                 onClick={() => setStep(1)}
-                className="flex-1"
                 disabled={isLinking}
+                className="flex-1 bg-gradient-to-r from-gray-700 to-gray-600 hover:from-gray-600 hover:to-gray-500 disabled:from-gray-800 disabled:to-gray-700 disabled:cursor-not-allowed text-white px-4 py-3 border border-gray-500/50 shadow-[0_0_15px_rgba(107,114,128,0.2)] hover:shadow-[0_0_25px_rgba(107,114,128,0.4)] disabled:shadow-none transition-all duration-300 relative overflow-hidden group"
               >
-                Back
-              </Button>
-              <Button
+                <div className="absolute top-0 left-0 w-2 h-2 border-t border-l border-white/50"></div>
+                <div className="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-white/50"></div>
+                <span className="text-sm font-bold font-mono tracking-wider uppercase relative z-10">BACK</span>
+              </motion.button>
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
                 onClick={handleLinkAccount}
                 disabled={isLinking}
-                className="flex-1 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white"
+                className="flex-1 bg-gradient-to-r from-[#5383E8] to-cyan-400 hover:from-cyan-400 hover:to-[#5383E8] disabled:from-gray-600 disabled:to-gray-700 disabled:cursor-not-allowed text-white px-4 py-3 border border-cyan-400/50 disabled:border-gray-500/50 shadow-[0_0_15px_rgba(0,255,255,0.3)] hover:shadow-[0_0_25px_rgba(0,255,255,0.5)] disabled:shadow-none transition-all duration-300 relative overflow-hidden group"
               >
-                {isLinking ? (
-                  <>
-                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                    Linking...
-                  </>
-                ) : (
-                  <>
-                    <Link className="w-4 h-4 mr-2" />
-                    Link Account
-                  </>
-                )}
-              </Button>
+                <div className="absolute top-0 left-0 w-2 h-2 border-t border-l border-white/50"></div>
+                <div className="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-white/50"></div>
+                <div className="flex items-center justify-center gap-2 text-sm font-bold font-mono tracking-wider uppercase relative z-10">
+                  {isLinking ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      LINKING...
+                    </>
+                  ) : (
+                    <>
+                      <Link className="w-4 h-4" />
+                      LINK ACCOUNT
+                    </>
+                  )}
+                </div>
+              </motion.button>
             </div>
           </div>
         </motion.div>
@@ -362,17 +402,69 @@ export default function LolAccountLinking({
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="border-2 border-green-500/30 shadow-2xl shadow-green-500/10 backdrop-blur-xl bg-card/95 rounded-2xl p-6 max-w-md w-full text-center"
+          className="bg-gradient-to-br from-[#0a1628] via-[#0f1f3a] to-[#0a1628] rounded-none p-8 border-2 border-green-400/40 shadow-[0_0_40px_rgba(34,197,94,0.4)] max-w-md w-full text-center relative overflow-hidden"
         >
-          <div className="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-4">
-            <CheckCircle className="w-8 h-8 text-white" />
+          {/* Corner brackets */}
+          <div className="absolute top-0 left-0 w-8 h-8 border-t-2 border-l-2 border-green-400/50"></div>
+          <div className="absolute top-0 right-0 w-8 h-8 border-t-2 border-r-2 border-green-400/50"></div>
+          <div className="absolute bottom-0 left-0 w-8 h-8 border-b-2 border-l-2 border-green-400/50"></div>
+          <div className="absolute bottom-0 right-0 w-8 h-8 border-b-2 border-r-2 border-green-400/50"></div>
+          
+          {/* Glowing orb effect */}
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-green-400/10 rounded-full blur-3xl"></div>
+          
+          <div className="relative z-10">
+            <motion.div
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
+              className="w-20 h-20 bg-gradient-to-br from-green-400 to-green-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-[0_0_30px_rgba(34,197,94,0.6)] relative"
+            >
+              <div className="absolute inset-0 bg-gradient-to-tr from-green-300/50 to-transparent rounded-full"></div>
+              <CheckCircle className="w-10 h-10 text-white relative z-10" strokeWidth={3} />
+            </motion.div>
+            
+            <motion.h3
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+              className="text-xl font-bold text-green-400 font-mono tracking-wider uppercase mb-3 drop-shadow-[0_0_15px_rgba(34,197,94,0.6)]"
+            >
+              ACCOUNT LINKED!
+            </motion.h3>
+            
+            <motion.p
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4 }}
+              className="text-gray-400 font-mono text-sm"
+            >
+              Your League of Legends account has been successfully linked to your profile.
+            </motion.p>
+            
+            {/* Animated success particles */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.5 }}
+              className="mt-6 flex justify-center gap-2"
+            >
+              {[...Array(5)].map((_, i) => (
+                <motion.div
+                  key={i}
+                  initial={{ scale: 0 }}
+                  animate={{ scale: [0, 1, 0] }}
+                  transition={{
+                    delay: 0.6 + i * 0.1,
+                    duration: 1.5,
+                    repeat: Infinity,
+                    repeatDelay: 1
+                  }}
+                  className="w-2 h-2 bg-green-400 rounded-full shadow-[0_0_8px_rgba(34,197,94,0.8)]"
+                />
+              ))}
+            </motion.div>
           </div>
-          <h3 className={`${getTextClass(currentTheme)} text-xl font-bold mb-2`}>
-            Account Linked Successfully!
-          </h3>
-          <p className={`${getSecondaryTextClass(currentTheme)} text-sm`}>
-            Your League of Legends account has been linked to your profile.
-          </p>
         </motion.div>
       )}
     </div>
