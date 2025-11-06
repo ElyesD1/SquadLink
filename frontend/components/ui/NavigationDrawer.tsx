@@ -67,7 +67,7 @@ export default function NavigationDrawer({ children }: NavigationDrawerProps) {
       {/* Futuristic Menu Button */}
       <motion.button
         onClick={() => setIsOpen(true)}
-        className="fixed top-6 right-6 z-50 group"
+        className="fixed top-6 right-6 z-[60] group"
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
       >
@@ -94,7 +94,7 @@ export default function NavigationDrawer({ children }: NavigationDrawerProps) {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={() => setIsOpen(false)}
-            className="fixed inset-0 bg-black/70 backdrop-blur-sm z-40"
+            className="fixed inset-0 bg-black/70 backdrop-blur-sm z-[55]"
           />
         )}
       </AnimatePresence>
@@ -108,7 +108,7 @@ export default function NavigationDrawer({ children }: NavigationDrawerProps) {
             animate={{ x: 0 }}
             exit={{ x: '100%' }}
             transition={{ type: 'spring', damping: 25, stiffness: 120 }}
-            className="fixed right-0 top-0 h-full w-80 bg-gradient-to-br from-[#0a1628] via-[#0f1f3a] to-[#0a1628] border-l-2 border-cyan-400/30 shadow-[0_0_50px_rgba(0,255,255,0.3)] z-50 overflow-hidden"
+            className="fixed right-0 top-0 h-full w-80 bg-gradient-to-br from-[#0a1628] via-[#0f1f3a] to-[#0a1628] border-l-2 border-cyan-400/30 shadow-[0_0_50px_rgba(0,255,255,0.3)] z-[60] overflow-hidden"
           >
             {/* Tech grid background */}
             <div className="absolute inset-0 bg-[linear-gradient(rgba(0,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(0,255,255,0.03)_1px,transparent_1px)] bg-[size:30px_30px] opacity-50"></div>

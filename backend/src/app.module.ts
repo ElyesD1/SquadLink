@@ -10,6 +10,7 @@ import { RiotApiModule } from './riot-api/riot-api.module';
 import { PartyModule } from './party/party.module';
 import { DiscordModule } from './discord/discord.module';
 import { EmailModule } from './email/email.module';
+import { AIInsightsModule } from './ai-insights/ai-insights.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { EmailModule } from './email/email.module';
     PartyModule,
     DiscordModule,
     EmailModule,
+    AIInsightsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

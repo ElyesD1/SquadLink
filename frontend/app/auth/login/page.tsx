@@ -20,12 +20,34 @@ import {
   Shield, 
   Gamepad2,
   Eye,
-  EyeOff
+  EyeOff,
+  Target,
+  TrendingUp,
+  BarChart3
 } from 'lucide-react';
 import { FcGoogle } from 'react-icons/fc';
 import { storage } from '@/lib/storage';
 import { AnimatedLogo } from '@/components/ui/AnimatedLogo';
 import { PasswordResetModal } from '@/components/ui/PasswordResetModal';
+
+// Pre-defined particle positions to avoid hydration mismatch
+const PARTICLE_POSITIONS = [
+  { left: 15, top: 25 },
+  { left: 85, top: 15 },
+  { left: 45, top: 65 },
+  { left: 70, top: 40 },
+  { left: 30, top: 80 },
+  { left: 90, top: 55 },
+  { left: 10, top: 45 },
+  { left: 55, top: 20 },
+  { left: 25, top: 90 },
+  { left: 80, top: 70 },
+  { left: 60, top: 35 },
+  { left: 40, top: 75 },
+  { left: 20, top: 60 },
+  { left: 75, top: 85 },
+  { left: 50, top: 50 },
+];
 
 export default function LoginPage() {
   const router = useRouter();
@@ -129,22 +151,22 @@ export default function LoginPage() {
         <div className="absolute inset-0 bg-[linear-gradient(to_bottom,transparent_0%,rgba(0,255,255,0.03)_50%,transparent_100%)] bg-[length:100%_4px]" />
         
         {/* Floating Particles */}
-        {[...Array(15)].map((_, i) => (
+        {PARTICLE_POSITIONS.map((pos, i) => (
           <motion.div
             key={i}
             className="absolute w-1 h-1 bg-cyan-400/30"
             style={{
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
+              left: `${pos.left}%`,
+              top: `${pos.top}%`,
             }}
             animate={{
               y: [0, -30, 0],
               opacity: [0.3, 0.6, 0.3],
             }}
             transition={{
-              duration: 3 + Math.random() * 2,
+              duration: 3 + (i % 3),
               repeat: Infinity,
-              delay: Math.random() * 2,
+              delay: i * 0.2,
             }}
           />
         ))}
@@ -185,67 +207,64 @@ export default function LoginPage() {
                 </span>
               </h1>
               <p className="text-xl text-gray-400 leading-relaxed">
-                Connect with gamers who share your passion. Form squads, make friends, and elevate your gameplay.
+                Join League of Legends players worldwide. Find your perfect team, climb the ranks, and dominate the rift.
               </p>
             </div>
           </div>
 
-          {/* Supported Games */}
+          {/* League Features */}
           <div className="space-y-6">
-            <h3 className="text-lg font-black font-mono uppercase tracking-wider text-cyan-400">Supported Games</h3>
+            <h3 className="text-lg font-black font-mono uppercase tracking-wider text-cyan-400">League of Legends</h3>
             <div className="grid grid-cols-3 gap-4">
               {[
                 {
-                  name: 'League of Legends',
-                  description: 'Find your perfect team composition',
+                  name: 'Find Teams',
+                  description: 'Match by role and rank',
                   gradient: 'from-cyan-400 to-blue-500',
-                  icon: '/league.png'
+                  icon: Users
                 },
                 {
-                  name: 'Valorant',
-                  description: 'Tactical squad coordination',
+                  name: 'Ranked Squads',
+                  description: 'Climb the ladder together',
                   gradient: 'from-blue-500 to-cyan-400',
-                  icon: '/valorant.png'
+                  icon: Target
                 },
                 {
-                  name: 'Fortnite',
-                  description: 'Build and battle together',
+                  name: 'Track Stats',
+                  description: 'View performance metrics',
                   gradient: 'from-cyan-500 to-blue-400',
-                  icon: '/fortnite.png'
+                  icon: BarChart3
                 }
-              ].map((game, index) => (
-                <motion.div
-                  key={index}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.3 + index * 0.1 }}
-                  whileHover={{ scale: 1.05, y: -5 }}
-                  className="relative group cursor-pointer"
-                >
-                  {/* Glow effect on hover */}
-                  <div className="absolute inset-0 bg-gradient-to-br from-cyan-400/20 to-blue-500/20 rounded blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                  
-                  <div className={`relative h-24 bg-gradient-to-br ${game.gradient} p-[2px]`}
-                    style={{ clipPath: 'polygon(4px 0, 100% 0, 100% calc(100% - 4px), calc(100% - 4px) 100%, 0 100%, 0 4px)' }}
+              ].map((feature, index) => {
+                const IconComponent = feature.icon;
+                return (
+                  <motion.div
+                    key={index}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.3 + index * 0.1 }}
+                    whileHover={{ scale: 1.05, y: -5 }}
+                    className="relative group cursor-pointer"
                   >
-                    <div className="h-full w-full bg-[#0a1628] flex flex-col items-center justify-center gap-1 group-hover:bg-[#0a1628]/90 transition-all duration-300"
-                      style={{ clipPath: 'polygon(3px 0, 100% 0, 100% calc(100% - 3px), calc(100% - 3px) 100%, 0 100%, 0 3px)' }}
+                    {/* Glow effect on hover */}
+                    <div className="absolute inset-0 bg-gradient-to-br from-cyan-400/20 to-blue-500/20 rounded blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                    
+                    <div className={`relative h-24 bg-gradient-to-br ${feature.gradient} p-[2px]`}
+                      style={{ clipPath: 'polygon(4px 0, 100% 0, 100% calc(100% - 4px), calc(100% - 4px) 100%, 0 100%, 0 4px)' }}
                     >
-                      <Image
-                        src={game.icon}
-                        alt={game.name}
-                        width={32}
-                        height={32}
-                        className="w-8 h-8 object-contain group-hover:scale-110 transition-transform duration-300"
-                      />
-                      <span className="text-xs font-bold font-mono text-center leading-tight text-cyan-400 group-hover:text-cyan-300 transition-colors">{game.name}</span>
+                      <div className="h-full w-full bg-[#0a1628] flex flex-col items-center justify-center gap-1 group-hover:bg-[#0a1628]/90 transition-all duration-300"
+                        style={{ clipPath: 'polygon(3px 0, 100% 0, 100% calc(100% - 3px), calc(100% - 3px) 100%, 0 100%, 0 3px)' }}
+                      >
+                        <IconComponent className="w-8 h-8 text-cyan-400 group-hover:scale-110 transition-transform duration-300" />
+                        <span className="text-xs font-bold font-mono text-center leading-tight text-cyan-400 group-hover:text-cyan-300 transition-colors">{feature.name}</span>
+                      </div>
                     </div>
-                  </div>
-                </motion.div>
-              ))}
+                  </motion.div>
+                );
+              })}
             </div>
             <p className="text-sm text-gray-400 text-center">
-              Connect with players who share your gaming passion
+              Connect with players who share your LoL passion
             </p>
           </div>
 
@@ -302,9 +321,9 @@ export default function LoginPage() {
               >
                 🎮
               </motion.div>
-              <h3 className="text-lg font-black font-mono uppercase tracking-wider text-cyan-400">Ready to Squad Up?</h3>
+              <h3 className="text-lg font-black font-mono uppercase tracking-wider text-cyan-400">Ready to Climb?</h3>
               <p className="text-sm text-gray-400 leading-relaxed">
-                Join fellow gamers, form lasting friendships, and dominate your favorite games together.
+                Join League of Legends players, build your dream team, and dominate the rift together.
               </p>
             </div>
           </motion.div>

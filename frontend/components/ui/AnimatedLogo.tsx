@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion';
 import { Sparkles, Zap } from 'lucide-react';
+import Image from 'next/image';
 
 interface AnimatedLogoProps {
   size?: 'sm' | 'md' | 'lg';
@@ -12,9 +13,15 @@ interface AnimatedLogoProps {
 
 export function AnimatedLogo({ size = 'md', showText = true, className = '', variant = 'default' }: AnimatedLogoProps) {
   const sizeClasses = {
-    sm: 'w-8 h-8',
-    md: 'w-10 h-10',
-    lg: 'w-12 h-12'
+    sm: 'w-20 h-20',
+    md: 'w-24 h-24',
+    lg: 'w-32 h-32'
+  };
+
+  const imageSizes = {
+    sm: 80,
+    md: 96,
+    lg: 128
   };
 
   const iconSizes = {
@@ -39,52 +46,57 @@ export function AnimatedLogo({ size = 'md', showText = true, className = '', var
         transition={{ duration: 0.6 }}
       >
         <div className={`relative ${sizeClasses[size]}`}>
-          {/* Outer glow ring */}
+          {/* Outer blue neon glow */}
           <motion.div
-            className={`absolute inset-0 ${sizeClasses[size]} bg-gradient-to-br from-cyan-400 via-[#5383E8] to-cyan-400 opacity-40 blur-lg`}
+            className={`absolute inset-0 ${sizeClasses[size]} rounded-full`}
+            style={{
+              background: 'radial-gradient(circle, rgba(59, 130, 246, 0.6) 0%, rgba(59, 130, 246, 0.3) 50%, transparent 70%)',
+              filter: 'blur(12px)',
+            }}
             animate={{
-              scale: [1, 1.2, 1],
-              opacity: [0.3, 0.6, 0.3]
+              scale: [1, 1.3, 1],
+              opacity: [0.5, 0.8, 0.5]
             }}
             transition={{
-              duration: 3,
+              duration: 2.5,
               repeat: Infinity,
               ease: "easeInOut"
             }}
           />
           
-          {/* Main hexagon shape */}
+          {/* Secondary neon pulse */}
           <motion.div
-            className={`relative ${sizeClasses[size]} bg-gradient-to-br from-[#0a1628] via-[#5383E8]/30 to-[#0a1628] border-2 border-cyan-400/50 shadow-[0_0_30px_rgba(0,255,255,0.4)]`}
-            style={{ clipPath: 'polygon(30% 0%, 70% 0%, 100% 50%, 70% 100%, 30% 100%, 0% 50%)' }}
+            className={`absolute inset-0 ${sizeClasses[size]} rounded-full`}
+            style={{
+              background: 'radial-gradient(circle, rgba(96, 165, 250, 0.4) 0%, transparent 60%)',
+              filter: 'blur(8px)',
+            }}
             animate={{
-              rotateY: [0, 360],
-              borderColor: ['rgba(0,255,255,0.5)', 'rgba(83,131,232,0.8)', 'rgba(0,255,255,0.5)']
+              scale: [1.2, 1, 1.2],
+              opacity: [0.3, 0.6, 0.3]
             }}
             transition={{
-              rotateY: { duration: 20, repeat: Infinity, ease: "linear" },
-              borderColor: { duration: 3, repeat: Infinity }
+              duration: 3,
+              repeat: Infinity,
+              ease: "easeInOut",
+              delay: 0.5
             }}
-          >
-            {/* Inner glow */}
-            <motion.div
-              className={`absolute inset-0 bg-gradient-to-br from-cyan-400/20 to-transparent`}
-              animate={{ opacity: [0.3, 0.7, 0.3] }}
-              transition={{ duration: 2, repeat: Infinity }}
-            />
-            
-            {/* Tech corner brackets */}
-            <div className="absolute top-0 left-0 w-2 h-2 border-t-2 border-l-2 border-cyan-400"></div>
-            <div className="absolute top-0 right-0 w-2 h-2 border-t-2 border-r-2 border-cyan-400"></div>
-            <div className="absolute bottom-0 left-0 w-2 h-2 border-b-2 border-l-2 border-cyan-400"></div>
-            <div className="absolute bottom-0 right-0 w-2 h-2 border-b-2 border-r-2 border-cyan-400"></div>
-          </motion.div>
-
-          {/* Icon */}
+          />
+          
+          {/* Main logo container with neon border */}
           <motion.div
-            className="absolute inset-0 flex items-center justify-center"
+            className={`relative ${sizeClasses[size]} rounded-full flex items-center justify-center`}
+            style={{
+              boxShadow: '0 0 20px rgba(59, 130, 246, 0.6), 0 0 40px rgba(59, 130, 246, 0.4), inset 0 0 20px rgba(59, 130, 246, 0.2)',
+              border: '2px solid rgba(96, 165, 250, 0.6)',
+              background: 'radial-gradient(circle at center, rgba(59, 130, 246, 0.1) 0%, rgba(10, 22, 40, 0.95) 70%)'
+            }}
             animate={{
-              scale: [1, 1.1, 1],
+              boxShadow: [
+                '0 0 20px rgba(59, 130, 246, 0.6), 0 0 40px rgba(59, 130, 246, 0.4), inset 0 0 20px rgba(59, 130, 246, 0.2)',
+                '0 0 30px rgba(96, 165, 250, 0.8), 0 0 60px rgba(96, 165, 250, 0.5), inset 0 0 30px rgba(96, 165, 250, 0.3)',
+                '0 0 20px rgba(59, 130, 246, 0.6), 0 0 40px rgba(59, 130, 246, 0.4), inset 0 0 20px rgba(59, 130, 246, 0.2)'
+              ]
             }}
             transition={{
               duration: 2,
@@ -92,12 +104,37 @@ export function AnimatedLogo({ size = 'md', showText = true, className = '', var
               ease: "easeInOut"
             }}
           >
-            <Zap className={`${iconSizes[size]} text-cyan-400 drop-shadow-[0_0_10px_rgba(0,255,255,0.8)]`} fill="currentColor" />
+            {/* Logo Image */}
+            <motion.div
+              animate={{
+                scale: [1, 1.05, 1],
+              }}
+              transition={{
+                duration: 2,
+                repeat: Infinity,
+                ease: "easeInOut"
+              }}
+            >
+              <Image
+                src="/Logo-Photoroom.png"
+                alt="SquadLink Logo"
+                width={imageSizes[size]}
+                height={imageSizes[size]}
+                className="relative z-10"
+                style={{
+                  filter: 'drop-shadow(0 0 8px rgba(59, 130, 246, 0.8))'
+                }}
+              />
+            </motion.div>
           </motion.div>
 
-          {/* Orbiting particles */}
+          {/* Orbiting blue particles */}
           <motion.div
-            className="absolute top-0 left-1/2 w-1 h-1 bg-cyan-400 rounded-full shadow-[0_0_4px_rgba(0,255,255,0.8)]"
+            className="absolute top-0 left-1/2 w-1 h-1 bg-blue-400 rounded-full"
+            style={{
+              boxShadow: '0 0 6px rgba(96, 165, 250, 0.9), 0 0 12px rgba(59, 130, 246, 0.6)',
+              transformOrigin: '0px 20px'
+            }}
             animate={{
               rotate: [0, 360],
             }}
@@ -106,7 +143,6 @@ export function AnimatedLogo({ size = 'md', showText = true, className = '', var
               repeat: Infinity,
               ease: "linear"
             }}
-            style={{ transformOrigin: '0px 20px' }}
           />
           <motion.div
             className="absolute top-0 left-1/2 w-1 h-1 bg-[#5383E8] rounded-full shadow-[0_0_4px_rgba(83,131,232,0.8)]"
@@ -121,42 +157,6 @@ export function AnimatedLogo({ size = 'md', showText = true, className = '', var
             style={{ transformOrigin: '0px 20px' }}
           />
         </div>
-
-        {showText && (
-          <div className="relative">
-            {/* Text glow */}
-            <motion.span 
-              className={`absolute inset-0 ${textSizes[size]} font-black font-mono tracking-wider bg-gradient-to-r from-cyan-400 via-[#5383E8] to-cyan-400 bg-clip-text text-transparent blur-sm`}
-              animate={{
-                opacity: [0.5, 1, 0.5]
-              }}
-              transition={{
-                duration: 2,
-                repeat: Infinity
-              }}
-            >
-              SQUADLINK
-            </motion.span>
-            
-            {/* Main text */}
-            <span className={`relative ${textSizes[size]} font-black font-mono tracking-wider bg-gradient-to-r from-cyan-400 via-[#5383E8] to-cyan-400 bg-clip-text text-transparent drop-shadow-[0_0_15px_rgba(0,255,255,0.5)]`}>
-              SQUADLINK
-            </span>
-            
-            {/* Tech underline */}
-            <motion.div
-              className="absolute -bottom-1 left-0 right-0 h-px bg-gradient-to-r from-transparent via-cyan-400 to-transparent"
-              animate={{
-                opacity: [0.3, 1, 0.3],
-                scaleX: [0.8, 1, 0.8]
-              }}
-              transition={{
-                duration: 2,
-                repeat: Infinity
-              }}
-            />
-          </div>
-        )}
       </motion.div>
     );
   }

@@ -2,7 +2,7 @@
 
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, Users, Gamepad2, Shield, Sparkles, Zap } from 'lucide-react';
+import { ArrowRight, Users, Gamepad2, TrendingUp, Sparkles, Zap } from 'lucide-react';
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
 
@@ -34,7 +34,7 @@ export function HeroSection() {
                 <Sparkles className="w-4 h-4 text-cyan-400" />
               </motion.div>
               <span className="text-sm font-mono uppercase tracking-wider bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">
-                Connect with gamers worldwide
+                League of Legends Team Finder
               </span>
             </div>
           </div>
@@ -52,7 +52,7 @@ export function HeroSection() {
               Find Your
             </span>
             <span className="block bg-gradient-to-r from-blue-500 via-cyan-400 to-blue-500 bg-clip-text text-transparent drop-shadow-[0_0_30px_rgba(83,131,232,0.3)]">
-              Gaming
+              League
             </span>
             <span className="block bg-gradient-to-r from-cyan-400 via-blue-400 to-cyan-500 bg-clip-text text-transparent drop-shadow-[0_0_30px_rgba(0,255,255,0.3)]">
               Squad
@@ -66,8 +66,8 @@ export function HeroSection() {
           transition={{ duration: 0.8, delay: 0.5 }}
           className="text-xl md:text-2xl text-gray-400 mb-12 max-w-3xl mx-auto leading-relaxed"
         >
-          Connect with like-minded gamers, form squads, and dominate your favorite games together. 
-          <span className="text-cyan-400 font-semibold"> Build lasting gaming friendships.</span>
+          Connect with League of Legends players, form ranked teams, and climb the ladder together. 
+          <span className="text-cyan-400 font-semibold"> Build your ultimate LoL squad.</span>
         </motion.p>
         
         {/* CTA Buttons */}
@@ -91,7 +91,7 @@ export function HeroSection() {
                 >
                   <span className="relative z-10 flex items-center text-lg font-mono uppercase tracking-wider text-cyan-400">
                     <Users className="w-6 h-6 mr-3" />
-                    Join Community
+                    Join Squad
                     <ArrowRight className="w-6 h-6 ml-3" />
                   </span>
                   <motion.div
@@ -161,7 +161,7 @@ export function HeroSection() {
                 </div>
                 <p className="text-lg font-mono font-bold text-center uppercase tracking-wider text-cyan-400">Find Your Team</p>
                 <p className="text-sm text-gray-400 text-center mt-2">
-                  Connect with players who share your gaming style
+                  Match with players by role, rank, and playstyle
                 </p>
               </div>
             </div>
@@ -199,9 +199,9 @@ export function HeroSection() {
                     <Gamepad2 className="w-6 h-6 text-black" />
                   </motion.div>
                 </div>
-                <p className="text-lg font-mono font-bold text-center uppercase tracking-wider text-blue-400">Play Together</p>
+                <p className="text-lg font-mono font-bold text-center uppercase tracking-wider text-blue-400">Climb Together</p>
                 <p className="text-sm text-gray-400 text-center mt-2">
-                  Form squads and dominate your favorite games
+                  Form ranked squads and dominate the rift
                 </p>
               </div>
             </div>
@@ -236,12 +236,12 @@ export function HeroSection() {
                     whileHover={{ rotate: 360 }}
                     transition={{ duration: 0.6 }}
                   >
-                    <Shield className="w-6 h-6 text-black" />
+                    <TrendingUp className="w-6 h-6 text-black" />
                   </motion.div>
                 </div>
-                <p className="text-lg font-mono font-bold text-center uppercase tracking-wider text-cyan-400">Safe Environment</p>
+                <p className="text-lg font-mono font-bold text-center uppercase tracking-wider text-cyan-400">Track Progress</p>
                 <p className="text-sm text-gray-400 text-center mt-2">
-                  Secure platform with community guidelines
+                  View stats, match history, and team performance
                 </p>
               </div>
             </div>

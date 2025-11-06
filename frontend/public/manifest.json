@@ -1,0 +1,17 @@
+{
+  "name": "SquadLink - Link Your Squad",
+  "short_name": "SquadLink",
+  "description": "Find your League of Legends squad and dominate the Rift together",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#050a15",
+  "theme_color": "#00ffff",
+  "icons": [
+    {
+      "src": "/Logo-Photoroom.png",
+      "sizes": "any",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

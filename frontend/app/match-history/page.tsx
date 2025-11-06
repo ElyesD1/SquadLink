@@ -9,7 +9,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { AnimatedLogo } from '@/components/ui/AnimatedLogo';
 import NavigationDrawer from '@/components/ui/NavigationDrawer';
-import { ChevronDown, ChevronUp, Loader2, Trophy, Target, Shield, Skull, Users, Clock, AlertCircle, TrendingUp, TrendingDown, Swords, Search, Home, X, RefreshCw } from 'lucide-react';
+import { ChevronDown, ChevronUp, Loader2, Trophy, Target, Shield, Skull, Users, UserX, Clock, AlertCircle, TrendingUp, TrendingDown, Swords, Search, Home, X, RefreshCw, Sparkles, Download, Share2 } from 'lucide-react';
 import { lolService, type LolAccount } from '@/lib/lol-service';
 import { LOL_VERSION, getCDNUrl, getProfileIconUrl } from '@/lib/constants';
 
@@ -223,8 +223,16 @@ export default function MatchHistoryPage() {
   const [autocompleteLoading, setAutocompleteLoading] = useState(false);
   const autocompleteTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
+  // AI Insights state
+  const [showAIInsights, setShowAIInsights] = useState(false);
+  const [aiInsights, setAiInsights] = useState<any>(null);
+  const [loadingInsights, setLoadingInsights] = useState(false);
+
   // Use ref to track next offset to prevent race conditions with rapid clicks
   const nextOffsetRef = useRef(0);
+  
+  // Use ref to track if matches have been loaded to prevent unnecessary reloads on tab switch
+  const matchesLoadedRef = useRef(false);
 
   // Cooldown timer effect
   useEffect(() => {
@@ -272,12 +280,14 @@ export default function MatchHistoryPage() {
   }, [status, session]);
 
   useEffect(() => {
-    if (profile?.lolAccount?.puuid) {
+    // Only load matches once when puuid becomes available, unless explicitly refreshed
+    if (profile?.lolAccount?.puuid && !matchesLoadedRef.current && matches.length === 0) {
+      matchesLoadedRef.current = true;
       loadCachedMatches();
-    } else {
+    } else if (!profile?.lolAccount?.puuid) {
       setLoading(false);
     }
-  }, [profile]);
+  }, [profile?.lolAccount?.puuid]); // Only depend on puuid, not entire profile object
 
   // Fetch player tags when matches are loaded and account changes
   useEffect(() => {
@@ -565,6 +575,8 @@ export default function MatchHistoryPage() {
       setActiveTab({});
       setTimelineData({});
       setLoadingTimeline({});
+      setAiInsights(null); // Clear AI insights cache
+      matchesLoadedRef.current = false; // Reset the loaded flag to allow reload
       
       // Step 2: Clear localStorage cache
       console.log('[FULL REFRESH] Clearing localStorage cache...');
@@ -670,6 +682,10 @@ export default function MatchHistoryPage() {
           const allMatches = [...matches, ...newMatches].sort((a, b) => b.info.gameCreation - a.info.gameCreation);
           setMatches(allMatches);
           console.log('[Load More Frontend] ✅ Added', newMatches.length, 'matches. Total:', allMatches.length);
+          
+          // Invalidate AI insights cache since match count changed
+          setAiInsights(null);
+          console.log('[Load More Frontend] Invalidated AI insights cache - will refetch with new data');
           
           // Refresh player tags with updated match count
           const currentAccount = getCurrentAccount();
@@ -809,6 +825,217 @@ export default function MatchHistoryPage() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
+  // Fetch AI Insights for current summoner
+  const fetchAIInsights = async () => {
+    const currentAccount = getCurrentAccount();
+    if (!currentAccount || matches.length === 0) {
+      alert('No match data available for insights');
+      return;
+    }
+
+    setLoadingInsights(true);
+    try {
+      const response = await fetch('http://localhost:3001/api/v1/riot/insights', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          puuid: currentAccount.puuid,
+          gameName: currentAccount.gameName,
+          tagLine: currentAccount.tagLine,
+          region: currentAccount.region,
+          matches: matches
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to generate insights');
+      }
+
+      const data = await response.json();
+      setAiInsights(data);
+    } catch (error) {
+      console.error('[AI Insights] Error:', error);
+      alert('Failed to generate insights. Please try again.');
+    } finally {
+      setLoadingInsights(false);
+    }
+  };
+
+  // Download AI Insights as Image
+  const downloadInsightsImage = async () => {
+    const currentAccount = getCurrentAccount();
+    if (!aiInsights || !currentAccount) {
+      alert('No insights data available');
+      return;
+    }
+
+    try {
+      // Dynamically import dom-to-image-more (better modern CSS support)
+      const domtoimage = await import('dom-to-image-more');
+      
+      // Get the insights content element
+      const element = document.getElementById('ai-insights-content');
+      if (!element) {
+        console.error('Could not find insights content element');
+        alert('Failed to find insights content. Please try again.');
+        return;
+      }
+
+      console.log('Generating image from element...', element);
+      console.log('Element dimensions:', element.offsetWidth, 'x', element.offsetHeight);
+
+      // Show loading state
+      const originalCursor = document.body.style.cursor;
+      document.body.style.cursor = 'wait';
+
+      try {
+        // Hide decorative corner elements that don't render well
+        const decorativeElements = element.querySelectorAll('.absolute[class*="border-t"], .absolute[class*="border-b"]');
+        const originalDisplays: { element: HTMLElement; display: string }[] = [];
+        
+        decorativeElements.forEach((el) => {
+          const htmlEl = el as HTMLElement;
+          // Only hide if it's a small decorative element (corner brackets)
+          if (htmlEl.offsetWidth < 20 && htmlEl.offsetHeight < 20) {
+            originalDisplays.push({ element: htmlEl, display: htmlEl.style.display });
+            htmlEl.style.display = 'none';
+          }
+        });
+
+        // Wait for DOM updates
+        await new Promise(resolve => setTimeout(resolve, 50));
+
+        // Use a scale factor for better quality  
+        const scale = 2;
+        
+        // Generate PNG using dom-to-image-more with optimized settings
+        const dataUrl = await domtoimage.toPng(element, {
+          quality: 1.0,
+          bgcolor: '#0a0f1a',
+          cacheBust: true,
+          width: element.offsetWidth * scale,
+          height: element.offsetHeight * scale,
+          style: {
+            transform: `scale(${scale})`,
+            transformOrigin: 'top left',
+            width: element.offsetWidth + 'px',
+            height: element.offsetHeight + 'px',
+            margin: '0',
+            padding: '24px',
+            backgroundColor: '#0a0f1a',
+          }
+        });
+
+        // Restore decorative elements
+        originalDisplays.forEach(({ element: el, display }) => {
+          el.style.display = display;
+        });
+
+        console.log('Image generated successfully, data URL length:', dataUrl.length);
+
+        // Convert data URL to blob
+        const base64 = dataUrl.split(',')[1];
+        const binary = atob(base64);
+        const array = new Uint8Array(binary.length);
+        for (let i = 0; i < binary.length; i++) {
+          array[i] = binary.charCodeAt(i);
+        }
+        const blob = new Blob([array], { type: 'image/png' });
+
+        console.log('Blob created, size:', blob.size);
+
+        // Download the blob
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.download = `${currentAccount.gameName}-season-rewind.png`;
+        link.href = url;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        // Clean up after a delay
+        setTimeout(() => {
+          URL.revokeObjectURL(url);
+        }, 100);
+
+        console.log('Download completed');
+      } finally {
+        // Restore cursor
+        document.body.style.cursor = originalCursor;
+      }
+    } catch (error) {
+      console.error('Error generating image:', error);
+      console.error('Error stack:', error instanceof Error ? error.stack : 'No stack trace');
+      alert(`Failed to download image: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
+  };
+
+  // Share AI Insights
+  const shareInsights = async () => {
+    const currentAccount = getCurrentAccount();
+    if (!aiInsights || !currentAccount) {
+      alert('No insights data available');
+      return;
+    }
+
+    try {
+      // Dynamically import dom-to-image-more
+      const domtoimage = await import('dom-to-image-more');
+      
+      const element = document.getElementById('ai-insights-content');
+      if (!element) {
+        console.error('Could not find insights content element');
+        alert('Failed to find insights content. Please try again.');
+        return;
+      }
+
+      console.log('Generating image for sharing...');
+
+      // Generate blob from element
+      const blob = await domtoimage.toBlob(element, {
+        quality: 1.0,
+        bgcolor: '#0a0f1a',
+        cacheBust: true,
+        style: {
+          transform: 'scale(1)',
+          transformOrigin: 'top left'
+        }
+      });
+
+      console.log('Image generated for sharing');
+
+      // Check if Web Share API is available
+      if (navigator.share && navigator.canShare) {
+        const file = new File([blob], `${currentAccount.gameName}-season-rewind.png`, { type: 'image/png' });
+        
+        if (navigator.canShare({ files: [file] })) {
+          try {
+            await navigator.share({
+              title: `${currentAccount.gameName}'s Season Rewind`,
+              text: `Check out my League of Legends season stats!`,
+              files: [file]
+            });
+            console.log('Shared successfully');
+          } catch (err) {
+            // User cancelled or share failed, fallback to download
+            if ((err as Error).name !== 'AbortError') {
+              await downloadInsightsImage();
+            }
+          }
+        } else {
+          // Files not supported, fallback to download
+          await downloadInsightsImage();
+        }
+      } else {
+        // Web Share API not available, fallback to download
+        await downloadInsightsImage();
+      }
+    } catch (error) {
+      console.error('Error sharing:', error);
+      alert(`Failed to share: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
+  };
+
   // Parse search query (GameName#TAG format)
   const parseSearchQuery = (query: string): { gameName: string; tagline: string } | null => {
     const trimmed = query.trim();
@@ -853,6 +1080,9 @@ export default function MatchHistoryPage() {
     
     // Reset tags when switching summoners
     setPlayerTags([]);
+    
+    // Clear AI insights cache when searching for new summoner
+    setAiInsights(null);
 
     try {
       // Search for summoner
@@ -895,6 +1125,7 @@ export default function MatchHistoryPage() {
       setMatches([]);
       // Reset tags when loading new summoner
       setPlayerTags([]);
+      matchesLoadedRef.current = false; // Reset the loaded flag when searching for new summoner
       console.log('[Match History] Fetching matches for summoner:', account.gameName, 'Count:', count);
 
       // Try cache first - get ALL cached matches
@@ -987,6 +1218,8 @@ export default function MatchHistoryPage() {
     setSelectedFilter('all');
     setMatches([]); // Clear matches before reloading
     setPlayerTags([]); // Clear tags when returning to own profile
+    setAiInsights(null); // Clear AI insights cache
+    matchesLoadedRef.current = false; // Reset the loaded flag when returning to own profile
     
     if (profile?.lolAccount) {
       loadCachedMatches(); // Use the original function that was working
@@ -1994,6 +2227,31 @@ export default function MatchHistoryPage() {
                       <div className="absolute -bottom-1 -right-1 w-2 h-2 border-b border-r border-cyan-400/30"></div>
                     </div>
                   </div>
+                  </div>
+                
+                  {/* AI Insights Button - Own Row */}
+                  <div className="flex justify-center mt-4 pt-4 border-t border-cyan-400/10">
+                    <button
+                      onClick={() => {
+                        setShowAIInsights(true);
+                        if (!aiInsights) fetchAIInsights();
+                      }}
+                      className="relative group bg-gradient-to-br from-[#0a1628] to-[#1a2f4a] hover:from-[#1a2f4a] hover:to-[#0a1628] border-2 border-cyan-400/30 hover:border-cyan-400/60 px-5 py-2.5 transition-all duration-300 overflow-hidden shadow-[0_0_15px_rgba(0,255,255,0.2)] hover:shadow-[0_0_25px_rgba(0,255,255,0.4)]"
+                    >
+                      {/* Corner brackets */}
+                      <div className="absolute top-0 left-0 w-2.5 h-2.5 border-t-2 border-l-2 border-cyan-400 group-hover:w-3 group-hover:h-3 transition-all"></div>
+                      <div className="absolute top-0 right-0 w-2.5 h-2.5 border-t-2 border-r-2 border-cyan-400 group-hover:w-3 group-hover:h-3 transition-all"></div>
+                      <div className="absolute bottom-0 left-0 w-2.5 h-2.5 border-b-2 border-l-2 border-cyan-400 group-hover:w-3 group-hover:h-3 transition-all"></div>
+                      <div className="absolute bottom-0 right-0 w-2.5 h-2.5 border-b-2 border-r-2 border-cyan-400 group-hover:w-3 group-hover:h-3 transition-all"></div>
+                      
+                      {/* Scan line */}
+                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-cyan-400/20 to-transparent opacity-0 group-hover:opacity-100 group-hover:animate-pulse transition-opacity"></div>
+                      
+                      <span className="relative flex items-center space-x-2 text-cyan-400 font-mono font-bold text-sm uppercase tracking-wider drop-shadow-[0_0_5px_rgba(0,255,255,0.5)]">
+                        <Sparkles className="w-4 h-4" />
+                        <span>Season Rewind</span>
+                      </span>
+                    </button>
                   </div>
                 
                   {/* Player Tags Section */}
@@ -4559,6 +4817,520 @@ export default function MatchHistoryPage() {
           </div>
         </div>
       </div>
+
+      {/* AI Insights Modal */}
+      <AnimatePresence>
+        {showAIInsights && (
+          <>
+            {/* Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setShowAIInsights(false)}
+              className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[70]"
+            />
+            
+            {/* Modal */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="fixed inset-0 z-[75] flex items-center justify-center p-4"
+            >
+              <div 
+                onClick={(e) => e.stopPropagation()}
+                className="relative w-full max-w-4xl max-h-[90vh] overflow-y-auto bg-gradient-to-br from-[#0a1628] via-[#0f1f3a] to-[#0a1628] border-2 border-cyan-400/30 shadow-[0_0_50px_rgba(0,255,255,0.3)] overflow-hidden"
+              >
+                {/* Tech lines */}
+                <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-cyan-400/50 to-transparent"></div>
+                <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-transparent via-[#5383E8] to-transparent shadow-[0_0_10px_#5383E8]"></div>
+                
+                {/* Corner brackets */}
+                <div className="absolute top-0 left-0 w-8 h-8 border-t-2 border-l-2 border-cyan-400/40"></div>
+                <div className="absolute top-0 right-0 w-8 h-8 border-t-2 border-r-2 border-cyan-400/40"></div>
+                
+                {/* Header */}
+                <div className="sticky top-0 z-10 bg-gradient-to-r from-[#0a1628]/95 via-[#0f1f3a]/95 to-[#0a1628]/95 backdrop-blur-sm border-b border-cyan-400/20 p-6">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-3">
+                      <div className="relative">
+                        <Sparkles className="w-6 h-6 text-cyan-400 drop-shadow-[0_0_8px_rgba(0,255,255,0.8)]" />
+                        <div className="absolute inset-0 bg-cyan-400/20 blur-xl"></div>
+                      </div>
+                      <h2 className="text-2xl font-bold text-white font-mono uppercase tracking-wider drop-shadow-[0_0_10px_rgba(255,255,255,0.3)]">
+                        Season Rewind
+                      </h2>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      {/* Download Button */}
+                      {aiInsights && (
+                        <button
+                          onClick={downloadInsightsImage}
+                          className="relative group p-2 border border-green-400/30 hover:border-green-400/60 bg-[#0a1628] hover:bg-[#1a2f4a] transition-all"
+                          title="Download as Image"
+                        >
+                          <div className="absolute top-0 left-0 w-1.5 h-1.5 border-t border-l border-green-400"></div>
+                          <div className="absolute top-0 right-0 w-1.5 h-1.5 border-t border-r border-green-400"></div>
+                          <div className="absolute bottom-0 left-0 w-1.5 h-1.5 border-b border-l border-green-400"></div>
+                          <div className="absolute bottom-0 right-0 w-1.5 h-1.5 border-b border-r border-green-400"></div>
+                          
+                          <Download className="w-5 h-5 text-green-400 group-hover:text-white transition-colors" />
+                        </button>
+                      )}
+                      
+                      {/* Share Button */}
+                      {aiInsights && (
+                        <button
+                          onClick={shareInsights}
+                          className="relative group p-2 border border-purple-400/30 hover:border-purple-400/60 bg-[#0a1628] hover:bg-[#1a2f4a] transition-all"
+                          title="Share with Friends"
+                        >
+                          <div className="absolute top-0 left-0 w-1.5 h-1.5 border-t border-l border-purple-400"></div>
+                          <div className="absolute top-0 right-0 w-1.5 h-1.5 border-t border-r border-purple-400"></div>
+                          <div className="absolute bottom-0 left-0 w-1.5 h-1.5 border-b border-l border-purple-400"></div>
+                          <div className="absolute bottom-0 right-0 w-1.5 h-1.5 border-b border-r border-purple-400"></div>
+                          
+                          <Share2 className="w-5 h-5 text-purple-400 group-hover:text-white transition-colors" />
+                        </button>
+                      )}
+                      
+                      {/* Close Button */}
+                      <button
+                        onClick={() => setShowAIInsights(false)}
+                        className="relative group p-2 border border-cyan-400/30 hover:border-cyan-400/60 bg-[#0a1628] hover:bg-[#1a2f4a] transition-all"
+                      >
+                        {/* Corner accents */}
+                        <div className="absolute top-0 left-0 w-1.5 h-1.5 border-t border-l border-cyan-400"></div>
+                        <div className="absolute top-0 right-0 w-1.5 h-1.5 border-t border-r border-cyan-400"></div>
+                        <div className="absolute bottom-0 left-0 w-1.5 h-1.5 border-b border-l border-cyan-400"></div>
+                        <div className="absolute bottom-0 right-0 w-1.5 h-1.5 border-b border-r border-cyan-400"></div>
+                        
+                        <X className="w-5 h-5 text-cyan-400 group-hover:text-white transition-colors" />
+                      </button>
+                    </div>
+                  </div>
+                  
+                  {/* Summoner Info */}
+                  {getCurrentAccount() && (
+                    <div className="flex items-center space-x-3 mt-4 relative">
+                      <div className="relative w-12 h-12 overflow-hidden border-2 border-cyan-400/50 shadow-[0_0_15px_rgba(0,255,255,0.3)]">
+                        <Image
+                          src={getProfileIconUrl(getCurrentAccount()!.profileIconId)}
+                          alt="Profile Icon"
+                          width={48}
+                          height={48}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                      <div>
+                        <div className="text-lg font-bold text-white font-mono">
+                          {getCurrentAccount()!.gameName}
+                          <span className="text-gray-500">#{getCurrentAccount()!.tagLine}</span>
+                        </div>
+                        <div className="text-sm text-cyan-400 font-mono">
+                          {matches.length} matches analyzed
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Content */}
+                <div id="ai-insights-content" className="p-6 space-y-6 bg-[#0a0f1a]">
+                  {loadingInsights ? (
+                    <div className="flex flex-col items-center justify-center py-20 space-y-4">
+                      <div className="relative">
+                        <Loader2 className="w-12 h-12 text-cyan-400 animate-spin drop-shadow-[0_0_8px_rgba(0,255,255,0.8)]" />
+                        <div className="absolute inset-0 bg-cyan-400/20 blur-xl animate-pulse"></div>
+                      </div>
+                      <p className="text-white font-mono drop-shadow-[0_0_5px_rgba(255,255,255,0.3)]">Analyzing your journey...</p>
+                      <p className="text-sm text-cyan-400 font-mono">Crunching match data with AI magic</p>
+                      {matches.length > 50 && (
+                        <p className="text-xs text-yellow-400 font-mono max-w-md text-center">
+                          Large dataset detected ({matches.length} matches). AI processing may take a moment...
+                        </p>
+                      )}
+                    </div>
+                  ) : aiInsights ? (
+                    <div className="space-y-6">
+                      {/* Hero Stats - Big Visual Impact */}
+                      <div className="grid grid-cols-3 gap-4">
+                        {/* Total Games */}
+                        <div className="relative bg-gradient-to-br from-cyan-900/20 to-blue-900/20 border-2 border-cyan-400/40 p-6 text-center overflow-hidden group hover:border-cyan-400/60 transition-all">
+                          <div className="absolute inset-0 bg-cyan-400/5 group-hover:bg-cyan-400/10 transition-all"></div>
+                          <div className="relative z-10">
+                            <div className="text-6xl font-bold text-cyan-400 font-mono drop-shadow-[0_0_15px_rgba(0,255,255,0.8)] mb-2">
+                              {aiInsights.stats.totalGames}
+                            </div>
+                            <div className="text-sm text-gray-300 uppercase font-mono tracking-wider">Total Games</div>
+                          </div>
+                        </div>
+
+                        {/* Win Rate */}
+                        <div className="relative bg-gradient-to-br from-green-900/20 to-emerald-900/20 border-2 border-green-400/40 p-6 text-center overflow-hidden group hover:border-green-400/60 transition-all">
+                          <div className="absolute inset-0 bg-green-400/5 group-hover:bg-green-400/10 transition-all"></div>
+                          <div className="relative z-10">
+                            <div className="text-6xl font-bold text-green-400 font-mono drop-shadow-[0_0_15px_rgba(34,197,94,0.8)] mb-2">
+                              {aiInsights.stats.winRate}%
+                            </div>
+                            <div className="text-sm text-gray-300 uppercase font-mono tracking-wider">Win Rate</div>
+                            <div className="text-xs text-gray-400 font-mono mt-1">{aiInsights.stats.wins}W - {aiInsights.stats.losses}L</div>
+                          </div>
+                        </div>
+
+                        {/* KDA */}
+                        <div className="relative bg-gradient-to-br from-purple-900/20 to-pink-900/20 border-2 border-purple-400/40 p-6 text-center overflow-hidden group hover:border-purple-400/60 transition-all">
+                          <div className="absolute inset-0 bg-purple-400/5 group-hover:bg-purple-400/10 transition-all"></div>
+                          <div className="relative z-10">
+                            <div className="text-6xl font-bold text-purple-400 font-mono drop-shadow-[0_0_15px_rgba(168,85,247,0.8)] mb-2">
+                              {aiInsights.stats.avgKDA}
+                            </div>
+                            <div className="text-sm text-gray-300 uppercase font-mono tracking-wider">Avg K/D/A</div>
+                            <div className="text-xs text-gray-400 font-mono mt-1">{aiInsights.stats.avgKills}/{aiInsights.stats.avgDeaths}/{aiInsights.stats.avgAssists}</div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* AI Tagline - Short & Punchy */}
+                      {aiInsights.summary && (
+                        <div className="relative bg-gradient-to-r from-cyan-400/10 via-purple-400/10 to-cyan-400/10 border border-cyan-400/30 p-4 overflow-hidden">
+                          <div className="absolute top-0 left-0 w-full h-0.5 bg-gradient-to-r from-transparent via-cyan-400/50 to-transparent"></div>
+                          <div className="absolute bottom-0 left-0 w-full h-0.5 bg-gradient-to-r from-transparent via-cyan-400/50 to-transparent"></div>
+                          
+                          <p className="text-center text-white/90 font-mono text-base leading-relaxed">
+                            {aiInsights.summary}
+                          </p>
+                        </div>
+                      )}
+
+                      {/* Secondary Stats - Compact Grid */}
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                        {/* Damage */}
+                        <div className="relative bg-[#0a1628]/60 border border-red-400/30 p-3 text-center hover:border-red-400/50 transition-all">
+                          <div className="text-3xl font-bold text-red-400 font-mono mb-1">
+                            {aiInsights.stats.avgDamage?.toLocaleString()}
+                          </div>
+                          <div className="text-xs text-gray-400 uppercase font-mono">Avg Damage</div>
+                        </div>
+
+                        {/* Gold */}
+                        <div className="relative bg-[#0a1628]/60 border border-yellow-400/30 p-3 text-center hover:border-yellow-400/50 transition-all">
+                          <div className="text-3xl font-bold text-yellow-400 font-mono mb-1">
+                            {aiInsights.stats.avgGold?.toLocaleString()}
+                          </div>
+                          <div className="text-xs text-gray-400 uppercase font-mono">Avg Gold</div>
+                        </div>
+
+                        {/* CS */}
+                        <div className="relative bg-[#0a1628]/60 border border-green-400/30 p-3 text-center hover:border-green-400/50 transition-all">
+                          <div className="text-3xl font-bold text-green-400 font-mono mb-1">
+                            {aiInsights.stats.avgCS}
+                          </div>
+                          <div className="text-xs text-gray-400 uppercase font-mono">Avg CS</div>
+                        </div>
+
+                        {/* Favorite Role */}
+                        <div className="relative bg-[#0a1628]/60 border border-cyan-400/30 p-3 text-center hover:border-cyan-400/50 transition-all">
+                          <div className="text-2xl font-bold text-cyan-400 font-mono mb-1 uppercase">
+                            {aiInsights.stats.favoriteRole}
+                          </div>
+                          <div className="text-xs text-gray-400 uppercase font-mono">Favorite Role</div>
+                        </div>
+                      </div>
+
+                      {/* Epic Moments - Multikills & Streaks */}
+                      {aiInsights.stats && (aiInsights.stats.multikills?.penta > 0 || aiInsights.stats.longestWinStreak >= 5 || aiInsights.stats.multikills?.quadra > 0) && (
+                        <div className="relative bg-gradient-to-br from-[#1a1a2e] via-[#16213e] to-[#0f1f3a] border-2 border-yellow-400/40 p-6 overflow-hidden shadow-[0_0_30px_rgba(250,204,21,0.3)]">
+                          <div className="absolute top-0 left-0 w-6 h-6 border-t-2 border-l-2 border-yellow-400/60"></div>
+                          <div className="absolute top-0 right-0 w-6 h-6 border-t-2 border-r-2 border-yellow-400/60"></div>
+                          
+                          <h3 className="text-lg font-bold text-yellow-400 mb-4 font-mono uppercase tracking-wider drop-shadow-[0_0_10px_rgba(250,204,21,0.8)] flex items-center space-x-2">
+                            <Sparkles className="w-6 h-6" />
+                            <span>Epic Moments</span>
+                          </h3>
+                          
+                          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            {aiInsights.stats.multikills?.penta > 0 && (
+                              <div className="bg-[#0a1628]/80 border-2 border-yellow-400/50 p-4 text-center">
+                                <div className="text-4xl font-bold text-yellow-400 font-mono drop-shadow-[0_0_10px_rgba(250,204,21,0.8)]">
+                                  {aiInsights.stats.multikills.penta}
+                                </div>
+                                <div className="text-sm text-yellow-400/80 font-mono uppercase mt-2">Pentakill{aiInsights.stats.multikills.penta > 1 ? 's' : ''}</div>
+                                <div className="text-xs text-gray-400 font-mono mt-1">Legendary!</div>
+                              </div>
+                            )}
+                            
+                            {aiInsights.stats.multikills?.quadra > 0 && (
+                              <div className="bg-[#0a1628]/80 border border-purple-400/50 p-4 text-center">
+                                <div className="text-4xl font-bold text-purple-400 font-mono">
+                                  {aiInsights.stats.multikills.quadra}
+                                </div>
+                                <div className="text-sm text-purple-400/80 font-mono uppercase mt-2">Quadrakill{aiInsights.stats.multikills.quadra > 1 ? 's' : ''}</div>
+                              </div>
+                            )}
+                            
+                            {aiInsights.stats.longestWinStreak >= 5 && (
+                              <div className="bg-[#0a1628]/80 border border-green-400/50 p-4 text-center">
+                                <div className="text-4xl font-bold text-green-400 font-mono">
+                                  {aiInsights.stats.longestWinStreak}
+                                </div>
+                                <div className="text-sm text-green-400/80 font-mono uppercase mt-2">Win Streak</div>
+                                <div className="text-xs text-gray-400 font-mono mt-1">On Fire!</div>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Top Champions */}
+                      {aiInsights.topChampions && (
+                        <div>
+                          <h3 className="text-lg font-bold text-cyan-400 mb-4 font-mono uppercase tracking-wider drop-shadow-[0_0_8px_rgba(0,255,255,0.6)]">
+                            Your Legends
+                          </h3>
+                          <div className="grid grid-cols-3 gap-6">
+                            {aiInsights.topChampions.map((champ: any, idx: number) => (
+                              <div key={idx} className="relative bg-gradient-to-br from-[#0a1628]/90 to-[#0f1f3a]/90 border-2 border-cyan-400/30 p-6 overflow-hidden hover:border-cyan-400/60 transition-all group shadow-[0_0_15px_rgba(0,255,255,0.2)] hover:shadow-[0_0_25px_rgba(0,255,255,0.4)]">
+                                {/* Corner brackets */}
+                                <div className="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2 border-cyan-400 group-hover:w-4 group-hover:h-4 transition-all"></div>
+                                <div className="absolute top-0 right-0 w-3 h-3 border-t-2 border-r-2 border-cyan-400 group-hover:w-4 group-hover:h-4 transition-all"></div>
+                                <div className="absolute bottom-0 left-0 w-3 h-3 border-b-2 border-l-2 border-cyan-400 group-hover:w-4 group-hover:h-4 transition-all"></div>
+                                <div className="absolute bottom-0 right-0 w-3 h-3 border-b-2 border-r-2 border-cyan-400 group-hover:w-4 group-hover:h-4 transition-all"></div>
+                                
+                                {/* Large champion image */}
+                                <div className="relative w-24 h-24 mx-auto mb-4 border-2 border-cyan-400/50 overflow-hidden shadow-[0_0_20px_rgba(0,255,255,0.3)] group-hover:scale-110 transition-transform">
+                                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                                  <img
+                                    src={`https://ddragon.leagueoflegends.com/cdn/${LOL_VERSION}/img/champion/${champ.name}.png`}
+                                    alt={champ.name}
+                                    className="w-full h-full object-cover"
+                                    crossOrigin="anonymous"
+                                  />
+                                </div>
+                                
+                                <div className="text-white font-bold font-mono text-center text-lg mb-2">{champ.name}</div>
+                                
+                                {/* Visual win rate bar */}
+                                <div className="mb-3">
+                                  <div className="flex justify-between text-xs font-mono mb-1">
+                                    <span className="text-gray-400">{champ.games} games</span>
+                                    <span className={`font-bold ${champ.winRate >= 55 ? 'text-green-400' : champ.winRate >= 45 ? 'text-yellow-400' : 'text-red-400'}`}>
+                                      {champ.winRate}%
+                                    </span>
+                                  </div>
+                                  <div className="h-2 bg-gray-700/50 overflow-hidden">
+                                    <div 
+                                      className={`h-full transition-all ${champ.winRate >= 55 ? 'bg-gradient-to-r from-green-500 to-green-400' : champ.winRate >= 45 ? 'bg-gradient-to-r from-yellow-500 to-yellow-400' : 'bg-gradient-to-r from-red-500 to-red-400'}`}
+                                      style={{ width: `${champ.winRate}%` }}
+                                    />
+                                  </div>
+                                </div>
+                                
+                                {/* KDA badge */}
+                                <div className="text-center">
+                                  <span className="inline-block px-3 py-1 bg-cyan-400/20 border border-cyan-400/40 text-cyan-400 text-xs font-mono font-bold">
+                                    {champ.avgKDA} KDA
+                                  </span>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Best & Worst Teammates */}
+                      <div className="grid grid-cols-2 gap-6">
+                        {/* Best Teammates - Highest Win Rate */}
+                        {aiInsights.bestTeammates && aiInsights.bestTeammates.length > 0 && (
+                          <div className="relative bg-gradient-to-br from-[#0a1628] to-[#0f1f3a] border-2 border-green-400/30 p-6 overflow-hidden shadow-[0_0_20px_rgba(74,222,128,0.2)]">
+                            <div className="absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-green-400/60"></div>
+                            <div className="absolute top-0 right-0 w-4 h-4 border-t-2 border-r-2 border-green-400/60"></div>
+                            
+                            <h3 className="text-lg font-bold text-green-400 mb-4 font-mono uppercase tracking-wider drop-shadow-[0_0_8px_rgba(74,222,128,0.6)] flex items-center space-x-2">
+                              <Users className="w-5 h-5" />
+                              <span>Victory Squad</span>
+                            </h3>
+                            <p className="text-xs text-green-400/70 mb-3 font-mono">Highest win rate together (5+ games)</p>
+                            <div className="space-y-3">
+                              {aiInsights.bestTeammates.slice(0, 3).map((teammate: any, idx: number) => (
+                                <div key={idx} className="bg-[#0a1628]/60 border border-green-400/20 p-4 hover:border-green-400/40 transition-colors">
+                                  <div className="flex items-center space-x-3 mb-2">
+                                    <div className="relative w-12 h-12 border-2 border-green-400/50 overflow-hidden shadow-[0_0_10px_rgba(74,222,128,0.2)]">
+                                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                                      <img
+                                        src={teammate.profileIconId ? `https://ddragon.leagueoflegends.com/cdn/${LOL_VERSION}/img/profileicon/${teammate.profileIconId}.png` : '/default-icon.png'}
+                                        alt={teammate.gameName}
+                                        className="w-full h-full object-cover"
+                                        crossOrigin="anonymous"
+                                        onError={(e) => {
+                                          const img = e.target as HTMLImageElement;
+                                          img.src = `https://ddragon.leagueoflegends.com/cdn/${LOL_VERSION}/img/profileicon/29.png`;
+                                        }}
+                                      />
+                                    </div>
+                                    <div className="flex-1 min-w-0">
+                                      <div className="text-white font-bold font-mono truncate">
+                                        {teammate.gameName}
+                                        <span className="text-gray-500 text-sm">#{teammate.tagLine}</span>
+                                      </div>
+                                      <div className="text-xs text-gray-400 font-mono">
+                                        {teammate.gamesPlayed} games • {teammate.wins}W-{teammate.losses}L
+                                      </div>
+                                    </div>
+                                  </div>
+                                  {/* Win rate progress bar */}
+                                  <div className="flex items-center space-x-2">
+                                    <div className="flex-1 h-3 bg-gray-700/50 overflow-hidden border border-green-400/20">
+                                      <div 
+                                        className="h-full bg-gradient-to-r from-green-600 to-green-400 shadow-[0_0_8px_rgba(74,222,128,0.4)]"
+                                        style={{ width: `${teammate.winRate}%` }}
+                                      />
+                                    </div>
+                                    <span className="text-green-400 font-mono font-bold text-sm min-w-[45px] text-right">
+                                      {teammate.winRate}%
+                                    </span>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Worst Teammates - Lowest Win Rate */}
+                        {aiInsights.worstTeammates && aiInsights.worstTeammates.length > 0 && (
+                          <div className="relative bg-gradient-to-br from-[#0a1628] to-[#0f1f3a] border-2 border-red-400/30 p-6 overflow-hidden shadow-[0_0_20px_rgba(248,113,113,0.2)]">
+                            <div className="absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-red-400/60"></div>
+                            <div className="absolute top-0 right-0 w-4 h-4 border-t-2 border-r-2 border-red-400/60"></div>
+                            
+                            <h3 className="text-lg font-bold text-red-400 mb-4 font-mono uppercase tracking-wider drop-shadow-[0_0_8px_rgba(248,113,113,0.6)] flex items-center space-x-2">
+                              <UserX className="w-5 h-5" />
+                              <span>Cursed Comps</span>
+                            </h3>
+                            <p className="text-xs text-red-400/70 mb-3 font-mono">Lowest win rate together (5+ games)</p>
+                            <div className="space-y-3">
+                              {aiInsights.worstTeammates.slice(0, 3).map((teammate: any, idx: number) => (
+                                <div key={idx} className="bg-[#0a1628]/60 border border-red-400/20 p-4 hover:border-red-400/40 transition-colors">
+                                  <div className="flex items-center space-x-3 mb-2">
+                                    <div className="relative w-12 h-12 border-2 border-red-400/50 overflow-hidden shadow-[0_0_10px_rgba(248,113,113,0.2)]">
+                                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                                      <img
+                                        src={teammate.profileIconId ? `https://ddragon.leagueoflegends.com/cdn/${LOL_VERSION}/img/profileicon/${teammate.profileIconId}.png` : '/default-icon.png'}
+                                        alt={teammate.gameName}
+                                        className="w-full h-full object-cover"
+                                        crossOrigin="anonymous"
+                                        onError={(e) => {
+                                          const img = e.target as HTMLImageElement;
+                                          img.src = `https://ddragon.leagueoflegends.com/cdn/${LOL_VERSION}/img/profileicon/29.png`;
+                                        }}
+                                      />
+                                    </div>
+                                    <div className="flex-1 min-w-0">
+                                      <div className="text-white font-bold font-mono truncate">
+                                        {teammate.gameName}
+                                        <span className="text-gray-500 text-sm">#{teammate.tagLine}</span>
+                                      </div>
+                                      <div className="text-xs text-gray-400 font-mono">
+                                        {teammate.gamesPlayed} games • {teammate.wins}W-{teammate.losses}L
+                                      </div>
+                                    </div>
+                                  </div>
+                                  {/* Win rate progress bar */}
+                                  <div className="flex items-center space-x-2">
+                                    <div className="flex-1 h-3 bg-gray-700/50 overflow-hidden border border-red-400/20">
+                                      <div 
+                                        className="h-full bg-gradient-to-r from-red-600 to-red-400 shadow-[0_0_8px_rgba(248,113,113,0.4)]"
+                                        style={{ width: `${teammate.winRate}%` }}
+                                      />
+                                    </div>
+                                    <span className="text-red-400 font-mono font-bold text-sm min-w-[45px] text-right">
+                                      {teammate.winRate}%
+                                    </span>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Strengths & Weaknesses */}
+                      <div className="grid grid-cols-2 gap-6">
+                        {aiInsights.strengths && (
+                          <div className="relative bg-gradient-to-br from-[#0a1628]/90 to-[#0f1f3a]/90 border-2 border-green-400/30 p-6 overflow-hidden shadow-[0_0_15px_rgba(74,222,128,0.2)]">
+                            {/* Corner brackets */}
+                            <div className="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2 border-green-400/60"></div>
+                            <div className="absolute top-0 right-0 w-3 h-3 border-t-2 border-r-2 border-green-400/60"></div>
+                            
+                            <h3 className="text-lg font-bold text-green-400 mb-4 font-mono uppercase flex items-center space-x-2 drop-shadow-[0_0_8px_rgba(74,222,128,0.6)]">
+                              <Trophy className="w-5 h-5" />
+                              <span>Strengths</span>
+                            </h3>
+                            <div className="flex flex-wrap gap-2">
+                              {aiInsights.strengths.map((strength: string, idx: number) => (
+                                <div key={idx} className="inline-flex items-center space-x-2 bg-green-400/10 border border-green-400/40 px-3 py-2 hover:bg-green-400/20 hover:border-green-400/60 transition-all group">
+                                  <div className="w-1.5 h-1.5 bg-green-400 rounded-full shadow-[0_0_4px_rgba(74,222,128,0.8)] group-hover:shadow-[0_0_8px_rgba(74,222,128,1)]"></div>
+                                  <span className="text-white/90 text-sm font-mono">{strength}</span>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+
+                        {aiInsights.weaknesses && (
+                          <div className="relative bg-gradient-to-br from-[#0a1628]/90 to-[#0f1f3a]/90 border-2 border-red-400/30 p-6 overflow-hidden shadow-[0_0_15px_rgba(248,113,113,0.2)]">
+                            {/* Corner brackets */}
+                            <div className="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2 border-red-400/60"></div>
+                            <div className="absolute top-0 right-0 w-3 h-3 border-t-2 border-r-2 border-red-400/60"></div>
+                            
+                            <h3 className="text-lg font-bold text-red-400 mb-4 font-mono uppercase flex items-center space-x-2 drop-shadow-[0_0_8px_rgba(248,113,113,0.6)]">
+                              <Target className="w-5 h-5" />
+                              <span>Areas to Improve</span>
+                            </h3>
+                            <div className="flex flex-wrap gap-2">
+                              {aiInsights.weaknesses.map((weakness: string, idx: number) => (
+                                <div key={idx} className="inline-flex items-center space-x-2 bg-red-400/10 border border-red-400/40 px-3 py-2 hover:bg-red-400/20 hover:border-red-400/60 transition-all group">
+                                  <div className="w-1.5 h-1.5 bg-red-400 rounded-full shadow-[0_0_4px_rgba(248,113,113,0.8)] group-hover:shadow-[0_0_8px_rgba(248,113,113,1)]"></div>
+                                  <span className="text-white/90 text-sm font-mono">{weakness}</span>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="flex flex-col items-center justify-center py-20 space-y-4">
+                      <div className="relative">
+                        <Sparkles className="w-12 h-12 text-cyan-400 drop-shadow-[0_0_10px_rgba(0,255,255,0.8)]" />
+                        <div className="absolute inset-0 bg-cyan-400/20 blur-xl"></div>
+                      </div>
+                      <p className="text-white font-mono drop-shadow-[0_0_5px_rgba(255,255,255,0.3)]">Ready to discover your story?</p>
+                      <button
+                        onClick={fetchAIInsights}
+                        className="relative group bg-gradient-to-br from-[#0a1628] to-[#1a2f4a] hover:from-[#1a2f4a] hover:to-[#0a1628] border-2 border-cyan-400/30 hover:border-cyan-400/60 px-6 py-3 transition-all duration-300 overflow-hidden shadow-[0_0_20px_rgba(0,255,255,0.2)] hover:shadow-[0_0_30px_rgba(0,255,255,0.4)]"
+                      >
+                        {/* Corner brackets */}
+                        <div className="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2 border-cyan-400 group-hover:w-4 group-hover:h-4 transition-all"></div>
+                        <div className="absolute top-0 right-0 w-3 h-3 border-t-2 border-r-2 border-cyan-400 group-hover:w-4 group-hover:h-4 transition-all"></div>
+                        <div className="absolute bottom-0 left-0 w-3 h-3 border-b-2 border-l-2 border-cyan-400 group-hover:w-4 group-hover:h-4 transition-all"></div>
+                        <div className="absolute bottom-0 right-0 w-3 h-3 border-b-2 border-r-2 border-cyan-400 group-hover:w-4 group-hover:h-4 transition-all"></div>
+                        
+                        {/* Scan line */}
+                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-cyan-400/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                        
+                        <span className="relative text-cyan-400 font-mono font-bold uppercase tracking-wider">
+                          Generate Insights
+                        </span>
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
       </div>
     </div>
   );

@@ -455,9 +455,10 @@ export default function PartiesPage() {
           {/* Scan lines effect */}
           <div className="fixed inset-0 bg-[linear-gradient(transparent_50%,rgba(0,255,255,0.02)_50%)] bg-[length:100%_4px] pointer-events-none"></div>
           
-          {/* Loading text */}
+          {/* Loading content */}
           <div className="relative z-10 text-center">
-            <div className="text-cyan-400 text-2xl font-mono tracking-widest uppercase animate-pulse">
+            <AnimatedLogo size="lg" variant="futuristic" />
+            <div className="text-cyan-400 text-2xl font-mono tracking-widest uppercase mt-4 drop-shadow-[0_0_10px_rgba(0,255,255,0.4)]">
               LOADING...
             </div>
           </div>

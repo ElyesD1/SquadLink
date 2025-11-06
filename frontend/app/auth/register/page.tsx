@@ -22,7 +22,10 @@ import {
   ArrowRight,
   Shield,
   Gamepad2,
-  Sparkles
+  Sparkles,
+  Target,
+  TrendingUp,
+  BarChart3
 } from 'lucide-react';
 import { FcGoogle } from 'react-icons/fc';
 import { differenceInYears, startOfDay } from 'date-fns';
@@ -246,63 +249,60 @@ export default function RegisterPage() {
                 </span>
               </h1>
               <p className="text-xl text-gray-400 leading-relaxed">
-                Join a community of passionate gamers. Connect, compete, and conquer together.
+                Join League of Legends players worldwide. Find your perfect team and climb the ranks together.
               </p>
             </div>
 
-            {/* Supported Games */}
+            {/* League Features */}
             <div className="space-y-6">
-              <h3 className="text-lg font-black font-mono uppercase tracking-wider text-cyan-400">Supported Games</h3>
+              <h3 className="text-lg font-black font-mono uppercase tracking-wider text-cyan-400">What You Get</h3>
               <div className="grid grid-cols-1 gap-3">
                 {[
                   { 
-                    icon: '/league.png', 
-                    name: 'League of Legends',
-                    description: 'Strategic team battles',
+                    icon: Users, 
+                    name: 'Find Your Team',
+                    description: 'Match by role, rank, and playstyle',
                     gradient: 'from-cyan-400 to-blue-500'
                   },
                   { 
-                    icon: '/valorant.png', 
-                    name: 'Valorant',
-                    description: 'Tactical FPS gameplay',
+                    icon: Target, 
+                    name: 'Ranked Squads',
+                    description: 'Climb the ladder with teammates',
                     gradient: 'from-blue-500 to-cyan-400'
                   },
                   { 
-                    icon: '/fortnite.png', 
-                    name: 'Fortnite',
-                    description: 'Build, battle, survive',
+                    icon: BarChart3, 
+                    name: 'Track Performance',
+                    description: 'Stats, match history & analytics',
                     gradient: 'from-cyan-500 to-blue-400'
                   }
-                ].map((game, index) => (
-                  <motion.div
-                    key={index}
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.3 + index * 0.1 }}
-                    whileHover={{ scale: 1.02, x: 5 }}
-                    className="relative flex items-center gap-4 p-3 border-2 border-cyan-400/30 bg-[#0a1628] hover:bg-[#0a1628]/90 transition-all duration-300 group cursor-pointer"
-                    style={{ clipPath: 'polygon(4px 0, 100% 0, 100% calc(100% - 4px), calc(100% - 4px) 100%, 0 100%, 0 4px)' }}
-                  >
-                    {/* Glow effect on hover */}
-                    <div className="absolute inset-0 bg-gradient-to-r from-cyan-400/10 to-blue-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                    
-                    <div className={`relative w-12 h-12 bg-gradient-to-br ${game.gradient} flex items-center justify-center p-1`}
-                      style={{ clipPath: 'polygon(3px 0, 100% 0, 100% calc(100% - 3px), calc(100% - 3px) 100%, 0 100%, 0 3px)' }}
+                ].map((feature, index) => {
+                  const IconComponent = feature.icon;
+                  return (
+                    <motion.div
+                      key={index}
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: 0.3 + index * 0.1 }}
+                      whileHover={{ scale: 1.02, x: 5 }}
+                      className="relative flex items-center gap-4 p-3 border-2 border-cyan-400/30 bg-[#0a1628] hover:bg-[#0a1628]/90 transition-all duration-300 group cursor-pointer"
+                      style={{ clipPath: 'polygon(4px 0, 100% 0, 100% calc(100% - 4px), calc(100% - 4px) 100%, 0 100%, 0 4px)' }}
                     >
-                      <Image
-                        src={game.icon}
-                        alt={game.name}
-                        width={32}
-                        height={32}
-                        className="w-8 h-8 object-contain group-hover:scale-110 transition-transform duration-300"
-                      />
-                    </div>
-                    <div className="relative space-y-1">
-                      <span className="text-cyan-400 font-bold font-mono group-hover:text-cyan-300 transition-colors">{game.name}</span>
-                      <p className="text-sm text-gray-400">{game.description}</p>
-                    </div>
-                  </motion.div>
-                ))}
+                      {/* Glow effect on hover */}
+                      <div className="absolute inset-0 bg-gradient-to-r from-cyan-400/10 to-blue-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                      
+                      <div className={`relative w-12 h-12 bg-gradient-to-br ${feature.gradient} flex items-center justify-center p-1`}
+                        style={{ clipPath: 'polygon(3px 0, 100% 0, 100% calc(100% - 3px), calc(100% - 3px) 100%, 0 100%, 0 3px)' }}
+                      >
+                        <IconComponent className="w-8 h-8 text-black group-hover:scale-110 transition-transform duration-300" />
+                      </div>
+                      <div className="relative space-y-1">
+                        <span className="text-cyan-400 font-bold font-mono group-hover:text-cyan-300 transition-colors">{feature.name}</span>
+                        <p className="text-sm text-gray-400">{feature.description}</p>
+                      </div>
+                    </motion.div>
+                  );
+                })}
               </div>
             </div>
 
@@ -353,41 +353,23 @@ export default function RegisterPage() {
                   <div className="w-16 h-16 bg-gradient-to-br from-cyan-400 to-blue-500 flex items-center justify-center p-2"
                     style={{ clipPath: 'polygon(4px 0, 100% 0, 100% calc(100% - 4px), calc(100% - 4px) 100%, 0 100%, 0 4px)' }}
                   >
-                    <Image
-                      src="/league.png"
-                      alt="League of Legends"
-                      width={48}
-                      height={48}
-                      className="w-12 h-12 object-contain"
-                    />
+                    <Users className="w-12 h-12 text-black" />
                   </div>
                   <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-cyan-400 flex items-center justify-center p-2"
                     style={{ clipPath: 'polygon(4px 0, 100% 0, 100% calc(100% - 4px), calc(100% - 4px) 100%, 0 100%, 0 4px)' }}
                   >
-                    <Image
-                      src="/valorant.png"
-                      alt="Valorant"
-                      width={48}
-                      height={48}
-                      className="w-12 h-12 object-contain"
-                    />
+                    <Gamepad2 className="w-12 h-12 text-black" />
                   </div>
                   <div className="w-16 h-16 bg-gradient-to-br from-cyan-500 to-blue-400 flex items-center justify-center p-2"
                     style={{ clipPath: 'polygon(4px 0, 100% 0, 100% calc(100% - 4px), calc(100% - 4px) 100%, 0 100%, 0 4px)' }}
                   >
-                    <Image
-                      src="/fortnite.png"
-                      alt="Fortnite"
-                      width={48}
-                      height={48}
-                      className="w-12 h-12 object-contain"
-                    />
+                    <Shield className="w-12 h-12 text-black" />
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <h3 className="text-xl font-black font-mono uppercase tracking-wider text-cyan-400">Your Gaming Journey Starts Here</h3>
+                  <h3 className="text-xl font-black font-mono uppercase tracking-wider text-cyan-400">Ready to Dominate the Rift?</h3>
                   <p className="text-sm text-gray-400">
-                    Connect with players across League of Legends, Valorant, and Fortnite
+                    Join thousands of League of Legends players building their dream teams
                   </p>
                 </div>
               </div>

@@ -161,7 +161,10 @@ export default function CreatePartyPage() {
           <div className="fixed bottom-0 right-1/4 w-[600px] h-[600px] bg-cyan-400/10 rounded-full blur-[120px] animate-pulse" style={{ animationDelay: '2s' }}></div>
           <div className="fixed inset-0 bg-[linear-gradient(transparent_50%,rgba(0,255,255,0.02)_50%)] bg-[length:100%_4px] pointer-events-none"></div>
           
-          <div className="text-cyan-400 text-2xl font-mono font-bold tracking-wider uppercase relative z-10">LOADING...</div>
+          <div className="relative z-10 text-center">
+            <AnimatedLogo size="lg" variant="futuristic" />
+            <div className="text-cyan-400 text-2xl font-mono font-bold tracking-wider uppercase mt-4 drop-shadow-[0_0_10px_rgba(0,255,255,0.4)]">LOADING...</div>
+          </div>
         </div>
       </NavigationDrawer>
     );

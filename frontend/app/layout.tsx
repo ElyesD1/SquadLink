@@ -10,7 +10,17 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: "SquadLink - Link Your Squad",
-  description: "Gaming community platform",
+  description: "Find your League of Legends squad and dominate the Rift together",
+  icons: {
+    icon: [
+      { url: '/Logo-Photoroom.png', sizes: 'any' },
+      { url: '/icon.png', type: 'image/png' },
+    ],
+    apple: [
+      { url: '/apple-icon.png', type: 'image/png' },
+    ],
+  },
+  manifest: '/manifest.json',
 };
 
 export default function RootLayout({
@@ -20,6 +30,11 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        <link rel="icon" href="/Logo-Photoroom.png" type="image/png" />
+        <link rel="apple-touch-icon" href="/apple-icon.png" />
+        <link rel="shortcut icon" href="/Logo-Photoroom.png" />
+      </head>
       <body className={inter.variable}>
         <Providers>{children}</Providers>
       </body>
