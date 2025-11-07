@@ -9,7 +9,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { AnimatedLogo } from '@/components/ui/AnimatedLogo';
 import NavigationDrawer from '@/components/ui/NavigationDrawer';
-import { ChevronDown, ChevronUp, Loader2, Trophy, Target, Shield, Skull, Users, UserX, Clock, AlertCircle, TrendingUp, TrendingDown, Swords, Search, Home, X, RefreshCw, Sparkles, Download, Share2 } from 'lucide-react';
+import { ChevronDown, ChevronUp, Loader2, Trophy, Target, Shield, Skull, Users, UserX, Clock, AlertCircle, TrendingUp, TrendingDown, Swords, Search, Home, X, RefreshCw, Sparkles, Download, Share2, Lightbulb } from 'lucide-react';
 import { lolService, type LolAccount } from '@/lib/lol-service';
 import { LOL_VERSION, getCDNUrl, getProfileIconUrl } from '@/lib/constants';
 
@@ -227,6 +227,10 @@ export default function MatchHistoryPage() {
   const [showAIInsights, setShowAIInsights] = useState(false);
   const [aiInsights, setAiInsights] = useState<any>(null);
   const [loadingInsights, setLoadingInsights] = useState(false);
+
+  // AI Coaching state
+  const [matchCoaching, setMatchCoaching] = useState<Record<string, any>>({});
+  const [loadingCoaching, setLoadingCoaching] = useState<Record<string, boolean>>({});
 
   // Use ref to track next offset to prevent race conditions with rapid clicks
   const nextOffsetRef = useRef(0);
@@ -1033,6 +1037,50 @@ export default function MatchHistoryPage() {
     } catch (error) {
       console.error('Error sharing:', error);
       alert(`Failed to share: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
+  };
+
+  // Fetch AI Coaching for a specific match
+  const fetchAICoaching = async (matchId: string, match: any) => {
+    const currentAccount = getCurrentAccount();
+    if (!currentAccount) {
+      alert('No account selected');
+      return;
+    }
+
+    // Check if already loading or loaded
+    if (loadingCoaching[matchId] || matchCoaching[matchId]) {
+      return;
+    }
+
+    setLoadingCoaching({ ...loadingCoaching, [matchId]: true });
+
+    try {
+      const response = await fetch('http://localhost:3001/api/v1/riot/insights/coaching', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          puuid: currentAccount.puuid,
+          match: match
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to generate coaching');
+      }
+
+      const data = await response.json();
+      
+      if (!data.success) {
+        throw new Error(data.message || 'Failed to generate coaching');
+      }
+
+      setMatchCoaching({ ...matchCoaching, [matchId]: data.coaching });
+    } catch (error) {
+      console.error('[AI Coaching] Error:', error);
+      alert(error instanceof Error ? error.message : 'Failed to generate coaching. Please try again.');
+    } finally {
+      setLoadingCoaching({ ...loadingCoaching, [matchId]: false });
     }
   };
 
@@ -3025,6 +3073,28 @@ export default function MatchHistoryPage() {
                                   )}
                                   <span className="relative z-10">Metrics</span>
                                 </button>
+                                <button 
+                                  onClick={() => {
+                                    setActiveTab({ ...activeTab, [match.metadata.matchId]: 'ai-coaching' });
+                                    fetchAICoaching(match.metadata.matchId, match);
+                                  }}
+                                  className={`relative flex-1 px-4 py-2.5 text-sm font-bold font-mono tracking-wider uppercase transition-all group ${
+                                    activeTab[match.metadata.matchId] === 'ai-coaching'
+                                      ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-[0_0_15px_rgba(168,85,247,0.4)]'
+                                      : 'text-gray-500 hover:text-purple-400 hover:bg-purple-400/5'
+                                  }`}
+                                >
+                                  {activeTab[match.metadata.matchId] === 'ai-coaching' && (
+                                    <>
+                                      <div className="absolute top-0 left-0 w-2 h-2 border-t border-l border-white/50"></div>
+                                      <div className="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-white/50"></div>
+                                    </>
+                                  )}
+                                  <span className="relative z-10 flex items-center space-x-1">
+                                    <Sparkles className="w-4 h-4" />
+                                    <span>AI Coach</span>
+                                  </span>
+                                </button>
                               </div>
 
                               {/* Post Game Tab Content */}
@@ -4765,6 +4835,338 @@ export default function MatchHistoryPage() {
                                   ) : (
                                     <div className="flex items-center justify-center py-20 text-gray-500">
                                       <p>Loading metrics data...</p>
+                                    </div>
+                                  )}
+                                </div>
+                              )}
+
+                              {/* AI Coaching Tab Content */}
+                              {activeTab[match.metadata.matchId] === 'ai-coaching' && (
+                                <div className="space-y-6">
+                                  {loadingCoaching[match.metadata.matchId] ? (
+                                    <div className="flex flex-col items-center justify-center py-20 space-y-4">
+                                      <div className="relative">
+                                        <Loader2 className="w-12 h-12 text-purple-400 animate-spin drop-shadow-[0_0_8px_rgba(168,85,247,0.8)]" />
+                                        <div className="absolute inset-0 bg-purple-400/20 blur-xl animate-pulse"></div>
+                                      </div>
+                                      <p className="text-white font-mono drop-shadow-[0_0_5px_rgba(255,255,255,0.3)]">AI Coach analyzing your performance...</p>
+                                      <p className="text-sm text-purple-400 font-mono">Reviewing stats, items, and decision-making</p>
+                                    </div>
+                                  ) : matchCoaching[match.metadata.matchId] ? (
+                                    <div className="space-y-6">
+                                      {/* Header with Champion */}
+                                      <div className="relative bg-gradient-to-br from-purple-900/30 via-indigo-900/30 to-purple-900/30 border-2 border-purple-400/40 p-6 overflow-hidden">
+                                        <div className="absolute top-0 left-0 w-full h-0.5 bg-gradient-to-r from-transparent via-purple-400 to-transparent"></div>
+                                        <div className="flex items-center space-x-6">
+                                          {/* Champion Portrait */}
+                                          <div className="relative group">
+                                            <div className="absolute inset-0 bg-purple-400/30 blur-xl group-hover:bg-purple-400/50 transition-all"></div>
+                                            <div className="relative w-24 h-24 border-4 border-purple-400/60 overflow-hidden shadow-[0_0_30px_rgba(168,85,247,0.6)]">
+                                              {/* eslint-disable-next-line @next/next/no-img-element */}
+                                              <img
+                                                src={getChampionImageUrl(matchCoaching[match.metadata.matchId].championId)}
+                                                alt={matchCoaching[match.metadata.matchId].championName}
+                                                className="w-full h-full object-cover"
+                                                crossOrigin="anonymous"
+                                              />
+                                            </div>
+                                          </div>
+                                          
+                                          {/* Match Info */}
+                                          <div className="flex-1">
+                                            <div className="flex items-center space-x-3 mb-2">
+                                              <h3 className="text-2xl font-bold text-white font-mono">{matchCoaching[match.metadata.matchId].championName}</h3>
+                                              <span className="px-3 py-1 bg-purple-400/20 border border-purple-400/40 text-purple-300 text-sm font-mono uppercase">{matchCoaching[match.metadata.matchId].role}</span>
+                                              <span className={`px-3 py-1 font-bold text-sm font-mono ${matchCoaching[match.metadata.matchId].matchData.win ? 'bg-green-400/20 border border-green-400/40 text-green-300' : 'bg-red-400/20 border border-red-400/40 text-red-300'}`}>
+                                                {matchCoaching[match.metadata.matchId].matchData.win ? 'VICTORY' : 'DEFEAT'}
+                                              </span>
+                                            </div>
+                                            <div className="flex items-center space-x-4 text-sm text-gray-400 font-mono">
+                                              <span>{matchCoaching[match.metadata.matchId].matchData.gameMode}</span>
+                                              <span>•</span>
+                                              <span>{Math.floor(matchCoaching[match.metadata.matchId].matchData.gameDuration / 60)}m {matchCoaching[match.metadata.matchId].matchData.gameDuration % 60}s</span>
+                                              <span>•</span>
+                                              <span className="text-cyan-400">{matchCoaching[match.metadata.matchId].matchData.kda} KDA</span>
+                                            </div>
+                                            
+                                            {/* Quick Stats Bar */}
+                                            <div className="grid grid-cols-4 gap-3 mt-3">
+                                              <div className="bg-[#0a1628]/60 border border-cyan-400/20 px-3 py-2">
+                                                <div className="text-xs text-gray-400 uppercase font-mono">KDA</div>
+                                                <div className="text-lg font-bold text-cyan-400 font-mono">{matchCoaching[match.metadata.matchId].matchData.kills}/{matchCoaching[match.metadata.matchId].matchData.deaths}/{matchCoaching[match.metadata.matchId].matchData.assists}</div>
+                                              </div>
+                                              <div className="bg-[#0a1628]/60 border border-yellow-400/20 px-3 py-2">
+                                                <div className="text-xs text-gray-400 uppercase font-mono">CS</div>
+                                                <div className="text-lg font-bold text-yellow-400 font-mono">{matchCoaching[match.metadata.matchId].matchData.totalMinionsKilled + matchCoaching[match.metadata.matchId].matchData.neutralMinionsKilled}</div>
+                                              </div>
+                                              <div className="bg-[#0a1628]/60 border border-green-400/20 px-3 py-2">
+                                                <div className="text-xs text-gray-400 uppercase font-mono">Vision</div>
+                                                <div className="text-lg font-bold text-green-400 font-mono">{matchCoaching[match.metadata.matchId].matchData.visionScore}</div>
+                                              </div>
+                                              <div className="bg-[#0a1628]/60 border border-purple-400/20 px-3 py-2">
+                                                <div className="text-xs text-gray-400 uppercase font-mono">Damage</div>
+                                                <div className="text-lg font-bold text-purple-400 font-mono">{(matchCoaching[match.metadata.matchId].matchData.totalDamageDealtToChampions / 1000).toFixed(1)}k</div>
+                                              </div>
+                                            </div>
+                                          </div>
+                                          
+                                          {/* Items Display */}
+                                          <div className="flex flex-col items-end space-y-2">
+                                            <div className="text-xs text-gray-400 uppercase font-mono mb-1">Final Build</div>
+                                            <div className="flex flex-wrap gap-1 justify-end max-w-[200px]">
+                                              {matchCoaching[match.metadata.matchId].matchData.items.map((itemId: number, idx: number) => (
+                                                <div key={idx} className="relative w-10 h-10 border-2 border-yellow-400/40 bg-[#0a1628] overflow-hidden shadow-[0_0_8px_rgba(250,204,21,0.3)]">
+                                                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                                                  <img
+                                                    src={`https://ddragon.leagueoflegends.com/cdn/${LOL_VERSION}/img/item/${itemId}.png`}
+                                                    alt={`Item ${itemId}`}
+                                                    className="w-full h-full object-cover"
+                                                    crossOrigin="anonymous"
+                                                  />
+                                                </div>
+                                              ))}
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </div>
+
+                                      {/* Overall Performance */}
+                                      <div className="relative bg-gradient-to-br from-purple-900/20 to-pink-900/20 border-2 border-purple-400/40 p-6 overflow-hidden">
+                                        <div className="absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-purple-400/60"></div>
+                                        <div className="absolute top-0 right-0 w-4 h-4 border-t-2 border-r-2 border-purple-400/60"></div>
+                                        
+                                        <h3 className="text-lg font-bold text-purple-400 mb-3 font-mono uppercase tracking-wider flex items-center space-x-2">
+                                          <Sparkles className="w-5 h-5" />
+                                          <span>Coach's Assessment</span>
+                                        </h3>
+                                        <p className="text-white/90 font-mono leading-relaxed text-base">{matchCoaching[match.metadata.matchId].coaching.overallPerformance}</p>
+                                      </div>
+
+                                      {/* Strengths & Weaknesses Grid */}
+                                      <div className="grid grid-cols-2 gap-6">
+                                        {/* Strengths */}
+                                        <div className="relative bg-gradient-to-br from-green-900/20 to-emerald-900/20 border-2 border-green-400/30 p-6 overflow-hidden">
+                                          <div className="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2 border-green-400/60"></div>
+                                          <div className="absolute top-0 right-0 w-3 h-3 border-t-2 border-r-2 border-green-400/60"></div>
+                                          
+                                          <h3 className="text-lg font-bold text-green-400 mb-4 font-mono uppercase flex items-center space-x-2">
+                                            <Trophy className="w-5 h-5" />
+                                            <span>What You Did Well</span>
+                                          </h3>
+                                          <div className="space-y-2">
+                                            {matchCoaching[match.metadata.matchId].coaching.strengths.map((strength: string, idx: number) => (
+                                              <div key={idx} className="flex items-start space-x-2 bg-green-400/10 border border-green-400/30 px-3 py-2">
+                                                <div className="w-1.5 h-1.5 bg-green-400 rounded-full mt-1.5 flex-shrink-0"></div>
+                                                <span className="text-white/90 text-sm font-mono">{strength}</span>
+                                              </div>
+                                            ))}
+                                          </div>
+                                        </div>
+
+                                        {/* Weaknesses */}
+                                        <div className="relative bg-gradient-to-br from-red-900/20 to-orange-900/20 border-2 border-red-400/30 p-6 overflow-hidden">
+                                          <div className="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2 border-red-400/60"></div>
+                                          <div className="absolute top-0 right-0 w-3 h-3 border-t-2 border-r-2 border-red-400/60"></div>
+                                          
+                                          <h3 className="text-lg font-bold text-red-400 mb-4 font-mono uppercase flex items-center space-x-2">
+                                            <Target className="w-5 h-5" />
+                                            <span>Room for Growth</span>
+                                          </h3>
+                                          <div className="space-y-2">
+                                            {matchCoaching[match.metadata.matchId].coaching.weaknesses.map((weakness: string, idx: number) => (
+                                              <div key={idx} className="flex items-start space-x-2 bg-red-400/10 border border-red-400/30 px-3 py-2">
+                                                <div className="w-1.5 h-1.5 bg-red-400 rounded-full mt-1.5 flex-shrink-0"></div>
+                                                <span className="text-white/90 text-sm font-mono">{weakness}</span>
+                                              </div>
+                                            ))}
+                                          </div>
+                                        </div>
+                                      </div>
+
+                                      {/* Detailed Analysis */}
+                                      <div className="grid grid-cols-2 gap-4">
+                                        <div className="bg-[#0a1628]/60 border border-cyan-400/20 p-4">
+                                          <h4 className="text-cyan-400 font-mono font-bold mb-2 uppercase text-sm flex items-center space-x-2">
+                                            <span>💰</span>
+                                            <span>Gold Management</span>
+                                          </h4>
+                                          <p className="text-white/80 text-sm font-mono leading-relaxed">{matchCoaching[match.metadata.matchId].coaching.itemBuildAnalysis}</p>
+                                        </div>
+                                        <div className="bg-[#0a1628]/60 border border-cyan-400/20 p-4">
+                                          <h4 className="text-cyan-400 font-mono font-bold mb-2 uppercase text-sm flex items-center space-x-2">
+                                            <span>👁️</span>
+                                            <span>Vision Game</span>
+                                          </h4>
+                                          <p className="text-white/80 text-sm font-mono leading-relaxed">{matchCoaching[match.metadata.matchId].coaching.visionControl}</p>
+                                        </div>
+                                        <div className="bg-[#0a1628]/60 border border-cyan-400/20 p-4">
+                                          <h4 className="text-cyan-400 font-mono font-bold mb-2 uppercase text-sm flex items-center space-x-2">
+                                            <span>🌾</span>
+                                            <span>Farming</span>
+                                          </h4>
+                                          <p className="text-white/80 text-sm font-mono leading-relaxed">{matchCoaching[match.metadata.matchId].coaching.farmingEfficiency}</p>
+                                        </div>
+                                        <div className="bg-[#0a1628]/60 border border-cyan-400/20 p-4">
+                                          <h4 className="text-cyan-400 font-mono font-bold mb-2 uppercase text-sm flex items-center space-x-2">
+                                            <span>⚔️</span>
+                                            <span>Fighting</span>
+                                          </h4>
+                                          <p className="text-white/80 text-sm font-mono leading-relaxed">{matchCoaching[match.metadata.matchId].coaching.fightingStyle}</p>
+                                        </div>
+                                      </div>
+
+                                      {/* New Detailed Assessments */}
+                                      {matchCoaching[match.metadata.matchId].coaching.buildAssessment && (
+                                        <div className="relative bg-gradient-to-br from-yellow-900/20 to-orange-900/20 border-2 border-yellow-400/30 p-6 overflow-hidden">
+                                          <div className="absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-yellow-400/60"></div>
+                                          <div className="absolute top-0 right-0 w-4 h-4 border-t-2 border-r-2 border-yellow-400/60"></div>
+                                          
+                                          <h3 className="text-lg font-bold text-yellow-400 mb-4 font-mono uppercase tracking-wider flex items-center space-x-2">
+                                            <span>🛠️</span>
+                                            <span>Build Assessment</span>
+                                          </h3>
+                                          <div className="grid grid-cols-2 gap-4">
+                                            <div className="bg-[#0a1628]/60 border border-yellow-400/20 p-3">
+                                              <h5 className="text-yellow-300 font-mono text-xs uppercase mb-2">Early Game (0-10min)</h5>
+                                              <p className="text-white/80 text-sm font-mono">{matchCoaching[match.metadata.matchId].coaching.buildAssessment.earlyGame}</p>
+                                            </div>
+                                            <div className="bg-[#0a1628]/60 border border-yellow-400/20 p-3">
+                                              <h5 className="text-yellow-300 font-mono text-xs uppercase mb-2">Mid Game (10-20min)</h5>
+                                              <p className="text-white/80 text-sm font-mono">{matchCoaching[match.metadata.matchId].coaching.buildAssessment.midGame}</p>
+                                            </div>
+                                            <div className="bg-[#0a1628]/60 border border-yellow-400/20 p-3">
+                                              <h5 className="text-yellow-300 font-mono text-xs uppercase mb-2">Late Game (20+min)</h5>
+                                              <p className="text-white/80 text-sm font-mono">{matchCoaching[match.metadata.matchId].coaching.buildAssessment.lateGame}</p>
+                                            </div>
+                                            <div className="bg-[#0a1628]/60 border border-yellow-400/20 p-3">
+                                              <h5 className="text-yellow-300 font-mono text-xs uppercase mb-2">Item Timings</h5>
+                                              <p className="text-white/80 text-sm font-mono">{matchCoaching[match.metadata.matchId].coaching.buildAssessment.itemTimings}</p>
+                                            </div>
+                                          </div>
+                                          <div className="mt-3 bg-yellow-400/10 border border-yellow-400/30 p-3">
+                                            <p className="text-white/90 font-mono text-sm">{matchCoaching[match.metadata.matchId].coaching.buildAssessment.overall}</p>
+                                          </div>
+                                        </div>
+                                      )}
+
+                                      {matchCoaching[match.metadata.matchId].coaching.tacticalAssessment && (
+                                        <div className="relative bg-gradient-to-br from-blue-900/20 to-indigo-900/20 border-2 border-blue-400/30 p-6 overflow-hidden">
+                                          <div className="absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-blue-400/60"></div>
+                                          <div className="absolute top-0 right-0 w-4 h-4 border-t-2 border-r-2 border-blue-400/60"></div>
+                                          
+                                          <h3 className="text-lg font-bold text-blue-400 mb-4 font-mono uppercase tracking-wider flex items-center space-x-2">
+                                            <span>⚔️</span>
+                                            <span>Tactical Assessment</span>
+                                          </h3>
+                                          <div className="grid grid-cols-2 gap-4">
+                                            <div className="bg-[#0a1628]/60 border border-blue-400/20 p-3">
+                                              <h5 className="text-blue-300 font-mono text-xs uppercase mb-2">Laning Phase</h5>
+                                              <p className="text-white/80 text-sm font-mono">{matchCoaching[match.metadata.matchId].coaching.tacticalAssessment.laning}</p>
+                                            </div>
+                                            <div className="bg-[#0a1628]/60 border border-blue-400/20 p-3">
+                                              <h5 className="text-blue-300 font-mono text-xs uppercase mb-2">Teamfighting</h5>
+                                              <p className="text-white/80 text-sm font-mono">{matchCoaching[match.metadata.matchId].coaching.tacticalAssessment.teamfighting}</p>
+                                            </div>
+                                            <div className="bg-[#0a1628]/60 border border-blue-400/20 p-3">
+                                              <h5 className="text-blue-300 font-mono text-xs uppercase mb-2">Objective Control</h5>
+                                              <p className="text-white/80 text-sm font-mono">{matchCoaching[match.metadata.matchId].coaching.tacticalAssessment.objectiveControl}</p>
+                                            </div>
+                                            <div className="bg-[#0a1628]/60 border border-blue-400/20 p-3">
+                                              <h5 className="text-blue-300 font-mono text-xs uppercase mb-2">Map Awareness</h5>
+                                              <p className="text-white/80 text-sm font-mono">{matchCoaching[match.metadata.matchId].coaching.tacticalAssessment.mapAwareness}</p>
+                                            </div>
+                                          </div>
+                                        </div>
+                                      )}
+
+                                      {matchCoaching[match.metadata.matchId].coaching.skillAssessment && (
+                                        <div className="relative bg-gradient-to-br from-purple-900/20 to-fuchsia-900/20 border-2 border-purple-400/30 p-6 overflow-hidden">
+                                          <div className="absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-purple-400/60"></div>
+                                          <div className="absolute top-0 right-0 w-4 h-4 border-t-2 border-r-2 border-purple-400/60"></div>
+                                          
+                                          <h3 className="text-lg font-bold text-purple-400 mb-4 font-mono uppercase tracking-wider flex items-center space-x-2">
+                                            <span>🎯</span>
+                                            <span>Skill Assessment</span>
+                                          </h3>
+                                          <div className="space-y-3">
+                                            <div className="bg-[#0a1628]/60 border border-purple-400/20 p-3">
+                                              <h5 className="text-purple-300 font-mono text-xs uppercase mb-2">Mechanics</h5>
+                                              <p className="text-white/80 text-sm font-mono">{matchCoaching[match.metadata.matchId].coaching.skillAssessment.mechanics}</p>
+                                            </div>
+                                            <div className="bg-[#0a1628]/60 border border-purple-400/20 p-3">
+                                              <h5 className="text-purple-300 font-mono text-xs uppercase mb-2">Decision Making</h5>
+                                              <p className="text-white/80 text-sm font-mono">{matchCoaching[match.metadata.matchId].coaching.skillAssessment.decisionMaking}</p>
+                                            </div>
+                                            <div className="bg-[#0a1628]/60 border border-purple-400/20 p-3">
+                                              <h5 className="text-purple-300 font-mono text-xs uppercase mb-2">Adaptability</h5>
+                                              <p className="text-white/80 text-sm font-mono">{matchCoaching[match.metadata.matchId].coaching.skillAssessment.adaptability}</p>
+                                            </div>
+                                          </div>
+                                        </div>
+                                      )}
+
+                                      {matchCoaching[match.metadata.matchId].coaching.strategicAssessment && (
+                                        <div className="relative bg-gradient-to-br from-pink-900/20 to-rose-900/20 border-2 border-pink-400/30 p-6 overflow-hidden">
+                                          <div className="absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-pink-400/60"></div>
+                                          <div className="absolute top-0 right-0 w-4 h-4 border-t-2 border-r-2 border-pink-400/60"></div>
+                                          
+                                          <h3 className="text-lg font-bold text-pink-400 mb-4 font-mono uppercase tracking-wider flex items-center space-x-2">
+                                            <span>🧠</span>
+                                            <span>Strategic Assessment</span>
+                                          </h3>
+                                          <div className="space-y-3">
+                                            <div className="bg-[#0a1628]/60 border border-pink-400/20 p-3">
+                                              <h5 className="text-pink-300 font-mono text-xs uppercase mb-2">Game Plan</h5>
+                                              <p className="text-white/80 text-sm font-mono">{matchCoaching[match.metadata.matchId].coaching.strategicAssessment.gamePlan}</p>
+                                            </div>
+                                            <div className="bg-[#0a1628]/60 border border-pink-400/20 p-3">
+                                              <h5 className="text-pink-300 font-mono text-xs uppercase mb-2">Tempo Control</h5>
+                                              <p className="text-white/80 text-sm font-mono">{matchCoaching[match.metadata.matchId].coaching.strategicAssessment.tempo}</p>
+                                            </div>
+                                            <div className="bg-[#0a1628]/60 border border-pink-400/20 p-3">
+                                              <h5 className="text-pink-300 font-mono text-xs uppercase mb-2">Win Conditions</h5>
+                                              <p className="text-white/80 text-sm font-mono">{matchCoaching[match.metadata.matchId].coaching.strategicAssessment.winConditions}</p>
+                                            </div>
+                                          </div>
+                                        </div>
+                                      )}
+
+                                      {/* Recommendations */}
+                                      <div className="relative bg-gradient-to-br from-cyan-900/20 to-blue-900/20 border-2 border-cyan-400/30 p-6 overflow-hidden">
+                                        <div className="absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-cyan-400/60"></div>
+                                        <div className="absolute top-0 right-0 w-4 h-4 border-t-2 border-r-2 border-cyan-400/60"></div>
+                                        
+                                        <h3 className="text-lg font-bold text-cyan-400 mb-4 font-mono uppercase tracking-wider flex items-center space-x-2">
+                                          <Lightbulb className="w-5 h-5" />
+                                          <span>Your Action Plan</span>
+                                        </h3>
+                                        <div className="space-y-3">
+                                          {matchCoaching[match.metadata.matchId].coaching.recommendations.map((rec: string, idx: number) => (
+                                            <div key={idx} className="flex items-start space-x-3 bg-cyan-400/5 border-l-2 border-cyan-400/50 px-4 py-3">
+                                              <div className="text-cyan-400 font-bold font-mono text-lg mt-0.5">{idx + 1}.</div>
+                                              <span className="text-white/90 font-mono">{rec}</span>
+                                            </div>
+                                          ))}
+                                        </div>
+                                      </div>
+
+                                      {/* Key Takeaways */}
+                                      <div className="relative bg-gradient-to-br from-yellow-900/20 to-amber-900/20 border-2 border-yellow-400/30 p-6 overflow-hidden">
+                                        <h3 className="text-lg font-bold text-yellow-400 mb-3 font-mono uppercase tracking-wider">Remember This</h3>
+                                        <div className="space-y-2">
+                                          {matchCoaching[match.metadata.matchId].coaching.keyTakeaways.map((takeaway: string, idx: number) => (
+                                            <div key={idx} className="flex items-center space-x-2 text-yellow-400/90 font-mono text-sm">
+                                              <span>⚡</span>
+                                              <span>{takeaway}</span>
+                                            </div>
+                                          ))}
+                                        </div>
+                                      </div>
+                                    </div>
+                                  ) : (
+                                    <div className="flex flex-col items-center justify-center py-20 space-y-4">
+                                      <Sparkles className="w-12 h-12 text-purple-400 drop-shadow-[0_0_10px_rgba(168,85,247,0.8)]" />
+                                      <p className="text-white font-mono">Click the AI Coach tab to get personalized insights!</p>
                                     </div>
                                   )}
                                 </div>

@@ -1,5 +1,6 @@
 import { Controller, Post, Body, Logger } from '@nestjs/common';
 import { AIInsightsService } from './ai-insights.service';
+import { AICoachingService } from './ai-coaching.service';
 
 interface GenerateInsightsDto {
   puuid: string;
@@ -9,11 +10,19 @@ interface GenerateInsightsDto {
   matches: any[];
 }
 
+interface GenerateCoachingDto {
+  puuid: string;
+  match: any;
+}
+
 @Controller('api/v1/riot/insights')
 export class AIInsightsController {
   private readonly logger = new Logger(AIInsightsController.name);
 
-  constructor(private readonly aiInsightsService: AIInsightsService) {}
+  constructor(
+    private readonly aiInsightsService: AIInsightsService,
+    private readonly aiCoachingService: AICoachingService,
+  ) {}
 
   @Post()
   async generateInsights(@Body() dto: GenerateInsightsDto) {
@@ -38,6 +47,33 @@ export class AIInsightsController {
       };
     } catch (error) {
       this.logger.error('Failed to generate insights:', error);
+      throw error;
+    }
+  }
+
+  @Post('coaching')
+  async generateCoaching(@Body() dto: GenerateCoachingDto) {
+    this.logger.log(`Generating coaching for match ${dto.match?.metadata?.matchId}`);
+    
+    try {
+      const coaching = await this.aiCoachingService.getCoaching(dto);
+      
+      return {
+        success: true,
+        coaching,
+      };
+    } catch (error) {
+      this.logger.error('Failed to generate coaching:', error);
+      
+      // Return more descriptive error for unsupported game modes
+      if (error.message?.includes('Summoner\'s Rift')) {
+        return {
+          success: false,
+          error: error.message,
+          message: 'AI Coaching is only available for Summoner\'s Rift games (Draft Pick, Ranked Solo/Duo, Blind Pick, Ranked Flex, Quick Play)',
+        };
+      }
+      
       throw error;
     }
   }
