@@ -39,6 +39,7 @@ import {
 } from '@/lib/lol-esports-service';
 import { useOffline } from '@/lib/useOffline';
 import { OfflineBanner, OfflineDataMessage } from '@/components/ui/OfflineComponents';
+import { API_URL } from '@/lib/constants';
 
 interface UserProfile {
   gamePreferences: string[];
@@ -103,7 +104,7 @@ export default function EsportsNewsPage() {
       }
 
       console.log('Fetching profile for:', session.user.email);
-      const response = await fetch('http://localhost:3001/users/profile/full', {
+      const response = await fetch(`${API_URL}/users/profile/full`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

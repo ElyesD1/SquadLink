@@ -18,6 +18,7 @@ import { useTheme } from 'next-themes';
 import { lolService, type LolAccount } from '@/lib/lol-service';
 import { useOffline } from '@/lib/useOffline';
 import { OfflineBanner, OfflineDataMessage } from '@/components/ui/OfflineComponents';
+import { API_URL } from '@/lib/constants';
 
 interface UserProfile {
   firstName: string;
@@ -89,7 +90,7 @@ export default function ProfilePage() {
 
   const fetchUserProfile = async () => {
     try {
-      const response = await fetch('http://localhost:3001/users/profile/full', {
+      const response = await fetch(`${API_URL}/users/profile/full`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -116,7 +117,7 @@ export default function ProfilePage() {
 
   const updateProfilePicture = async (avatar: string) => {
     try {
-      const response = await fetch('http://localhost:3001/users/profile-picture', {
+      const response = await fetch(`${API_URL}/users/profile-picture`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -138,7 +139,7 @@ export default function ProfilePage() {
 
   const addGamePreference = async (gameId: string) => {
     try {
-      const response = await fetch('http://localhost:3001/users/game-preferences/add', {
+      const response = await fetch(`${API_URL}/users/game-preferences/add`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -163,7 +164,7 @@ export default function ProfilePage() {
 
   const removeGamePreference = async (gameId: string) => {
     try {
-      const response = await fetch(`http://localhost:3001/users/game-preferences/${gameId}`, {
+      const response = await fetch(`${API_URL}/users/game-preferences/${gameId}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',

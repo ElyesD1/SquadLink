@@ -1,7 +1,9 @@
 // SquadLink Backend API Service for LoL eSports
 // Connects to our NestJS backend that serves real 2025 LoL eSports data
 
-const API_BASE_URL = 'http://localhost:3001/riot-esports';
+import { API_URL } from './constants';
+
+const API_BASE_URL = `${API_URL}/riot-esports`;
 
 export interface League {
   id: string;

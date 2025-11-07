@@ -12,6 +12,7 @@ import NavigationDrawer from '@/components/ui/NavigationDrawer';
 import { ChevronDown, ChevronUp, Loader2, Trophy, Target, Shield, Skull, Users, UserX, Clock, AlertCircle, TrendingUp, TrendingDown, Swords, Search, Home, X, RefreshCw, Sparkles, Download, Share2, Lightbulb } from 'lucide-react';
 import { lolService, type LolAccount } from '@/lib/lol-service';
 import { LOL_VERSION, getCDNUrl, getProfileIconUrl } from '@/lib/constants';
+import { API_URL } from '@/lib/constants';
 
 interface UserProfile {
   lolAccount?: LolAccount;
@@ -259,7 +260,7 @@ export default function MatchHistoryPage() {
       if (!session?.user?.email) return;
 
       try {
-        const response = await fetch('http://localhost:3001/users/profile/full', {
+        const response = await fetch(`${API_URL}/users/profile/full`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -366,7 +367,7 @@ export default function MatchHistoryPage() {
     try {
       // Use batch endpoint for efficient fetching with caching
       const response = await fetch(
-        'http://localhost:3001/api/v1/riot/summoner/batch',
+        '${API_URL}/api/v1/riot/summoner/batch',
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -419,7 +420,7 @@ export default function MatchHistoryPage() {
     setTagsLoading(true);
     try {
       const response = await fetch(
-        `http://localhost:3001/api/v1/riot/player-tags/${account.puuid}?region=${account.region}`
+        `${API_URL}/api/v1/riot/player-tags/${account.puuid}?region=${account.region}`
       );
 
       if (response.ok) {
@@ -440,7 +441,7 @@ export default function MatchHistoryPage() {
     setTagsLoading(true);
     try {
       const response = await fetch(
-        `http://localhost:3001/api/v1/riot/player-tags/${account.puuid}/refresh?region=${account.region}`,
+        `${API_URL}/api/v1/riot/player-tags/${account.puuid}/refresh?region=${account.region}`,
         { method: 'POST' }
       );
 
@@ -468,7 +469,7 @@ export default function MatchHistoryPage() {
 
       // Try to load ALL cached matches from backend
       const cachedResponse = await fetch(
-        `http://localhost:3001/api/v1/riot/matches/${profile.lolAccount.puuid}/cached?region=${profile.lolAccount.region}&count=1000` // Get all cached matches
+        `${API_URL}/api/v1/riot/matches/${profile.lolAccount.puuid}/cached?region=${profile.lolAccount.region}&count=1000` // Get all cached matches
       );
 
       console.log('[Cache Check] Response status:', cachedResponse.status, 'OK:', cachedResponse.ok);
@@ -520,7 +521,7 @@ export default function MatchHistoryPage() {
       console.log('[Match History] Fetching and caching matches:', count);
 
       const response = await fetch(
-        `http://localhost:3001/api/v1/riot/matches/${profile.lolAccount.puuid}/fetch-and-cache`,
+        `${API_URL}/api/v1/riot/matches/${profile.lolAccount.puuid}/fetch-and-cache`,
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -594,7 +595,7 @@ export default function MatchHistoryPage() {
       // Step 3: Force backend to re-fetch from Riot API (bypass cache)
       console.log('[FULL REFRESH] Forcing fresh data from Riot API...');
       const response = await fetch(
-        `http://localhost:3001/api/v1/riot/matches/${currentAccount.puuid}/fetch-and-cache`,
+        `${API_URL}/api/v1/riot/matches/${currentAccount.puuid}/fetch-and-cache`,
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -655,7 +656,7 @@ export default function MatchHistoryPage() {
       console.log(`[Load More Frontend] Loading from offset ${offset}`);
 
       const response = await fetch(
-        `http://localhost:3001/api/v1/riot/matches/${currentAccount.puuid}/load-more`,
+        `${API_URL}/api/v1/riot/matches/${currentAccount.puuid}/load-more`,
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -732,7 +733,7 @@ export default function MatchHistoryPage() {
     setLoadingTimeline({ ...loadingTimeline, [matchId]: true });
     try {
       const response = await fetch(
-        `http://localhost:3001/api/v1/riot/matches/${matchId}/timeline?region=${region || 'americas'}`,
+        `${API_URL}/api/v1/riot/matches/${matchId}/timeline?region=${region || 'americas'}`,
         {
           method: 'GET',
           headers: { 'Content-Type': 'application/json' },
@@ -771,7 +772,7 @@ export default function MatchHistoryPage() {
     setAutocompleteLoading(true);
     try {
       const response = await fetch(
-        `http://localhost:3001/api/v1/riot/summoner/autocomplete?q=${encodeURIComponent(searchTerm)}&region=${selectedRegion}&limit=10`
+        `${API_URL}/api/v1/riot/summoner/autocomplete?q=${encodeURIComponent(searchTerm)}&region=${selectedRegion}&limit=10`
       );
       
       if (response.ok) {
@@ -839,7 +840,7 @@ export default function MatchHistoryPage() {
 
     setLoadingInsights(true);
     try {
-      const response = await fetch('http://localhost:3001/api/v1/riot/insights', {
+      const response = await fetch(`${API_URL}/api/v1/riot/insights`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -1056,7 +1057,7 @@ export default function MatchHistoryPage() {
     setLoadingCoaching({ ...loadingCoaching, [matchId]: true });
 
     try {
-      const response = await fetch('http://localhost:3001/api/v1/riot/insights/coaching', {
+      const response = await fetch(`${API_URL}/api/v1/riot/insights/coaching`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -1178,7 +1179,7 @@ export default function MatchHistoryPage() {
 
       // Try cache first - get ALL cached matches
       const cachedResponse = await fetch(
-        `http://localhost:3001/api/v1/riot/matches/${account.puuid}/cached?region=${account.region}&count=1000` // Get all cached matches
+        `${API_URL}/api/v1/riot/matches/${account.puuid}/cached?region=${account.region}&count=1000` // Get all cached matches
       );
 
       console.log('[Cache Check] Response status:', cachedResponse.status, 'OK:', cachedResponse.ok);
@@ -1216,7 +1217,7 @@ export default function MatchHistoryPage() {
 
       // Fetch and cache if no cache - fetch initial batch
       const response = await fetch(
-        `http://localhost:3001/api/v1/riot/matches/${account.puuid}/fetch-and-cache`,
+        `${API_URL}/api/v1/riot/matches/${account.puuid}/fetch-and-cache`,
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },

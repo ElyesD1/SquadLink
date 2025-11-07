@@ -33,6 +33,7 @@ import { OfflineBanner, OfflineMessage, CachedDataIndicator } from '@/components
 import DiscordIntegration from '@/components/ui/DiscordIntegration';
 import JoinPartyModal from '@/components/ui/JoinPartyModal';
 import Image from 'next/image';
+import { API_URL } from '@/lib/constants';
 
 interface Party {
   _id: string;
@@ -176,7 +177,7 @@ export default function PartiesPage() {
     if (!session?.user?.email) return null;
     
     try {
-      const response = await fetch('http://localhost:3001/users/profile/full', {
+      const response = await fetch(`${API_URL}/users/profile/full`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -254,7 +255,7 @@ export default function PartiesPage() {
       }
       
       // Fetch parties (now includes user's closed parties)
-      const response = await fetch(`http://localhost:3001/party?${queryParams}`);
+      const response = await fetch(`${API_URL}/party?${queryParams}`);
       
       if (response.ok) {
         const data = await response.json();
@@ -321,7 +322,7 @@ export default function PartiesPage() {
 
   const handleAcceptRequest = async (partyId: string, userId: string) => {
     try {
-      const response = await fetch(`http://localhost:3001/party/${partyId}/handle-request`, {
+      const response = await fetch(`${API_URL}/party/${partyId}/handle-request`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -352,7 +353,7 @@ export default function PartiesPage() {
     }
 
     try {
-      const response = await fetch(`http://localhost:3001/party/${partyId}/leave`, {
+      const response = await fetch(`${API_URL}/party/${partyId}/leave`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -377,7 +378,7 @@ export default function PartiesPage() {
 
   const handleRejectRequest = async (partyId: string, userId: string) => {
     try {
-      const response = await fetch(`http://localhost:3001/party/${partyId}/handle-request`, {
+      const response = await fetch(`${API_URL}/party/${partyId}/handle-request`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

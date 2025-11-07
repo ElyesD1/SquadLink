@@ -6,6 +6,12 @@
 export const LOL_VERSION = '15.21.1';
 
 /**
+ * Backend API URL
+ * Uses environment variable or falls back to localhost for development
+ */
+export const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+
+/**
  * Base URLs for League of Legends CDN resources
  */
 export const CDN_BASE_URL = 'https://ddragon.leagueoflegends.com/cdn';

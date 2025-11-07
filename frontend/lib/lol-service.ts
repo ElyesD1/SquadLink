@@ -1,6 +1,6 @@
-import { LOL_VERSION, getCDNUrl, getProfileIconUrl } from './constants';
+import { LOL_VERSION, getCDNUrl, getProfileIconUrl, API_URL } from './constants';
 
-const API_BASE_URL = 'http://localhost:3001';
+const API_BASE_URL = API_URL;
 
 export interface LolAccount {
   puuid: string;

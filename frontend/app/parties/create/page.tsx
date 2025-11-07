@@ -19,6 +19,7 @@ import { AnimatedLogo } from '@/components/ui/AnimatedLogo';
 import NavigationDrawer from '@/components/ui/NavigationDrawer';
 import { useTheme } from 'next-themes';
 import RoleSelector, { Position } from '@/components/ui/RoleSelector';
+import { API_URL } from '@/lib/constants';
 
 interface PartyFormData {
   name: string;
@@ -126,7 +127,7 @@ export default function CreatePartyPage() {
     setIsSubmitting(true);
 
     try {
-      const response = await fetch('http://localhost:3001/party', {
+      const response = await fetch(`${API_URL}/party`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

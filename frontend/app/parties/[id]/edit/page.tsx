@@ -25,6 +25,7 @@ import { AnimatedLogo } from '@/components/ui/AnimatedLogo';
 import NavigationDrawer from '@/components/ui/NavigationDrawer';
 import { useTheme } from 'next-themes';
 import { getCDNUrl } from '@/lib/constants';
+import { API_URL } from '@/lib/constants';
 
 interface PartyFormData {
   name: string;
@@ -126,7 +127,7 @@ export default function EditPartyPage() {
       if (!partyId) return;
       
       try {
-        const response = await fetch(`http://localhost:3001/party/${partyId}`);
+        const response = await fetch(`${API_URL}/party/${partyId}`);
         if (response.ok) {
           const result = await response.json();
           const party = result.data || result;
@@ -175,7 +176,7 @@ export default function EditPartyPage() {
     setIsSubmitting(true);
 
     try {
-      const response = await fetch(`http://localhost:3001/party/${partyId}/by-email`, {
+      const response = await fetch(`${API_URL}/party/${partyId}/by-email`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -207,7 +208,7 @@ export default function EditPartyPage() {
     }
 
     try {
-      const response = await fetch(`http://localhost:3001/party/${partyId}/kick`, {
+      const response = await fetch(`${API_URL}/party/${partyId}/kick`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -241,7 +242,7 @@ export default function EditPartyPage() {
     setIsSubmitting(true);
 
     try {
-      const response = await fetch(`http://localhost:3001/party/${partyId}/by-email`, {
+      const response = await fetch(`${API_URL}/party/${partyId}/by-email`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',

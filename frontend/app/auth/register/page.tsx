@@ -28,6 +28,7 @@ import {
   BarChart3
 } from 'lucide-react';
 import { FcGoogle } from 'react-icons/fc';
+import { API_URL } from '@/lib/constants';
 import { differenceInYears, startOfDay } from 'date-fns';
 import { AnimatedLogo } from '@/components/ui/AnimatedLogo';
 
@@ -85,7 +86,7 @@ export default function RegisterPage() {
     setLoading(true);
     
     try {
-      const response = await fetch('http://localhost:3001/auth/register', {
+      const response = await fetch(`${API_URL}/auth/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

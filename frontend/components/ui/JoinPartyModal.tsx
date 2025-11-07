@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { X } from 'lucide-react';
 import { Button } from './button';
 import RoleSelector, { Position } from './RoleSelector';
+import { API_URL } from '@/lib/constants';
 
 interface JoinPartyModalProps {
   isOpen: boolean;
@@ -49,7 +50,7 @@ export default function JoinPartyModal({
   const fetchAvailableRoles = async () => {
     setIsLoadingRoles(true);
     try {
-      const response = await fetch(`http://localhost:3001/party/${partyId}/available-positions`);
+      const response = await fetch(`${API_URL}/party/${partyId}/available-positions`);
       if (response.ok) {
         const data = await response.json();
         setAvailableRoles(data.data || []);
@@ -70,7 +71,7 @@ export default function JoinPartyModal({
     setIsSubmitting(true);
 
     try {
-      const response = await fetch(`http://localhost:3001/party/${partyId}/request-join`, {
+      const response = await fetch(`${API_URL}/party/${partyId}/request-join`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

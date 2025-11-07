@@ -12,6 +12,7 @@ import { FiCheck, FiArrowRight, FiLogOut } from 'react-icons/fi';
 import { Zap } from 'lucide-react';
 import { AnimatedLogo } from '@/components/ui/AnimatedLogo';
 import { useTheme } from 'next-themes';
+import { API_URL } from '@/lib/constants';
 
 interface Game {
   id: string;
@@ -83,7 +84,7 @@ export default function HomePage() {
 
   const checkExistingPreferences = async () => {
     try {
-      const response = await fetch('http://localhost:3001/users/profile/full', {
+      const response = await fetch(`${API_URL}/users/profile/full`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -141,7 +142,7 @@ export default function HomePage() {
     
     setIsLoading(true);
     try {
-      const response = await fetch('http://localhost:3001/users/game-preferences', {
+      const response = await fetch(`${API_URL}/users/game-preferences`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

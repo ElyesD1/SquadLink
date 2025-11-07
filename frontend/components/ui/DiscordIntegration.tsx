@@ -5,6 +5,7 @@ import { useSession } from 'next-auth/react';
 import { Button } from '@/components/ui/button';
 import { MessageCircle, Users } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { API_URL } from '@/lib/constants';
 
 interface DiscordIntegrationProps {
   partyId: string;
@@ -29,7 +30,7 @@ export default function DiscordIntegration({ partyId, partyName, isOwner, existi
     }
 
     // Otherwise, go through OAuth flow
-    window.location.href = `http://localhost:3001/discord/auth?userEmail=${encodeURIComponent(session.user.email)}&partyId=${partyId}`;
+    window.location.href = `${API_URL}/discord/auth?userEmail=${encodeURIComponent(session.user.email)}&partyId=${partyId}`;
   };
 
   return (
