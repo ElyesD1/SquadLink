@@ -19,7 +19,6 @@ import {
   AlertCircle, 
   CheckCircle, 
   Users,
-  ArrowRight,
   Shield,
   Gamepad2,
   Sparkles,

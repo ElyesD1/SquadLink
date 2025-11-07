@@ -3,6 +3,22 @@ import GoogleProvider from 'next-auth/providers/google';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import { API_URL } from '@/lib/constants';
 
+interface GoogleProfile {
+  given_name?: string;
+  family_name?: string;
+}
+
+interface ExtendedUser {
+  id: string;
+  email?: string | null;
+  name?: string | null;
+  accessToken?: string;
+}
+
+interface ExtendedSession {
+  accessToken?: string;
+}
+
 const handler = NextAuth({
   providers: [
     GoogleProvider({
@@ -44,7 +60,7 @@ const handler = NextAuth({
             };
           }
           return null;
-        } catch (error) {
+        } catch {
           return null;
         }
       },
@@ -55,7 +71,7 @@ const handler = NextAuth({
       if (account?.provider === 'google') {
         try {
           // Check if user exists or create new user
-          const googleProfile = profile as any;
+          const googleProfile = profile as GoogleProfile;
           const res = await fetch(`${API_URL}/auth/google`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -78,12 +94,12 @@ const handler = NextAuth({
     },
     async jwt({ token, user, account }) {
       if (account && user) {
-        token.accessToken = (user as any).accessToken;
+        token.accessToken = (user as ExtendedUser).accessToken;
       }
       return token;
     },
     async session({ session, token }) {
-      (session as any).accessToken = token.accessToken;
+      (session as ExtendedSession).accessToken = token.accessToken as string;
       return session;
     },
   },

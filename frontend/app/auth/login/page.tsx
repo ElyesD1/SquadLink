@@ -93,7 +93,7 @@ export default function LoginPage() {
         
         router.push('/home');
       }
-    } catch (err: any) {
+    } catch {
       setError('Something went wrong. Please try again.');
     } finally {
       setLoading(false);
@@ -509,7 +509,7 @@ export default function LoginPage() {
 
             <CardFooter className="flex flex-col space-y-4 pt-6 border-t border-cyan-400/20">
               <p className="text-center text-sm text-gray-400">
-                Don't have an account?{' '}
+                Don&apos;t have an account?{' '}
                 <Link 
                   href="/auth/register" 
                   className="font-semibold text-cyan-400 hover:text-cyan-300 transition-colors"
