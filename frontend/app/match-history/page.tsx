@@ -1868,8 +1868,8 @@ export default function MatchHistoryPage() {
                         <div className="relative w-16 h-16 flex items-center justify-center group/emblem">
                           {/* Emblem glow */}
                           <div className="absolute inset-0 bg-gradient-to-br from-cyan-400/20 to-[#5383E8]/20 blur-lg opacity-0 group-hover/emblem:opacity-100 transition-opacity"></div>
-                          <Image
-                            src={`/Rank=${soloQueue.tier}.png`}
+                          <img
+                            src={lolService.getRankImageUrl(soloQueue.tier)}
                             alt={soloQueue.tier}
                             width={64}
                             height={64}
@@ -1930,8 +1930,8 @@ export default function MatchHistoryPage() {
                         <div className="relative w-16 h-16 flex items-center justify-center group/emblem">
                           {/* Emblem glow */}
                           <div className="absolute inset-0 bg-gradient-to-br from-cyan-400/20 to-[#5383E8]/20 blur-lg opacity-0 group-hover/emblem:opacity-100 transition-opacity"></div>
-                          <Image
-                            src={`/Rank=${flexQueue.tier}.png`}
+                          <img
+                            src={lolService.getRankImageUrl(flexQueue.tier)}
                             alt={flexQueue.tier}
                             width={64}
                             height={64}
