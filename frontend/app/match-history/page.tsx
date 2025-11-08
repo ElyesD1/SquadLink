@@ -2952,15 +2952,16 @@ export default function MatchHistoryPage() {
                             {/* Tech accent line */}
                             <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-cyan-400/50 to-transparent"></div>
                             
-                            <div className="p-6 relative z-10">
-                              {/* Tabs */}
-                              <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-2 mb-6 bg-[#0a1628]/50 rounded-none p-1 border border-cyan-400/20 relative overflow-hidden">
+                            <div className="p-3 sm:p-6 relative z-10">
+                              {/* Tabs - Horizontal scroll on mobile */}
+                              <div className="flex sm:flex-row sm:items-center sm:space-x-2 mb-6 bg-[#0a1628]/50 rounded-none p-1 border border-cyan-400/20 relative overflow-x-auto sm:overflow-hidden overflow-y-hidden">
                                 {/* Background glow */}
                                 <div className="absolute inset-0 bg-gradient-to-r from-transparent via-cyan-400/5 to-transparent"></div>
                                 
+                                <div className="flex space-x-2 sm:space-x-0 sm:flex-row sm:flex-1 min-w-max sm:min-w-0">
                                 <button 
                                   onClick={() => setActiveTab({ ...activeTab, [match.metadata.matchId]: 'post-game' })}
-                                  className={`relative flex-1 px-4 py-2.5 text-sm font-bold font-mono tracking-wider uppercase transition-all group ${
+                                  className={`relative flex-shrink-0 sm:flex-1 px-4 py-2.5 text-xs sm:text-sm font-bold font-mono tracking-wider uppercase transition-all group ${
                                     (!activeTab[match.metadata.matchId] || activeTab[match.metadata.matchId] === 'post-game')
                                       ? 'bg-gradient-to-r from-[#5383E8] to-cyan-400 text-white shadow-[0_0_15px_rgba(0,255,255,0.4)]'
                                       : 'text-gray-500 hover:text-cyan-400 hover:bg-cyan-400/5'
@@ -2976,7 +2977,7 @@ export default function MatchHistoryPage() {
                                 </button>
                                 <button 
                                   onClick={() => setActiveTab({ ...activeTab, [match.metadata.matchId]: 'performance' })}
-                                  className={`relative flex-1 px-4 py-2.5 text-sm font-bold font-mono tracking-wider uppercase transition-all group ${
+                                  className={`relative flex-shrink-0 sm:flex-1 px-4 py-2.5 text-xs sm:text-sm font-bold font-mono tracking-wider uppercase transition-all group ${
                                     activeTab[match.metadata.matchId] === 'performance'
                                       ? 'bg-gradient-to-r from-[#5383E8] to-cyan-400 text-white shadow-[0_0_15px_rgba(0,255,255,0.4)]'
                                       : 'text-gray-500 hover:text-cyan-400 hover:bg-cyan-400/5'
@@ -2995,7 +2996,7 @@ export default function MatchHistoryPage() {
                                     setActiveTab({ ...activeTab, [match.metadata.matchId]: 'item-build' });
                                     fetchTimeline(match.metadata.matchId, getCurrentAccount()?.region);
                                   }}
-                                  className={`relative flex-1 px-4 py-2.5 text-sm font-bold font-mono tracking-wider uppercase transition-all group ${
+                                  className={`relative flex-shrink-0 sm:flex-1 px-4 py-2.5 text-xs sm:text-sm font-bold font-mono tracking-wider uppercase transition-all group ${
                                     activeTab[match.metadata.matchId] === 'item-build'
                                       ? 'bg-gradient-to-r from-[#5383E8] to-cyan-400 text-white shadow-[0_0_15px_rgba(0,255,255,0.4)]'
                                       : 'text-gray-500 hover:text-cyan-400 hover:bg-cyan-400/5'
@@ -3014,7 +3015,7 @@ export default function MatchHistoryPage() {
                                     setActiveTab({ ...activeTab, [match.metadata.matchId]: 'timeline' });
                                     fetchTimeline(match.metadata.matchId, getCurrentAccount()?.region);
                                   }}
-                                  className={`relative flex-1 px-4 py-2.5 text-sm font-bold font-mono tracking-wider uppercase transition-all group ${
+                                  className={`relative flex-shrink-0 sm:flex-1 px-4 py-2.5 text-xs sm:text-sm font-bold font-mono tracking-wider uppercase transition-all group ${
                                     activeTab[match.metadata.matchId] === 'timeline'
                                       ? 'bg-gradient-to-r from-[#5383E8] to-cyan-400 text-white shadow-[0_0_15px_rgba(0,255,255,0.4)]'
                                       : 'text-gray-500 hover:text-cyan-400 hover:bg-cyan-400/5'
@@ -3033,7 +3034,7 @@ export default function MatchHistoryPage() {
                                     setActiveTab({ ...activeTab, [match.metadata.matchId]: 'metrics' });
                                     fetchTimeline(match.metadata.matchId, getCurrentAccount()?.region);
                                   }}
-                                  className={`relative flex-1 px-4 py-2.5 text-sm font-bold font-mono tracking-wider uppercase transition-all group ${
+                                  className={`relative flex-shrink-0 sm:flex-1 px-4 py-2.5 text-xs sm:text-sm font-bold font-mono tracking-wider uppercase transition-all group ${
                                     activeTab[match.metadata.matchId] === 'metrics'
                                       ? 'bg-gradient-to-r from-[#5383E8] to-cyan-400 text-white shadow-[0_0_15px_rgba(0,255,255,0.4)]'
                                       : 'text-gray-500 hover:text-cyan-400 hover:bg-cyan-400/5'
@@ -3052,7 +3053,7 @@ export default function MatchHistoryPage() {
                                     setActiveTab({ ...activeTab, [match.metadata.matchId]: 'ai-coaching' });
                                     fetchAICoaching(match.metadata.matchId, match);
                                   }}
-                                  className={`relative flex-1 px-4 py-2.5 text-sm font-bold font-mono tracking-wider uppercase transition-all group ${
+                                  className={`relative flex-shrink-0 sm:flex-1 px-4 py-2.5 text-xs sm:text-sm font-bold font-mono tracking-wider uppercase transition-all group ${
                                     activeTab[match.metadata.matchId] === 'ai-coaching'
                                       ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-[0_0_15px_rgba(168,85,247,0.4)]'
                                       : 'text-gray-500 hover:text-purple-400 hover:bg-purple-400/5'
@@ -3069,13 +3070,14 @@ export default function MatchHistoryPage() {
                                     <span>AI Coach</span>
                                   </span>
                                 </button>
+                                </div>
                               </div>
 
                               {/* Post Game Tab Content */}
                               {(!activeTab[match.metadata.matchId] || activeTab[match.metadata.matchId] === 'post-game') && (
                               <div className="space-y-4">
                                 {/* Blue Team (Victory/Defeat) */}
-                                <div className="relative bg-gradient-to-br from-[#0a1628]/80 to-[#1a2f4a]/80 rounded-none p-5 border border-cyan-400/20 overflow-hidden shadow-[0_0_20px_rgba(83,131,232,0.15)]">
+                                <div className="relative bg-gradient-to-br from-[#0a1628]/80 to-[#1a2f4a]/80 rounded-none p-3 sm:p-5 border border-cyan-400/20 overflow-x-auto sm:overflow-hidden shadow-[0_0_20px_rgba(83,131,232,0.15)]">
                                   {/* Tech lines */}
                                   <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#5383E8]/50 to-transparent"></div>
                                   <div className="absolute left-0 top-0 bottom-0 w-px bg-gradient-to-b from-transparent via-[#5383E8]/50 to-transparent"></div>
@@ -3084,9 +3086,9 @@ export default function MatchHistoryPage() {
                                   <div className="absolute top-0 left-0 w-6 h-6 border-t-2 border-l-2 border-[#5383E8]/40"></div>
                                   <div className="absolute top-0 right-0 w-6 h-6 border-t-2 border-r-2 border-[#5383E8]/40"></div>
                                   
-                                  <div className="flex items-center justify-between mb-4 relative z-10">
-                                    <div className="flex items-center space-x-3">
-                                      <span className={`font-bold text-base font-mono tracking-wider uppercase drop-shadow-[0_0_10px_rgba(83,131,232,0.6)] ${
+                                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 relative z-10 gap-2 sm:gap-0 min-w-max sm:min-w-0">
+                                    <div className="flex items-center space-x-3 flex-shrink-0">
+                                      <span className={`font-bold text-sm sm:text-base font-mono tracking-wider uppercase drop-shadow-[0_0_10px_rgba(83,131,232,0.6)] ${
                                         playerTeam?.teamId === 100 && playerData.win ? 'text-[#5383E8]' :
                                         playerTeam?.teamId === 100 && !playerData.win ? 'text-[#E84057]' :
                                         playerTeam?.teamId === 200 && playerData.win ? 'text-[#E84057]' : 'text-[#5383E8]'
@@ -3098,16 +3100,16 @@ export default function MatchHistoryPage() {
                                       </span>
                                       <span className="text-gray-500 text-xs font-mono uppercase tracking-wider">(Blue Team)</span>
                                     </div>
-                                    <div className="flex items-center text-xs text-gray-500 font-bold font-mono uppercase tracking-wider">
-                                      <div className="flex-1 min-w-0"></div> {/* Spacer for champion/name section */}
-                                      <div className="flex items-center space-x-4">
-                                        <span className="w-12 text-center flex-shrink-0">Carry</span>
-                                        <span className="w-20 text-center flex-shrink-0">KDA</span>
-                                        <span className="w-20 text-center flex-shrink-0">Damage</span>
-                                        <span className="w-16 text-center flex-shrink-0">Gold</span>
-                                        <span className="w-12 text-center flex-shrink-0">CS</span>
-                                        <span className="w-16 text-center flex-shrink-0">Wards</span>
-                                        <span className="ml-4 flex-shrink-0" style={{ width: '192px' }}>Items</span>
+                                    <div className="flex items-center text-xs text-gray-500 font-bold font-mono uppercase tracking-wider overflow-x-auto sm:overflow-visible">
+                                      <div className="flex-1 min-w-0 hidden sm:block"></div> {/* Spacer for champion/name section */}
+                                      <div className="flex items-center space-x-3 sm:space-x-4 flex-shrink-0">
+                                        <span className="w-10 sm:w-12 text-center flex-shrink-0">Carry</span>
+                                        <span className="w-16 sm:w-20 text-center flex-shrink-0">KDA</span>
+                                        <span className="w-16 sm:w-20 text-center flex-shrink-0">Damage</span>
+                                        <span className="w-12 sm:w-16 text-center flex-shrink-0">Gold</span>
+                                        <span className="w-10 sm:w-12 text-center flex-shrink-0">CS</span>
+                                        <span className="w-12 sm:w-16 text-center flex-shrink-0">Wards</span>
+                                        <span className="ml-2 sm:ml-4 flex-shrink-0" style={{ width: '160px', minWidth: '160px' }}>Items</span>
                                       </div>
                                     </div>
                                   </div>
@@ -3128,7 +3130,7 @@ export default function MatchHistoryPage() {
                                         return (
                                           <div
                                             key={idx}
-                                            className={`relative flex items-center justify-between p-3 rounded-none transition-all overflow-hidden group/player ${
+                                            className={`relative flex items-center p-2 sm:p-3 rounded-none transition-all overflow-x-auto sm:overflow-hidden group/player min-w-max sm:min-w-0 ${
                                               isPlayer 
                                                 ? 'bg-[#5383E8]/15 border-l-2 border-[#5383E8] shadow-[0_0_15px_rgba(83,131,232,0.3)]' 
                                                 : 'hover:bg-cyan-400/5 border-l-2 border-transparent hover:border-cyan-400/30'
@@ -3138,7 +3140,7 @@ export default function MatchHistoryPage() {
                                             <div className="absolute inset-0 bg-gradient-to-r from-transparent via-cyan-400/5 to-transparent opacity-0 group-hover/player:opacity-100 transition-opacity"></div>
                                             
                                             {/* Champion Info */}
-                                            <div className="flex items-center space-x-3 flex-1 min-w-0 relative z-10">
+                                            <div className="flex items-center space-x-2 sm:space-x-3 flex-shrink-0 sm:flex-1 sm:min-w-0 relative z-10">
                                               <div className="relative flex-shrink-0 group/champ">
                                                 {/* Champion glow */}
                                                 {isPlayer && (
@@ -3268,7 +3270,7 @@ export default function MatchHistoryPage() {
                                               </div>
 
                                               {/* KDA */}
-                                              <div className="w-20 flex-shrink-0">
+                                              <div className="w-16 sm:w-20 flex-shrink-0">
                                                 <div className="text-center">
                                                   <div className="text-white text-[10px] font-medium font-mono whitespace-nowrap leading-tight">
                                                     {participant.kills}<span className="text-gray-600 mx-0.5">/</span><span className="text-[#E84057] font-bold">{participant.deaths}</span><span className="text-gray-600 mx-0.5">/</span>{participant.assists}
@@ -3283,8 +3285,8 @@ export default function MatchHistoryPage() {
                                               </div>
 
                                               {/* Damage */}
-                                              <div className="w-20 flex-shrink-0">
-                                                <div className="text-white text-center font-mono font-bold">{(participant.totalDamageDealtToChampions / 1000).toFixed(1)}k</div>
+                                              <div className="w-16 sm:w-20 flex-shrink-0">
+                                                <div className="text-white text-center font-mono font-bold text-[10px] sm:text-xs">{(participant.totalDamageDealtToChampions / 1000).toFixed(1)}k</div>
                                                 <div className="w-full bg-[#0a1628] h-1.5 rounded-none mt-1 border border-cyan-400/20 overflow-hidden">
                                                   <div 
                                                     className="bg-gradient-to-r from-[#5383E8] to-cyan-400 h-full shadow-[0_0_8px_rgba(0,255,255,0.6)]"
@@ -3296,21 +3298,21 @@ export default function MatchHistoryPage() {
                                               </div>
 
                                               {/* Gold */}
-                                              <div className="w-16 text-center flex-shrink-0">
-                                                <div className="text-[#ECBC2C] font-bold font-mono drop-shadow-[0_0_5px_rgba(236,188,44,0.5)]">{(participant.goldEarned / 1000).toFixed(1)}k</div>
+                                              <div className="w-12 sm:w-16 text-center flex-shrink-0">
+                                                <div className="text-[#ECBC2C] font-bold font-mono text-[10px] sm:text-xs drop-shadow-[0_0_5px_rgba(236,188,44,0.5)]">{(participant.goldEarned / 1000).toFixed(1)}k</div>
                                               </div>
 
                                               {/* CS */}
-                                              <div className="w-12 text-center flex-shrink-0">
-                                                <div className="text-white font-mono font-bold">{getCS(participant)}</div>
-                                                <div className="text-[10px] text-gray-500 font-mono">
+                                              <div className="w-10 sm:w-12 text-center flex-shrink-0">
+                                                <div className="text-white font-mono font-bold text-[10px] sm:text-xs">{getCS(participant)}</div>
+                                                <div className="text-[9px] sm:text-[10px] text-gray-500 font-mono">
                                                   ({getCSPerMin(participant, match.info.gameDuration)})
                                                 </div>
                                               </div>
 
                                               {/* Wards */}
-                                              <div className="w-16 text-center flex-shrink-0">
-                                                <div className="text-white font-mono font-bold">{participant.visionScore}</div>
+                                              <div className="w-12 sm:w-16 text-center flex-shrink-0">
+                                                <div className="text-white font-mono font-bold text-[10px] sm:text-xs">{participant.visionScore}</div>
                                               </div>
 
                                               {/* Items */}
@@ -3351,7 +3353,7 @@ export default function MatchHistoryPage() {
                                 </div>
 
                                 {/* Red Team */}
-                                <div className="relative bg-gradient-to-br from-[#1a0a0f]/80 to-[#2d1419]/80 rounded-none p-5 border border-red-400/20 overflow-hidden shadow-[0_0_20px_rgba(232,64,87,0.15)]">
+                                <div className="relative bg-gradient-to-br from-[#1a0a0f]/80 to-[#2d1419]/80 rounded-none p-3 sm:p-5 border border-red-400/20 overflow-x-auto sm:overflow-hidden shadow-[0_0_20px_rgba(232,64,87,0.15)]">
                                   {/* Tech lines */}
                                   <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#E84057]/50 to-transparent"></div>
                                   <div className="absolute left-0 top-0 bottom-0 w-px bg-gradient-to-b from-transparent via-[#E84057]/50 to-transparent"></div>
@@ -3360,9 +3362,9 @@ export default function MatchHistoryPage() {
                                   <div className="absolute top-0 left-0 w-6 h-6 border-t-2 border-l-2 border-[#E84057]/40"></div>
                                   <div className="absolute top-0 right-0 w-6 h-6 border-t-2 border-r-2 border-[#E84057]/40"></div>
                                   
-                                  <div className="flex items-center justify-between mb-4 relative z-10">
-                                    <div className="flex items-center space-x-3">
-                                      <span className={`font-bold text-base font-mono tracking-wider uppercase drop-shadow-[0_0_10px_rgba(232,64,87,0.6)] ${
+                                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 relative z-10 gap-2 sm:gap-0 min-w-max sm:min-w-0">
+                                    <div className="flex items-center space-x-3 flex-shrink-0">
+                                      <span className={`font-bold text-sm sm:text-base font-mono tracking-wider uppercase drop-shadow-[0_0_10px_rgba(232,64,87,0.6)] ${
                                         playerTeam?.teamId === 200 && playerData.win ? 'text-[#5383E8]' :
                                         playerTeam?.teamId === 200 && !playerData.win ? 'text-[#E84057]' :
                                         playerTeam?.teamId === 100 && playerData.win ? 'text-[#E84057]' : 'text-[#5383E8]'
@@ -3374,16 +3376,16 @@ export default function MatchHistoryPage() {
                                       </span>
                                       <span className="text-gray-500 text-xs font-mono uppercase tracking-wider">(Red Team)</span>
                                     </div>
-                                    <div className="flex items-center text-xs font-mono tracking-wider uppercase">
-                                      <div className="flex-1 min-w-0"></div> {/* Spacer for champion/name section */}
-                                      <div className="flex items-center space-x-4">
-                                        <span className="w-12 text-center flex-shrink-0 text-red-400/60 drop-shadow-[0_0_5px_rgba(232,64,87,0.3)]">Carry</span>
-                                        <span className="w-20 text-center flex-shrink-0 text-red-400/60 drop-shadow-[0_0_5px_rgba(232,64,87,0.3)]">KDA</span>
-                                        <span className="w-20 text-center flex-shrink-0 text-red-400/60 drop-shadow-[0_0_5px_rgba(232,64,87,0.3)]">Damage</span>
-                                        <span className="w-16 text-center flex-shrink-0 text-red-400/60 drop-shadow-[0_0_5px_rgba(232,64,87,0.3)]">Gold</span>
-                                        <span className="w-12 text-center flex-shrink-0 text-red-400/60 drop-shadow-[0_0_5px_rgba(232,64,87,0.3)]">CS</span>
-                                        <span className="w-16 text-center flex-shrink-0 text-red-400/60 drop-shadow-[0_0_5px_rgba(232,64,87,0.3)]">Wards</span>
-                                        <span className="ml-4 flex-shrink-0 text-red-400/60 drop-shadow-[0_0_5px_rgba(232,64,87,0.3)]" style={{ width: '192px' }}>Items</span>
+                                    <div className="flex items-center text-xs font-mono tracking-wider uppercase overflow-x-auto sm:overflow-visible">
+                                      <div className="flex-1 min-w-0 hidden sm:block"></div> {/* Spacer for champion/name section */}
+                                      <div className="flex items-center space-x-3 sm:space-x-4 flex-shrink-0">
+                                        <span className="w-10 sm:w-12 text-center flex-shrink-0 text-red-400/60 drop-shadow-[0_0_5px_rgba(232,64,87,0.3)]">Carry</span>
+                                        <span className="w-16 sm:w-20 text-center flex-shrink-0 text-red-400/60 drop-shadow-[0_0_5px_rgba(232,64,87,0.3)]">KDA</span>
+                                        <span className="w-16 sm:w-20 text-center flex-shrink-0 text-red-400/60 drop-shadow-[0_0_5px_rgba(232,64,87,0.3)]">Damage</span>
+                                        <span className="w-12 sm:w-16 text-center flex-shrink-0 text-red-400/60 drop-shadow-[0_0_5px_rgba(232,64,87,0.3)]">Gold</span>
+                                        <span className="w-10 sm:w-12 text-center flex-shrink-0 text-red-400/60 drop-shadow-[0_0_5px_rgba(232,64,87,0.3)]">CS</span>
+                                        <span className="w-12 sm:w-16 text-center flex-shrink-0 text-red-400/60 drop-shadow-[0_0_5px_rgba(232,64,87,0.3)]">Wards</span>
+                                        <span className="ml-2 sm:ml-4 flex-shrink-0 text-red-400/60 drop-shadow-[0_0_5px_rgba(232,64,87,0.3)]" style={{ width: '160px', minWidth: '160px' }}>Items</span>
                                       </div>
                                     </div>
                                   </div>
@@ -3404,7 +3406,7 @@ export default function MatchHistoryPage() {
                                         return (
                                           <div
                                             key={idx}
-                                            className={`relative flex items-center justify-between p-3 rounded-none transition-all overflow-hidden group/player ${
+                                            className={`relative flex items-center p-2 sm:p-3 rounded-none transition-all overflow-x-auto sm:overflow-hidden group/player min-w-max sm:min-w-0 ${
                                               isPlayer 
                                                 ? 'bg-[#E84057]/15 border-l-2 border-[#E84057] shadow-[0_0_15px_rgba(232,64,87,0.3)]' 
                                                 : 'hover:bg-red-400/5 border-l-2 border-transparent hover:border-red-400/30'
@@ -3414,7 +3416,7 @@ export default function MatchHistoryPage() {
                                             <div className="absolute inset-0 bg-gradient-to-r from-transparent via-red-400/5 to-transparent opacity-0 group-hover/player:opacity-100 transition-opacity"></div>
                                             
                                             {/* Champion Info */}
-                                            <div className="flex items-center space-x-3 flex-1 min-w-0 relative z-10">
+                                            <div className="flex items-center space-x-2 sm:space-x-3 flex-shrink-0 sm:flex-1 sm:min-w-0 relative z-10">
                                               <div className="relative flex-shrink-0 group/champ">
                                                 {/* Champion glow */}
                                                 {isPlayer && (
@@ -3529,10 +3531,10 @@ export default function MatchHistoryPage() {
                                             </div>
 
                                             {/* Stats Row */}
-                                            <div className="flex items-center space-x-4 text-xs relative z-10">
+                                            <div className="flex items-center space-x-3 sm:space-x-4 text-xs relative z-10 flex-shrink-0">
                                               {/* Carry Score */}
-                                              <div className="w-12 text-center flex-shrink-0">
-                                                <div className={`font-bold font-mono drop-shadow-[0_0_5px_rgba(236,188,44,0.3)] ${
+                                              <div className="w-10 sm:w-12 text-center flex-shrink-0">
+                                                <div className={`font-bold font-mono text-[10px] sm:text-xs drop-shadow-[0_0_5px_rgba(236,188,44,0.3)] ${
                                                   participantKDA >= 5 ? 'text-[#ECBC2C]' :
                                                   participantKDA >= 3 ? 'text-cyan-400' : 'text-gray-400'
                                                 }`}>
@@ -3544,7 +3546,7 @@ export default function MatchHistoryPage() {
                                               </div>
 
                                               {/* KDA */}
-                                              <div className="w-20 flex-shrink-0">
+                                              <div className="w-16 sm:w-20 flex-shrink-0">
                                                 <div className="text-center">
                                                   <div className="text-white text-[10px] font-medium font-mono whitespace-nowrap leading-tight">
                                                     {participant.kills}<span className="text-gray-600 mx-0.5">/</span><span className="text-[#E84057] font-bold">{participant.deaths}</span><span className="text-gray-600 mx-0.5">/</span>{participant.assists}
@@ -3559,8 +3561,8 @@ export default function MatchHistoryPage() {
                                               </div>
 
                                               {/* Damage */}
-                                              <div className="w-20 flex-shrink-0">
-                                                <div className="text-white text-center font-mono font-bold">{(participant.totalDamageDealtToChampions / 1000).toFixed(1)}k</div>
+                                              <div className="w-16 sm:w-20 flex-shrink-0">
+                                                <div className="text-white text-center font-mono font-bold text-[10px] sm:text-xs">{(participant.totalDamageDealtToChampions / 1000).toFixed(1)}k</div>
                                                 <div className="w-full bg-[#0a1628] h-1.5 rounded-none mt-1 border border-red-400/20 overflow-hidden">
                                                   <div 
                                                     className="bg-gradient-to-r from-[#E84057] to-red-400 h-full shadow-[0_0_8px_rgba(232,64,87,0.6)]"
@@ -3572,21 +3574,21 @@ export default function MatchHistoryPage() {
                                               </div>
 
                                               {/* Gold */}
-                                              <div className="w-16 text-center flex-shrink-0">
-                                                <div className="text-[#ECBC2C] font-bold font-mono drop-shadow-[0_0_5px_rgba(236,188,44,0.5)]">{(participant.goldEarned / 1000).toFixed(1)}k</div>
+                                              <div className="w-12 sm:w-16 text-center flex-shrink-0">
+                                                <div className="text-[#ECBC2C] font-bold font-mono text-[10px] sm:text-xs drop-shadow-[0_0_5px_rgba(236,188,44,0.5)]">{(participant.goldEarned / 1000).toFixed(1)}k</div>
                                               </div>
 
                                               {/* CS */}
-                                              <div className="w-12 text-center flex-shrink-0">
-                                                <div className="text-white font-mono font-bold">{getCS(participant)}</div>
-                                                <div className="text-[10px] text-gray-500 font-mono">
+                                              <div className="w-10 sm:w-12 text-center flex-shrink-0">
+                                                <div className="text-white font-mono font-bold text-[10px] sm:text-xs">{getCS(participant)}</div>
+                                                <div className="text-[9px] sm:text-[10px] text-gray-500 font-mono">
                                                   ({getCSPerMin(participant, match.info.gameDuration)})
                                                 </div>
                                               </div>
 
                                               {/* Wards */}
-                                              <div className="w-16 text-center flex-shrink-0">
-                                                <div className="text-white font-mono font-bold">{participant.visionScore}</div>
+                                              <div className="w-12 sm:w-16 text-center flex-shrink-0">
+                                                <div className="text-white font-mono font-bold text-[10px] sm:text-xs">{participant.visionScore}</div>
                                               </div>
 
                                               {/* Items */}
@@ -3630,16 +3632,16 @@ export default function MatchHistoryPage() {
 
                               {/* Performance Tab Content */}
                               {activeTab[match.metadata.matchId] === 'performance' && (
-                                <div className="relative">
+                                <div className="relative overflow-x-auto sm:overflow-visible">
                                   {/* Performance Header */}
-                                  <div className="flex items-center justify-between mb-4 px-4 text-xs font-mono tracking-wider uppercase text-gray-500">
-                                    <span className="w-48">Player</span>
-                                    <span className="w-20 text-center">Kills</span>
-                                    <span className="w-20 text-center">KDA</span>
-                                    <span className="flex-1 text-center">Damage</span>
-                                    <span className="w-24 text-center">Gold</span>
-                                    <span className="w-20 text-center">Wards</span>
-                                    <span className="w-20 text-center">CS</span>
+                                  <div className="flex items-center justify-between mb-4 px-2 sm:px-4 text-xs font-mono tracking-wider uppercase text-gray-500 min-w-max sm:min-w-0">
+                                    <span className="w-32 sm:w-48 flex-shrink-0">Player</span>
+                                    <span className="w-16 sm:w-20 text-center flex-shrink-0">Kills</span>
+                                    <span className="w-16 sm:w-20 text-center flex-shrink-0">KDA</span>
+                                    <span className="w-20 sm:flex-1 text-center flex-shrink-0 sm:flex-shrink">Damage</span>
+                                    <span className="w-20 sm:w-24 text-center flex-shrink-0">Gold</span>
+                                    <span className="w-16 sm:w-20 text-center flex-shrink-0">Wards</span>
+                                    <span className="w-16 sm:w-20 text-center flex-shrink-0">CS</span>
                                   </div>
 
                                   {/* All Players Performance */}
@@ -3672,7 +3674,7 @@ export default function MatchHistoryPage() {
                                         return (
                                           <div
                                             key={idx}
-                                            className={`relative flex items-center p-3 rounded-none transition-all overflow-hidden group/player ${
+                                            className={`relative flex items-center p-2 sm:p-3 rounded-none transition-all overflow-x-auto sm:overflow-hidden group/player min-w-max sm:min-w-0 ${
                                               isPlayer 
                                                 ? 'bg-cyan-400/10 border-l-2 border-cyan-400 shadow-[0_0_15px_rgba(0,255,255,0.2)]' 
                                                 : 'hover:bg-white/5 border-l-2 border-transparent'
@@ -3682,7 +3684,7 @@ export default function MatchHistoryPage() {
                                             <div className="absolute inset-0 bg-gradient-to-r from-transparent via-cyan-400/5 to-transparent opacity-0 group-hover/player:opacity-100 transition-opacity"></div>
                                             
                                             {/* Player Info */}
-                                            <div className="flex items-center space-x-3 w-48 flex-shrink-0 relative z-10">
+                                            <div className="flex items-center space-x-2 sm:space-x-3 w-32 sm:w-48 flex-shrink-0 relative z-10">
                                               <div className="relative flex-shrink-0">
                                                 <div className={`relative w-10 h-10 overflow-hidden border ${
                                                   isPlayer ? 'border-cyan-400/50' : participant.teamId === 100 ? 'border-[#5383E8]/30' : 'border-[#E84057]/30'
@@ -3727,11 +3729,11 @@ export default function MatchHistoryPage() {
                                             </div>
 
                                             {/* Stats */}
-                                            <div className="flex items-center flex-1 space-x-4 text-xs relative z-10">
-                                              <div className="w-20 text-center font-mono font-bold text-white">{participant.kills}</div>
+                                            <div className="flex items-center space-x-3 sm:space-x-4 text-xs relative z-10 flex-shrink-0">
+                                              <div className="w-16 sm:w-20 text-center font-mono font-bold text-white text-[10px] sm:text-xs flex-shrink-0">{participant.kills}</div>
                                               
-                                              <div className="w-20 text-center">
-                                                <div className={`text-xs font-bold font-mono ${
+                                              <div className="w-16 sm:w-20 text-center flex-shrink-0">
+                                                <div className={`text-[10px] sm:text-xs font-bold font-mono ${
                                                   participantKDA >= 5 ? 'text-[#ECBC2C] drop-shadow-[0_0_5px_rgba(236,188,44,0.5)]' :
                                                   participantKDA >= 3 ? 'text-cyan-400 drop-shadow-[0_0_5px_rgba(0,255,255,0.5)]' : 'text-gray-400'
                                                 }`}>
@@ -3739,17 +3741,17 @@ export default function MatchHistoryPage() {
                                                 </div>
                                               </div>
                                               
-                                              <div className="flex-1 text-center font-mono text-white font-bold">
+                                              <div className="w-20 sm:flex-1 text-center font-mono text-white font-bold text-[10px] sm:text-xs flex-shrink-0 sm:flex-shrink">
                                                 {(participant.totalDamageDealtToChampions / 1000).toFixed(1)}k
                                               </div>
                                               
-                                              <div className="w-24 text-center font-mono text-[#ECBC2C] font-bold drop-shadow-[0_0_5px_rgba(236,188,44,0.3)]">
+                                              <div className="w-20 sm:w-24 text-center font-mono text-[#ECBC2C] font-bold text-[10px] sm:text-xs drop-shadow-[0_0_5px_rgba(236,188,44,0.3)] flex-shrink-0">
                                                 {(participant.goldEarned / 1000).toFixed(1)}k
                                               </div>
                                               
-                                              <div className="w-20 text-center font-mono text-white font-bold">{participant.visionScore}</div>
+                                              <div className="w-16 sm:w-20 text-center font-mono text-white font-bold text-[10px] sm:text-xs flex-shrink-0">{participant.visionScore}</div>
                                               
-                                              <div className="w-20 text-center font-mono text-white font-bold">{getCS(participant)}</div>
+                                              <div className="w-16 sm:w-20 text-center font-mono text-white font-bold text-[10px] sm:text-xs flex-shrink-0">{getCS(participant)}</div>
                                             </div>
 
                                             {/* Performance Bar */}
@@ -3772,13 +3774,13 @@ export default function MatchHistoryPage() {
 
                               {/* Timeline Tab Content */}
                               {activeTab[match.metadata.matchId] === 'timeline' && (
-                                <div className="relative">
+                                <div className="relative overflow-x-auto sm:overflow-visible">
                                   {loadingTimeline[match.metadata.matchId] ? (
                                     <div className="flex items-center justify-center py-20">
                                       <Loader2 className="w-8 h-8 animate-spin text-cyan-400" />
                                     </div>
                                   ) : timelineData[match.metadata.matchId]?.events ? (
-                                    <div className="space-y-2">
+                                    <div className="space-y-2 min-w-max sm:min-w-0">
                                       {timelineData[match.metadata.matchId].events
                                         .filter((event: any) => {
                                           // Filter out events we don't want to display
@@ -3949,9 +3951,9 @@ export default function MatchHistoryPage() {
 
                               {/* Item Build Tab Content */}
                               {activeTab[match.metadata.matchId] === 'item-build' && (
-                                <div className="space-y-6">
+                                <div className="space-y-4 sm:space-y-6 overflow-x-auto sm:overflow-visible">
                                   {/* Runes Section */}
-                                  <div className="relative bg-gradient-to-br from-[#0a1628]/80 to-[#1a2f4a]/80 rounded-none p-6 border border-cyan-400/20 overflow-hidden shadow-[0_0_20px_rgba(83,131,232,0.15)]">
+                                  <div className="relative bg-gradient-to-br from-[#0a1628]/80 to-[#1a2f4a]/80 rounded-none p-4 sm:p-6 border border-cyan-400/20 overflow-x-auto sm:overflow-hidden shadow-[0_0_20px_rgba(83,131,232,0.15)] min-w-max sm:min-w-0">
                                     <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-cyan-400/50 to-transparent"></div>
                                     <div className="absolute left-0 top-0 bottom-0 w-px bg-gradient-to-b from-transparent via-cyan-400/50 to-transparent"></div>
                                     <div className="absolute top-0 left-0 w-6 h-6 border-t-2 border-l-2 border-cyan-400/40"></div>
@@ -3964,7 +3966,7 @@ export default function MatchHistoryPage() {
                                     {!playerData.perks?.styles ? (
                                       <div className="text-gray-500 relative z-10">No rune data available</div>
                                     ) : (
-                                    <div className="flex space-x-8 relative z-10">
+                                    <div className="flex space-x-4 sm:space-x-8 relative z-10 overflow-x-auto sm:overflow-visible min-w-max sm:min-w-0">
                                       {/* Primary Runes */}
                                       {(() => {
                                         const primaryStyle = playerData.perks?.styles?.[0];
@@ -4507,7 +4509,7 @@ export default function MatchHistoryPage() {
 
                               {/* Metrics Tab Content */}
                               {activeTab[match.metadata.matchId] === 'metrics' && (
-                                <div className="space-y-6">
+                                <div className="space-y-4 sm:space-y-6 overflow-x-auto sm:overflow-visible">
                                   {timelineData[match.metadata.matchId] ? (
                                     (() => {
                                       const timeline = timelineData[match.metadata.matchId];
@@ -4816,7 +4818,7 @@ export default function MatchHistoryPage() {
 
                               {/* AI Coaching Tab Content */}
                               {activeTab[match.metadata.matchId] === 'ai-coaching' && (
-                                <div className="space-y-6">
+                                <div className="space-y-4 sm:space-y-6 overflow-x-auto sm:overflow-visible">
                                   {loadingCoaching[match.metadata.matchId] ? (
                                     <div className="flex flex-col items-center justify-center py-20 space-y-4">
                                       <div className="relative">
