@@ -8,6 +8,7 @@ import Image from 'next/image';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { AnimatedLogo } from '@/components/ui/AnimatedLogo';
+import LoadingScreen from '@/components/ui/LoadingScreen';
 import NavigationDrawer from '@/components/ui/NavigationDrawer';
 import { ChevronDown, ChevronUp, Loader2, Trophy, Target, Shield, Skull, Users, UserX, Clock, AlertCircle, TrendingUp, TrendingDown, Swords, Search, Home, X, RefreshCw, Sparkles, Download, Share2, Lightbulb } from 'lucide-react';
 import { lolService, type LolAccount } from '@/lib/lol-service';
@@ -1456,44 +1457,7 @@ export default function MatchHistoryPage() {
   };
 
   if (status === 'loading' || loading) {
-    return (
-      <div className="min-h-screen bg-[#050a15] relative overflow-hidden">
-        {/* Animated grid background */}
-        <div className="absolute inset-0 bg-[linear-gradient(rgba(0,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(0,255,255,0.03)_1px,transparent_1px)] bg-[size:50px_50px] [mask-image:radial-gradient(ellipse_80%_50%_at_50%_50%,black,transparent)]"></div>
-        
-        {/* Glowing orbs */}
-        <div className="absolute top-20 left-20 w-96 h-96 bg-[#5383E8]/20 rounded-full blur-[100px] animate-pulse"></div>
-        <div className="absolute bottom-20 right-20 w-96 h-96 bg-cyan-400/20 rounded-full blur-[100px] animate-pulse" style={{ animationDelay: '1s' }}></div>
-        
-        {/* Scan lines */}
-        <div className="absolute inset-0 bg-[linear-gradient(transparent_50%,rgba(0,255,255,0.03)_50%)] bg-[length:100%_4px] pointer-events-none"></div>
-        
-        <div className="relative z-10 flex items-center justify-center min-h-screen">
-          <div className="text-center">
-            <AnimatedLogo size="lg" variant="futuristic" />
-            <p className="text-cyan-400 mt-4 font-mono tracking-wider drop-shadow-[0_0_10px_rgba(0,255,255,0.5)]">LOADING MATCH HISTORY...</p>
-            {loadingProgress.total > 0 && (
-              <div className="mt-4">
-                <div className="w-64 bg-[#0a1628] rounded-none h-2 mx-auto border border-cyan-400/30 overflow-hidden relative">
-                  {/* Progress bar glow */}
-                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-cyan-400/20 to-transparent"></div>
-                  <div
-                    className="bg-gradient-to-r from-[#5383E8] via-cyan-400 to-[#5383E8] h-full transition-all duration-300 relative shadow-[0_0_15px_rgba(0,255,255,0.8)]"
-                    style={{ width: `${(loadingProgress.current / loadingProgress.total) * 100}%` }}
-                  >
-                    {/* Animated shimmer */}
-                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-[shimmer_2s_infinite]"></div>
-                  </div>
-                </div>
-                <p className="text-gray-500 text-sm mt-2 font-mono">
-                  <span className="text-cyan-400">{loadingProgress.current}</span> / {loadingProgress.total}
-                </p>
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
-    );
+    return <LoadingScreen variant="futuristic" />;
   }
 
   return (

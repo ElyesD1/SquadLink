@@ -24,6 +24,7 @@ import {
   X
 } from 'lucide-react';
 import { AnimatedLogo } from '@/components/ui/AnimatedLogo';
+import LoadingScreen from '@/components/ui/LoadingScreen';
 import NavigationDrawer from '@/components/ui/NavigationDrawer';
 import { useTheme } from 'next-themes';
 import { usePartySocket } from '@/lib/usePartySocket';
@@ -441,31 +442,7 @@ export default function PartiesPage() {
   };
 
   if (!mounted || status === 'loading') {
-    return (
-      <NavigationDrawer>
-        <div className="min-h-screen bg-[#050a15] relative overflow-hidden flex items-center justify-center">
-          {/* Futuristic Background Layers */}
-          
-          {/* Animated grid pattern */}
-          <div className="fixed inset-0 bg-[linear-gradient(rgba(0,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(0,255,255,0.03)_1px,transparent_1px)] bg-[size:50px_50px] [mask-image:radial-gradient(ellipse_80%_50%_at_50%_0%,black,transparent)]"></div>
-          
-          {/* Large glowing orbs */}
-          <div className="fixed top-0 left-1/4 w-[600px] h-[600px] bg-[#5383E8]/10 rounded-full blur-[120px] animate-pulse"></div>
-          <div className="fixed bottom-0 right-1/4 w-[600px] h-[600px] bg-cyan-400/10 rounded-full blur-[120px] animate-pulse" style={{ animationDelay: '2s' }}></div>
-          
-          {/* Scan lines effect */}
-          <div className="fixed inset-0 bg-[linear-gradient(transparent_50%,rgba(0,255,255,0.02)_50%)] bg-[length:100%_4px] pointer-events-none"></div>
-          
-          {/* Loading content */}
-          <div className="relative z-10 text-center">
-            <AnimatedLogo size="lg" variant="futuristic" />
-            <div className="text-cyan-400 text-2xl font-mono tracking-widest uppercase mt-4 drop-shadow-[0_0_10px_rgba(0,255,255,0.4)]">
-              LOADING...
-            </div>
-          </div>
-        </div>
-      </NavigationDrawer>
-    );
+    return <LoadingScreen variant="futuristic" />;
   }
 
   return (

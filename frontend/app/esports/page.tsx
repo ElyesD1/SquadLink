@@ -10,6 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { AnimatedLogo } from '@/components/ui/AnimatedLogo';
+import LoadingScreen from '@/components/ui/LoadingScreen';
 import NavigationDrawer from '@/components/ui/NavigationDrawer';
 import { 
   Calendar, 
@@ -228,41 +229,7 @@ export default function EsportsNewsPage() {
   };
 
   if (!mounted || status === 'loading' || isLoading) {
-    return (
-      <NavigationDrawer>
-        <div className="min-h-screen bg-[#050a15] relative overflow-hidden flex items-center justify-center">
-          {/* Tech background */}
-          <div className="fixed inset-0 -z-10">
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(0,255,255,0.03),transparent_50%)]"></div>
-            <div className="absolute inset-0 bg-[linear-gradient(rgba(0,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(0,255,255,0.03)_1px,transparent_1px)] bg-[size:100px_100px]"></div>
-          </div>
-          
-          <div className="text-center space-y-4 relative z-10">
-            <AnimatedLogo size="lg" variant="futuristic" />
-            <div className="text-cyan-400 text-2xl font-mono font-bold tracking-wider uppercase drop-shadow-[0_0_10px_rgba(0,255,255,0.4)]">
-              {status === 'loading' ? 'AUTHENTICATING...' : 'LOADING ESPORTS DATA...'}
-            </div>
-            <div className="flex justify-center gap-2 mt-4">
-              {[...Array(3)].map((_, i) => (
-                <motion.div
-                  key={i}
-                  animate={{
-                    scale: [1, 1.5, 1],
-                    opacity: [0.3, 1, 0.3]
-                  }}
-                  transition={{
-                    duration: 1.5,
-                    repeat: Infinity,
-                    delay: i * 0.2
-                  }}
-                  className="w-2 h-2 bg-cyan-400 rounded-full shadow-[0_0_8px_rgba(0,255,255,0.8)]"
-                />
-              ))}
-            </div>
-          </div>
-        </div>
-      </NavigationDrawer>
-    );
+    return <LoadingScreen variant="futuristic" />;
   }
 
   if (!userProfile) {

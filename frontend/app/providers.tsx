@@ -7,7 +7,8 @@ import { OfflineProvider } from '../lib/useOffline';
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
     <SessionProvider>
-      <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
+      {/* Force app theme to a consistent value regardless of system theme */}
+      <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
         <OfflineProvider>
           {children}
         </OfflineProvider>

@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import { useSession, signOut } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
@@ -9,12 +9,12 @@ import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { FiLogOut, FiEdit, FiX, FiChevronDown, FiLink } from 'react-icons/fi';
-import { Zap, Sun, Moon } from 'lucide-react';
+import { Zap } from 'lucide-react';
 import { AnimatedLogo } from '@/components/ui/AnimatedLogo';
 import NavigationDrawer from '@/components/ui/NavigationDrawer';
 import LolAccountLinking from '@/components/ui/LolAccountLinking';
 import LolProfileDisplay from '@/components/ui/LolProfileDisplay';
-import { useTheme } from 'next-themes';
+import LoadingScreen from '@/components/ui/LoadingScreen';
 import { lolService, type LolAccount } from '@/lib/lol-service';
 import { useOffline } from '@/lib/useOffline';
 import { OfflineBanner, OfflineDataMessage } from '@/components/ui/OfflineComponents';
@@ -38,7 +38,8 @@ const avatars = [
 export default function ProfilePage() {
   const { data: session, status } = useSession();
   const router = useRouter();
-  const { theme, setTheme } = useTheme();
+  // Force a consistent theme across the app regardless of system preferences
+  const currentTheme = 'dark';
   const [mounted, setMounted] = useState(false);
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -47,17 +48,7 @@ export default function ProfilePage() {
   const [showLolLinking, setShowLolLinking] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  // Use the current theme from next-themes
-  const currentTheme = theme || 'dark';
-
-  // Theme helper functions
-  const getTextClass = (theme: string) => {
-    return theme === 'light' ? 'text-gray-900' : 'text-white';
-  };
-
-  const getSecondaryTextClass = (theme: string) => {
-    return theme === 'light' ? 'text-gray-600' : 'text-white/60';
-  };
+  // Theme helpers removed; app uses a consistent theme value (dark)
 
   useEffect(() => {
     setMounted(true);
@@ -89,10 +80,6 @@ export default function ProfilePage() {
       if (response.ok) {
         const profile = await response.json();
         setUserProfile(profile);
-        // Set the theme from user profile if it exists
-        if (profile.themePreference && profile.themePreference !== theme) {
-          setTheme(profile.themePreference);
-        }
       }
     } catch (error) {
       console.error('Error fetching user profile:', error);
@@ -164,10 +151,7 @@ export default function ProfilePage() {
         <div className="fixed inset-0 bg-[linear-gradient(rgba(0,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(0,255,255,0.03)_1px,transparent_1px)] bg-[size:50px_50px]"></div>
         <div className="absolute inset-0 bg-[linear-gradient(transparent_50%,rgba(0,255,255,0.02)_50%)] bg-[length:100%_4px]"></div>
         
-        <div className="relative z-10 text-center">
-          <AnimatedLogo size="lg" variant="futuristic" />
-          <p className="text-cyan-400 mt-4 font-mono tracking-wider drop-shadow-[0_0_10px_rgba(0,255,255,0.5)]">LOADING PROFILE...</p>
-        </div>
+        <LoadingScreen variant="futuristic" />
       </div>
     );
   }
@@ -307,42 +291,7 @@ export default function ProfilePage() {
                   <p className="text-sm text-gray-400 font-mono">{userProfile.email}</p>
                 </div>
 
-                {/* Theme Preference */}
-                <div className="space-y-3 pt-4 border-t border-cyan-400/20">
-                  <span className="text-white font-mono font-bold text-sm tracking-wider uppercase">Theme</span>
-                  
-                  <motion.div
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                  >
-                    <button
-                      onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-                      className="w-full bg-gradient-to-r from-[#0a1628]/80 to-[#1a2f4a]/80 border border-cyan-400/30 shadow-[0_0_15px_rgba(83,131,232,0.2)] hover:shadow-[0_0_25px_rgba(0,255,255,0.4)] hover:border-cyan-400/50 transition-all duration-300 flex items-center justify-start sm:justify-center gap-3 p-4 relative overflow-hidden group"
-                    >
-                      {/* Hover effect */}
-                      <div className="absolute inset-0 bg-gradient-to-r from-cyan-400/0 via-cyan-400/10 to-cyan-400/0 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                      
-                      {/* Corner brackets */}
-                      <div className="absolute top-0 left-0 w-3 h-3 border-t border-l border-cyan-400/50"></div>
-                      <div className="absolute bottom-0 right-0 w-3 h-3 border-b border-r border-cyan-400/50"></div>
-                      
-                      <motion.div
-                        initial={false}
-                        animate={{ rotate: theme === 'dark' ? 0 : 180 }}
-                        transition={{ duration: 0.5 }}
-                        className="relative z-10"
-                      >
-                        {theme === 'dark' ? 
-                          <Sun className="w-5 h-5 text-cyan-400 drop-shadow-[0_0_8px_rgba(0,255,255,0.6)]" /> : 
-                          <Moon className="w-5 h-5 text-cyan-400 drop-shadow-[0_0_8px_rgba(0,255,255,0.6)]" />
-                        }
-                      </motion.div>
-                      <span className="text-white font-mono font-bold text-sm relative z-10">
-                        {theme === 'dark' ? 'LIGHT MODE' : 'DARK MODE'}
-                      </span>
-                    </button>
-                  </motion.div>
-                </div>
+                {/* Theme preference removed - app enforces a consistent design */}
               </div>
             </motion.div>
           </div>
