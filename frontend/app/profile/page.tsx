@@ -245,7 +245,7 @@ export default function ProfilePage() {
             <motion.div
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
-              className="bg-gradient-to-br from-[#0a1628] via-[#0f1f3a] to-[#0a1628] rounded-none p-6 border-2 border-cyan-400/20 shadow-[0_0_30px_rgba(83,131,232,0.2)] relative overflow-hidden"
+              className="bg-gradient-to-br from-[#0a1628] via-[#0f1f3a] to-[#0a1628] rounded-none p-6 border-2 border-cyan-400/20 shadow-[0_0_30px_rgba(83,131,232,0.2)] relative overflow-hidden w-full max-w-full"
             >
               {/* Top tech line */}
               <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-cyan-400/50 to-transparent"></div>
@@ -317,7 +317,7 @@ export default function ProfilePage() {
                   >
                     <button
                       onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-                      className="w-full bg-gradient-to-r from-[#0a1628]/80 to-[#1a2f4a]/80 border border-cyan-400/30 shadow-[0_0_15px_rgba(83,131,232,0.2)] hover:shadow-[0_0_25px_rgba(0,255,255,0.4)] hover:border-cyan-400/50 transition-all duration-300 flex items-center justify-center gap-3 p-4 relative overflow-hidden group"
+                      className="w-full bg-gradient-to-r from-[#0a1628]/80 to-[#1a2f4a]/80 border border-cyan-400/30 shadow-[0_0_15px_rgba(83,131,232,0.2)] hover:shadow-[0_0_25px_rgba(0,255,255,0.4)] hover:border-cyan-400/50 transition-all duration-300 flex items-center justify-start sm:justify-center gap-3 p-4 relative overflow-hidden group"
                     >
                       {/* Hover effect */}
                       <div className="absolute inset-0 bg-gradient-to-r from-cyan-400/0 via-cyan-400/10 to-cyan-400/0 opacity-0 group-hover:opacity-100 transition-opacity"></div>
@@ -353,7 +353,7 @@ export default function ProfilePage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
-              className="bg-gradient-to-br from-[#0a1628] via-[#0f1f3a] to-[#0a1628] rounded-none p-6 border-2 border-cyan-400/20 shadow-[0_0_30px_rgba(83,131,232,0.2)] relative overflow-hidden"
+              className="bg-gradient-to-br from-[#0a1628] via-[#0f1f3a] to-[#0a1628] rounded-none p-6 border-2 border-cyan-400/20 shadow-[0_0_30px_rgba(83,131,232,0.2)] relative overflow-hidden w-full max-w-full"
             >
               {/* Top tech line */}
               <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-cyan-400/50 to-transparent"></div>
@@ -412,6 +412,7 @@ export default function ProfilePage() {
                       </div>
                     )}
                 </div>
+              </div>
             </motion.div>
           </div>
         </div>
