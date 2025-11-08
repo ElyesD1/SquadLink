@@ -1771,7 +1771,7 @@ export default function MatchHistoryPage() {
               <motion.div
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
-                className="bg-gradient-to-br from-[#0a1628] via-[#0f1f3a] to-[#0a1628] rounded-none p-4 sm:p-6 border-2 border-cyan-400/20 shadow-[0_0_30px_rgba(83,131,232,0.2)] relative overflow-hidden"
+                className="bg-gradient-to-br from-[#0a1628] via-[#0f1f3a] to-[#0a1628] rounded-none p-3 sm:p-6 border-2 border-cyan-400/20 shadow-[0_0_30px_rgba(83,131,232,0.2)] relative overflow-hidden"
               >
                 {/* Top tech line */}
                 <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-cyan-400/50 to-transparent"></div>
@@ -1786,7 +1786,7 @@ export default function MatchHistoryPage() {
                 <div className="absolute bottom-0 right-0 w-8 h-8 border-b-2 border-r-2 border-cyan-400/40"></div>
                 
                 {/* Summoner Info */}
-                <div className="flex items-center space-x-4 mb-4 sm:mb-6 relative z-10">
+                <div className="flex flex-col sm:flex-row items-center space-y-2 sm:space-y-0 sm:space-x-4 mb-4 sm:mb-6 relative z-10">
                   <div className="relative group">
                     {/* Icon glow effect */}
                     <div className="absolute inset-0 shadow-[0_0_30px_rgba(0,255,255,0.4)] group-hover:shadow-[0_0_40px_rgba(0,255,255,0.6)] transition-all duration-300"></div>
@@ -1824,7 +1824,7 @@ export default function MatchHistoryPage() {
                     <button 
                       onClick={refreshMatches}
                       disabled={refreshing}
-                      className="relative group/btn bg-gradient-to-r from-[#5383E8] to-cyan-400 hover:from-cyan-400 hover:to-[#5383E8] text-white text-sm px-4 py-2 font-bold font-mono transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2 border border-cyan-400/50 shadow-[0_0_15px_rgba(0,255,255,0.3)] hover:shadow-[0_0_25px_rgba(0,255,255,0.5)]"
+                      className="relative group/btn bg-gradient-to-r from-[#5383E8] to-cyan-400 hover:from-cyan-400 hover:to-[#5383E8] text-white text-sm px-4 py-2 font-bold font-mono transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2 border border-cyan-400/50 shadow-[0_0_15px_rgba(0,255,255,0.3)] hover:shadow-[0_0_25px_rgba(0,255,255,0.5)] w-full sm:w-auto"
                       title="Full refresh: Clears cache and reloads all data from Riot API"
                     >
                       {/* Button corner accents */}
@@ -1847,7 +1847,7 @@ export default function MatchHistoryPage() {
                 </div>
 
                 {/* Ranked Solo Stats */}
-                <div className="relative bg-gradient-to-br from-[#0a1628]/80 to-[#1a2f4a]/80 rounded-none p-4 mb-3 border border-cyan-400/20 overflow-hidden group/rank shadow-[0_0_15px_rgba(83,131,232,0.1)] hover:shadow-[0_0_25px_rgba(83,131,232,0.2)] transition-all">
+                <div className="relative bg-gradient-to-br from-[#0a1628]/80 to-[#1a2f4a]/80 rounded-none p-2 sm:p-4 mb-2 sm:mb-3 border border-cyan-400/20 overflow-hidden group/rank shadow-[0_0_15px_rgba(83,131,232,0.1)] hover:shadow-[0_0_25px_rgba(83,131,232,0.2)] transition-all">
                   {/* Tech accent line */}
                   <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-cyan-400/30 to-transparent"></div>
                   <div className="absolute left-0 top-0 bottom-0 w-px bg-gradient-to-b from-transparent via-[#5383E8]/50 to-transparent"></div>
@@ -1866,8 +1866,8 @@ export default function MatchHistoryPage() {
                   {(() => {
                     const soloQueue = getCurrentAccount()?.rankedData?.find(r => r.queueType === 'RANKED_SOLO_5x5');
                     return soloQueue ? (
-                      <div className="flex items-center space-x-3 relative z-10">
-                        <div className="relative w-16 h-16 flex items-center justify-center group/emblem">
+                      <div className="flex flex-col sm:flex-row items-center space-y-2 sm:space-y-0 sm:space-x-3 relative z-10">
+                        <div className="relative w-12 h-12 sm:w-16 sm:h-16 flex items-center justify-center group/emblem">
                           {/* Emblem glow */}
                           <div className="absolute inset-0 bg-gradient-to-br from-cyan-400/20 to-[#5383E8]/20 blur-lg opacity-0 group-hover/emblem:opacity-100 transition-opacity"></div>
                           <img
@@ -1909,7 +1909,7 @@ export default function MatchHistoryPage() {
                 </div>
 
                 {/* Ranked Flex Stats */}
-                <div className="relative bg-gradient-to-br from-[#0a1628]/80 to-[#1a2f4a]/80 rounded-none p-4 border border-cyan-400/20 overflow-hidden group/rank shadow-[0_0_15px_rgba(83,131,232,0.1)] hover:shadow-[0_0_25px_rgba(83,131,232,0.2)] transition-all">
+                <div className="relative bg-gradient-to-br from-[#0a1628]/80 to-[#1a2f4a]/80 rounded-none p-2 sm:p-4 border border-cyan-400/20 overflow-hidden group/rank shadow-[0_0_15px_rgba(83,131,232,0.1)] hover:shadow-[0_0_25px_rgba(83,131,232,0.2)] transition-all">
                   {/* Tech accent line */}
                   <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-cyan-400/30 to-transparent"></div>
                   <div className="absolute left-0 top-0 bottom-0 w-px bg-gradient-to-b from-transparent via-[#5383E8]/50 to-transparent"></div>
@@ -1928,8 +1928,8 @@ export default function MatchHistoryPage() {
                   {(() => {
                     const flexQueue = getCurrentAccount()?.rankedData?.find(r => r.queueType === 'RANKED_FLEX_SR');
                     return flexQueue ? (
-                      <div className="flex items-center space-x-3 relative z-10">
-                        <div className="relative w-16 h-16 flex items-center justify-center group/emblem">
+                      <div className="flex flex-col sm:flex-row items-center space-y-2 sm:space-y-0 sm:space-x-3 relative z-10">
+                        <div className="relative w-12 h-12 sm:w-16 sm:h-16 flex items-center justify-center group/emblem">
                           {/* Emblem glow */}
                           <div className="absolute inset-0 bg-gradient-to-br from-cyan-400/20 to-[#5383E8]/20 blur-lg opacity-0 group-hover/emblem:opacity-100 transition-opacity"></div>
                           <img
@@ -1978,7 +1978,7 @@ export default function MatchHistoryPage() {
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.1 }}
-                className="bg-gradient-to-br from-[#0a1628] via-[#0f1f3a] to-[#0a1628] rounded-none p-4 sm:p-5 border-2 border-cyan-400/20 shadow-[0_0_30px_rgba(83,131,232,0.2)] relative overflow-hidden"
+                className="bg-gradient-to-br from-[#0a1628] via-[#0f1f3a] to-[#0a1628] rounded-none p-3 sm:p-5 border-2 border-cyan-400/20 shadow-[0_0_30px_rgba(83,131,232,0.2)] relative overflow-hidden"
               >
                 {/* Top tech line */}
                 <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-cyan-400/50 to-transparent"></div>
@@ -1992,7 +1992,7 @@ export default function MatchHistoryPage() {
                 
                 {/* Header */}
                 <div className="flex items-center justify-between mb-4 relative z-10">
-                  <h3 className="text-sm font-bold text-white font-mono tracking-wider uppercase drop-shadow-[0_0_10px_rgba(255,255,255,0.3)]">
+                  <h3 className="text-xs sm:text-sm font-bold text-white font-mono tracking-wider uppercase drop-shadow-[0_0_10px_rgba(255,255,255,0.3)]">
                     Recently Played With
                   </h3>
                   <span className="text-xs text-gray-500 font-mono">Last {matches.length} games</span>
@@ -2057,7 +2057,7 @@ export default function MatchHistoryPage() {
                   return (
                     <div className="space-y-1 sm:space-y-2 relative z-10">
                       {/* Table Header - stack on xs, grid on sm+ to preserve desktop */}
-                      <div className="grid grid-cols-1 sm:grid-cols-12 gap-2 pb-2 border-b border-cyan-400/20 text-xs font-mono text-gray-500 uppercase tracking-wider">
+                      <div className="grid grid-cols-1 sm:grid-cols-12 gap-2 pb-1 sm:pb-2 border-b border-cyan-400/20 text-xs font-mono text-gray-500 uppercase tracking-wider">
                         <div className="sm:col-span-5">Summoner</div>
                         <div className="sm:col-span-2 text-center">Played</div>
                         <div className="sm:col-span-3 text-center">W - L</div>
@@ -2077,7 +2077,7 @@ export default function MatchHistoryPage() {
                             >
                               {/* Summoner Info */}
                                 <div className="sm:col-span-5 flex items-center space-x-2">
-                                <div className="relative w-8 h-8 flex-shrink-0">
+                                <div className="relative w-6 h-6 sm:w-8 sm:h-8 flex-shrink-0">
                                   <div className="absolute inset-0 bg-cyan-400/20 blur-md opacity-0 group-hover:opacity-100 transition-opacity"></div>
                                   <div className="relative w-full h-full overflow-hidden border border-cyan-400/30 bg-[#0a1628]">
                                     <img
@@ -2088,7 +2088,7 @@ export default function MatchHistoryPage() {
                                   </div>
                                 </div>
                                 <div className="flex-1 min-w-0">
-                                  <div className="text-sm font-medium text-white truncate font-mono">
+                                  <div className="text-xs sm:text-sm font-medium text-white truncate font-mono">
                                     {teammate.gameName}
                                   </div>
                                 </div>
@@ -2096,14 +2096,14 @@ export default function MatchHistoryPage() {
                               
                               {/* Games Played */}
                               <div className="sm:col-span-2 text-center">
-                                <span className="text-sm font-bold text-cyan-400 font-mono">
+                                <span className="text-xs sm:text-sm font-bold text-cyan-400 font-mono">
                                   {teammate.gamesPlayed}
                                 </span>
                               </div>
                               
                               {/* W - L */}
                               <div className="sm:col-span-3 text-center">
-                                <span className="text-sm font-mono text-gray-400">
+                                <span className="text-xs sm:text-sm font-mono text-gray-400">
                                   <span className="text-green-400">{teammate.wins}</span>
                                   {' - '}
                                   <span className="text-red-400">{teammate.losses}</span>
@@ -2112,7 +2112,7 @@ export default function MatchHistoryPage() {
                               
                               {/* Win Rate */}
                               <div className="sm:col-span-2 text-right">
-                                <span className={`text-sm font-bold font-mono ${
+                                <span className={`text-xs sm:text-sm font-bold font-mono ${
                                   parseFloat(winRate) >= 50
                                     ? 'text-green-400 drop-shadow-[0_0_5px_rgba(74,222,128,0.5)]'
                                     : 'text-red-400 drop-shadow-[0_0_5px_rgba(248,113,113,0.5)]'
