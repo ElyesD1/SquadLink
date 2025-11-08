@@ -2528,7 +2528,7 @@ export default function MatchHistoryPage() {
 
             {/* Matches List */}
             {getCurrentAccount() && (
-              <div className="flex sm:block sm:space-y-2 overflow-x-auto sm:overflow-visible space-x-3 sm:space-x-0 px-2 -mx-2">
+              <div className="flex flex-col space-y-3 sm:block sm:space-y-2 sm:overflow-visible">
                 {getFilteredMatches().length === 0 ? (
                   <motion.div
                     initial={{ opacity: 0, y: 10 }}
@@ -2565,11 +2565,11 @@ export default function MatchHistoryPage() {
                       key={match.metadata.matchId}
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
-                      className={`rounded-none overflow-hidden transition-all relative group ${
+                      className={`rounded-none overflow-hidden transition-all relative group w-full ${
                         playerData.win
                           ? 'bg-gradient-to-r from-[#0a1628] via-[#0f1f3a] to-[#0a1628] shadow-[0_0_20px_rgba(83,131,232,0.15)] hover:shadow-[0_0_30px_rgba(83,131,232,0.3)]'
                           : 'bg-gradient-to-r from-[#1a0a0f] via-[#2d1419] to-[#1a0a0f] shadow-[0_0_20px_rgba(232,64,87,0.15)] hover:shadow-[0_0_30px_rgba(232,64,87,0.3)]'
-                      } min-w-[300px] sm:min-w-0 flex-shrink-0`}
+                      } sm:min-w-0`}
                     >
                       {/* Futuristic Side Accent */}
                       <div className={`absolute left-0 top-0 bottom-0 w-1 ${
@@ -2592,39 +2592,41 @@ export default function MatchHistoryPage() {
                         {/* Scan Line Effect */}
                         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-white/[0.02] to-transparent pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity"></div>
                         
-                        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between relative z-10">
-                          {/* Left Section: Game Info */}
-                          <div className="flex flex-col items-start w-16 lg:w-24 flex-shrink-0 relative">
-                            {/* Holographic Corner */}
-                            <div className={`absolute -left-2 -top-2 w-12 h-12 border-l-2 border-t-2 ${
-                              playerData.win ? 'border-[#5383E8]/30' : 'border-[#E84057]/30'
-                            }`}></div>
-                            
-                            <span className="text-xs font-bold uppercase text-cyan-400 tracking-wider font-mono">
-                              {QUEUE_NAMES[match.info.queueId] || `Queue ${match.info.queueId}`}
-                            </span>
-                            <span className="text-[10px] text-gray-500 font-mono">
-                              {formatTimestamp(match.info.gameCreation)}
-                            </span>
-                            <div className={`w-full h-px my-1.5 ${
-                              playerData.win 
-                                ? 'bg-gradient-to-r from-[#5383E8] to-transparent' 
-                                : 'bg-gradient-to-r from-[#E84057] to-transparent'
-                            }`}></div>
-                            <span className={`text-sm font-bold tracking-widest ${
-                              playerData.win 
-                                ? 'text-[#5383E8] drop-shadow-[0_0_8px_rgba(83,131,232,0.8)]' 
-                                : 'text-[#E84057] drop-shadow-[0_0_8px_rgba(232,64,87,0.8)]'
-                            }`}>
-                              {playerData.win ? 'VICTORY' : 'DEFEAT'}
-                            </span>
-                            <span className="text-xs text-gray-500 font-mono">
-                              {formatGameDuration(match.info.gameDuration)}
-                            </span>
-                          </div>
+                        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between relative z-10 gap-3 sm:gap-0">
+                          {/* Top Row on Mobile: Game Info + Champion + KDA */}
+                          <div className="flex items-start justify-between sm:contents">
+                            {/* Left Section: Game Info */}
+                            <div className="flex flex-col items-start w-auto sm:w-16 lg:w-24 flex-shrink-0 relative">
+                              {/* Holographic Corner */}
+                              <div className={`absolute -left-2 -top-2 w-12 h-12 border-l-2 border-t-2 ${
+                                playerData.win ? 'border-[#5383E8]/30' : 'border-[#E84057]/30'
+                              }`}></div>
+                              
+                              <span className="text-xs font-bold uppercase text-cyan-400 tracking-wider font-mono">
+                                {QUEUE_NAMES[match.info.queueId] || `Queue ${match.info.queueId}`}
+                              </span>
+                              <span className="text-[10px] text-gray-500 font-mono">
+                                {formatTimestamp(match.info.gameCreation)}
+                              </span>
+                              <div className={`w-full h-px my-1.5 ${
+                                playerData.win 
+                                  ? 'bg-gradient-to-r from-[#5383E8] to-transparent' 
+                                  : 'bg-gradient-to-r from-[#E84057] to-transparent'
+                              }`}></div>
+                              <span className={`text-sm font-bold tracking-widest ${
+                                playerData.win 
+                                  ? 'text-[#5383E8] drop-shadow-[0_0_8px_rgba(83,131,232,0.8)]' 
+                                  : 'text-[#E84057] drop-shadow-[0_0_8px_rgba(232,64,87,0.8)]'
+                              }`}>
+                                {playerData.win ? 'VICTORY' : 'DEFEAT'}
+                              </span>
+                              <span className="text-xs text-gray-500 font-mono">
+                                {formatGameDuration(match.info.gameDuration)}
+                              </span>
+                            </div>
 
-                          {/* Center Section: Champion, Stats & Items */}
-                          <div className="flex items-center space-x-4 flex-1">
+                            {/* Center Section: Champion, Stats & Items */}
+                            <div className="flex items-center space-x-3 sm:space-x-4 flex-1 sm:flex-1 max-w-full sm:max-w-none overflow-x-auto sm:overflow-visible">
                             {/* Champion + Spells/Runes */}
                             <div className="flex items-center space-x-2">
                               <div className="relative group/champ">
@@ -2726,7 +2728,7 @@ export default function MatchHistoryPage() {
                             </div>
 
                             {/* KDA & Stats */}
-                            <div className="flex flex-wrap items-center gap-4 md:gap-6">
+                            <div className="flex flex-col sm:flex-row sm:flex-wrap items-start sm:items-center gap-2 sm:gap-4 md:gap-6">
                               <div className="text-center relative">
                                 {/* Holographic background glow */}
                                 <div className="absolute inset-0 bg-gradient-to-r from-cyan-400/5 via-transparent to-cyan-400/5 blur-xl"></div>
@@ -2738,22 +2740,22 @@ export default function MatchHistoryPage() {
                                   <span className="text-gray-500 mx-0.5">/</span>
                                   <span className="text-white font-bold drop-shadow-[0_0_5px_rgba(255,255,255,0.5)]">{playerData.assists}</span>
                                 </div>
-                                <div className={`text-sm font-bold font-mono tracking-wider relative ${
+                                <div className={`text-xs sm:text-sm font-bold font-mono tracking-wider relative ${
                                   parseFloat(getKDA(playerData)) >= 5 ? 'text-[#ECBC2C] drop-shadow-[0_0_10px_rgba(236,188,44,0.8)]' :
                                   parseFloat(getKDA(playerData)) >= 3 ? 'text-cyan-400 drop-shadow-[0_0_10px_rgba(0,255,255,0.6)]' : 'text-gray-400'
                                 }`}>
-                                  {getKDA(playerData)} <span className="text-xs text-gray-500">KDA</span>
+                                  {getKDA(playerData)} <span className="text-[10px] sm:text-xs text-gray-500">KDA</span>
                                 </div>
                                 {/* Corner accents */}
                                 <div className="absolute -top-1 -left-1 w-2 h-2 border-t border-l border-cyan-400/30"></div>
                                 <div className="absolute -bottom-1 -right-1 w-2 h-2 border-b border-r border-cyan-400/30"></div>
                               </div>
 
-                              <div className="text-xs text-gray-400 space-y-0.5 font-mono">
+                              <div className="text-[10px] sm:text-xs text-gray-400 space-y-0.5 font-mono">
                                 <div className="flex items-center gap-1">
                                   <span className="text-cyan-400/60">▸</span>
                                   <span className="text-white">{getCS(playerData)}</span> CS
-                                  <span className="text-gray-600">({getCSPerMin(playerData, match.info.gameDuration)})</span>
+                                  <span className="text-gray-600 hidden sm:inline">({getCSPerMin(playerData, match.info.gameDuration)})</span>
                                 </div>
                                 <div className="flex items-center gap-1">
                                   <span className="text-cyan-400/60">▸</span>
@@ -2763,7 +2765,7 @@ export default function MatchHistoryPage() {
                             </div>
 
                             {/* Items */}
-                            <div className="flex items-center space-x-0.5">
+                            <div className="flex items-center space-x-0.5 flex-shrink-0">
                               {[0, 1, 2, 3, 4, 5].map((index) => {
                                 const itemId = (playerData as any)[`item${index}`];
                                 return (
@@ -2833,10 +2835,13 @@ export default function MatchHistoryPage() {
                                 );
                               })()}
                             </div>
+                            </div>
                           </div>
 
-                          {/* Right Section: All Players */}
-                          <div className="flex items-center space-x-4 ml-6">
+                          {/* Bottom Row on Mobile: Teams + Expand Button */}
+                          <div className="flex items-center justify-between sm:contents sm:justify-end">
+                            {/* Right Section: All Players */}
+                            <div className="flex items-center space-x-2 sm:space-x-4 sm:ml-6 flex-1 sm:flex-initial justify-center sm:justify-start">
                             {/* Blue Team */}
                             <div className="flex items-center space-x-1 relative">
                               {/* Team label */}
@@ -2952,8 +2957,10 @@ export default function MatchHistoryPage() {
                                 })}
                             </div>
 
+                            </div>
+
                             {/* Expand Button */}
-                            <button className="relative group/expand ml-2 p-1.5 border border-cyan-400/20 hover:border-cyan-400/50 transition-all bg-[#0a1628] hover:bg-[#0a1628]/80">
+                            <button className="relative group/expand ml-2 sm:ml-2 p-1.5 border border-cyan-400/20 hover:border-cyan-400/50 transition-all bg-[#0a1628] hover:bg-[#0a1628]/80 flex-shrink-0">
                               {/* Button glow on hover */}
                               <div className="absolute -inset-0.5 bg-gradient-to-br from-cyan-400/20 to-[#5383E8]/20 opacity-0 group-hover/expand:opacity-100 transition-opacity blur-sm"></div>
                               <div className="relative">
