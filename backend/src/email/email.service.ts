@@ -1,10 +1,41 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import axios from 'axios';
+import nodemailer from 'nodemailer';
 
 @Injectable()
 export class EmailService {
-  private readonly apiKey = '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'; // Replace with your actual Brevo API key or load from env
-  private readonly sender = { name: 'Squadlink', email: 'skyrexcgaming@gmail.com' };
+  // Read API key from environment only (remove hard-coded fallback for security)
+  private readonly apiKey = process.env.BREVO_API_KEY || '';
+  private readonly sender = {
+    name: process.env.EMAIL_FROM_NAME || 'Squadlink',
+    email: process.env.EMAIL_FROM_ADDRESS || 'no-reply@squadlink.me',
+  };
+
+  // Optional SMTP transporter (will be initialized when SMTP creds are provided)
+  private transporter: nodemailer.Transporter | null = null;
+
+  constructor() {
+    // If SMTP credentials are provided via env, create a Nodemailer transporter to send via Brevo SMTP relay.
+    const smtpUser = process.env.BREVO_SMTP_USER;
+    const smtpPass = process.env.BREVO_SMTP_PASS || process.env.BREVO_SMTP_USER; // fallback to user token if no separate pass provided
+
+    if (smtpUser) {
+      try {
+        this.transporter = nodemailer.createTransport({
+          host: process.env.BREVO_SMTP_HOST || 'smtp-relay.brevo.com',
+          port: Number(process.env.BREVO_SMTP_PORT || 587),
+          secure: false,
+          auth: {
+            user: smtpUser,
+            pass: smtpPass,
+          },
+        });
+      } catch (err) {
+        console.error('Failed to create SMTP transporter:', err);
+        this.transporter = null;
+      }
+    }
+  }
 
   async sendVerificationEmail(to: string, code: string) {
     const codeDigits = code.split('').map(digit => `
@@ -44,6 +75,18 @@ export class EmailService {
 
   async sendEmail(to: string, subject: string, html: string) {
     try {
+      // If transporter is configured, send via SMTP (Nodemailer)
+      if (this.transporter) {
+        await this.transporter.sendMail({
+          from: `"${this.sender.name}" <${this.sender.email}>`,
+          to,
+          subject,
+          html,
+        });
+        return;
+      }
+
+      // Otherwise fall back to Brevo HTTP API
       await axios.post('https://api.brevo.com/v3/smtp/email', {
         sender: this.sender,
         to: [{ email: to }],
