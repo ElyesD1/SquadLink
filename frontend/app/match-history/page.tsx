@@ -1761,7 +1761,7 @@ export default function MatchHistoryPage() {
 
       {/* Mobile scroll/zoom wrapper: on mobile keep inner min-width to preserve desktop layout and allow pan/zoom */}
       <div className="overflow-auto sm:overflow-visible" style={{ WebkitOverflowScrolling: 'touch' }}>
-        <div className="container mx-auto px-4 pb-6 max-w-[1400px] min-w-[1200px] sm:min-w-0">
+        <div className="container mx-auto px-3 sm:px-4 pb-6 max-w-[1400px] min-w-[1200px] sm:min-w-0">
         {/* Main Grid Layout - stacked on mobile, 12-col at lg+ to preserve desktop layout */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
           {/* Left Sidebar - Profile & Stats */}
@@ -2184,13 +2184,13 @@ export default function MatchHistoryPage() {
                 
                 <div className="relative z-10">
                   {/* Header Row */}
-                  <div className="flex items-center justify-between mb-6">
-                    <h3 className="text-lg font-bold text-white font-mono tracking-wider uppercase drop-shadow-[0_0_10px_rgba(255,255,255,0.3)]">
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 sm:mb-6">
+                    <h3 className="text-base sm:text-lg font-bold text-white font-mono tracking-wider uppercase drop-shadow-[0_0_10px_rgba(255,255,255,0.3)] mb-4 sm:mb-0">
                       Match History
                     </h3>
                     
                     {/* Recent Performance Summary */}
-                    <div className="flex flex-wrap items-center gap-6">
+                    <div className="flex flex-col sm:flex-row sm:flex-wrap items-center gap-4 sm:gap-6">
                     {/* All Loaded Games Stats */}
                     <div className="flex items-center space-x-3">
                       <div className="text-center">
@@ -2281,7 +2281,7 @@ export default function MatchHistoryPage() {
                   </div>
                 
                   {/* AI Insights Button - Own Row */}
-                  <div className="flex justify-center mt-4 pt-4 border-t border-cyan-400/10">
+                  <div className="hidden sm:flex justify-center mt-4 pt-4 border-t border-cyan-400/10">
                     <button
                       onClick={() => {
                         setShowAIInsights(true);
@@ -2307,7 +2307,7 @@ export default function MatchHistoryPage() {
                 
                   {/* Player Tags Section */}
                   {playerTags.length > 0 && (
-                    <div className="flex items-center justify-center gap-2 mt-4 pt-4 border-t border-cyan-400/10 flex-wrap">
+                    <div className="hidden sm:flex items-center justify-center gap-2 mt-4 pt-4 border-t border-cyan-400/10 flex-wrap">
                       {playerTags.map((tag, index) => {
                         // Determine tag style based on content
                         const isPositive = ['Winner', 'KDA King', 'Good Laner', 'Deathless', 'Team Player', '1v1 Master', 'Consistent', 'Vision Expert', 'Good with', 'Pentakiller', 'Damage Dealer'].some(keyword => tag.includes(keyword));
@@ -2586,13 +2586,13 @@ export default function MatchHistoryPage() {
                       }`}></div>
                       {/* Compact Match Card */}
                       <div
-                        className="p-4 cursor-pointer hover:bg-white/5 transition-all relative"
+                        className="p-3 sm:p-4 cursor-pointer hover:bg-white/5 transition-all relative"
                         onClick={() => setExpandedMatch(isExpanded ? null : match.metadata.matchId)}
                       >
                         {/* Scan Line Effect */}
                         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-white/[0.02] to-transparent pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity"></div>
                         
-                        <div className="flex items-center justify-between relative z-10">
+                        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between relative z-10">
                           {/* Left Section: Game Info */}
                           <div className="flex flex-col items-start w-16 lg:w-24 flex-shrink-0 relative">
                             {/* Holographic Corner */}
@@ -2983,7 +2983,7 @@ export default function MatchHistoryPage() {
                             
                             <div className="p-6 relative z-10">
                               {/* Tabs */}
-                              <div className="flex items-center space-x-2 mb-6 bg-[#0a1628]/50 rounded-none p-1 border border-cyan-400/20 relative overflow-hidden">
+                              <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-2 mb-6 bg-[#0a1628]/50 rounded-none p-1 border border-cyan-400/20 relative overflow-hidden">
                                 {/* Background glow */}
                                 <div className="absolute inset-0 bg-gradient-to-r from-transparent via-cyan-400/5 to-transparent"></div>
                                 
