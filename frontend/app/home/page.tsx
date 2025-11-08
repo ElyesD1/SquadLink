@@ -3,6 +3,7 @@
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
+import LoadingScreen from '@/components/ui/LoadingScreen';
 
 export default function HomePage() {
   const { data: session, status } = useSession();
@@ -21,9 +22,5 @@ export default function HomePage() {
   }, [status, router]);
 
   // Show loading while redirecting
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-[#0A0118] via-[#1A0B2E] to-[#0A0118] flex items-center justify-center">
-      <div className="text-white text-2xl">Loading...</div>
-    </div>
-  );
+  return <LoadingScreen />;
 }

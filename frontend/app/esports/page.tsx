@@ -629,13 +629,7 @@ function MatchesSection({ matches, currentTheme }: { matches: Match[], currentTh
       {/* No matches message */}
       {matches.length === 0 && (
         <div className="text-center py-12">
-          <Loader2 className="w-12 h-12 mx-auto mb-4 text-cyan-400 animate-spin drop-shadow-[0_0_15px_rgba(0,255,255,0.6)]" />
-          <h3 className="text-white text-xl font-semibold mb-2 font-mono tracking-wide">
-            LOADING MATCHES...
-          </h3>
-          <p className="text-gray-400 font-mono text-sm">
-            Fetching the latest match data from Riot API
-          </p>
+          <LoadingScreen variant="futuristic" />
         </div>
       )}
     </div>
@@ -819,13 +813,7 @@ function TournamentsSection({ tournaments, currentTheme }: { tournaments: Tourna
         </div>
       ) : (
         <div className="text-center py-12">
-          <Loader2 className="w-12 h-12 mx-auto mb-4 text-cyan-400 animate-spin drop-shadow-[0_0_15px_rgba(0,255,255,0.6)]" />
-          <h3 className="text-white text-xl font-semibold mb-2 font-mono tracking-wide">
-            LOADING TOURNAMENTS...
-          </h3>
-          <p className="text-gray-400 font-mono text-sm">
-            Fetching tournament data from Riot API
-          </p>
+          <LoadingScreen variant="futuristic" />
         </div>
       )}
     </div>
