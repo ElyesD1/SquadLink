@@ -4,14 +4,12 @@ import { useEffect } from 'react';
 
 export function ServiceWorkerRegistration() {
   useEffect(() => {
-    if (
-      typeof window !== 'undefined' &&
-      'serviceWorker' in navigator &&
-      process.env.NODE_ENV === 'production'
-    ) {
-      // Register service worker
+    if (typeof window === 'undefined') return;
+
+    // Register service worker (works in both dev and production)
+    if ('serviceWorker' in navigator) {
       navigator.serviceWorker
-        .register('/sw.js')
+        .register('/sw.js', { scope: '/' })
         .then((registration) => {
           console.log('[PWA] Service Worker registered:', registration.scope);
 
@@ -26,9 +24,7 @@ export function ServiceWorkerRegistration() {
             if (newWorker) {
               newWorker.addEventListener('statechange', () => {
                 if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                  // New service worker available, prompt user to refresh
                   console.log('[PWA] New version available');
-                  // You can show a toast/notification here to prompt refresh
                 }
               });
             }
@@ -43,6 +39,23 @@ export function ServiceWorkerRegistration() {
         console.log('[PWA] Message from service worker:', event.data);
       });
     }
+
+    // Handle install prompt for Android
+    let deferredPrompt: any;
+    const handleBeforeInstallPrompt = (e: Event) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      console.log('[PWA] Install prompt available');
+      
+      // You can show a custom install button here
+      // For now, the browser will show the prompt automatically
+    };
+
+    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+
+    return () => {
+      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+    };
   }, []);
 
   return null;
