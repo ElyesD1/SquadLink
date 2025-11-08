@@ -1759,11 +1759,13 @@ export default function MatchHistoryPage() {
         </motion.div>
       </div>
 
-      <div className="container mx-auto px-4 pb-6 max-w-[1400px]">
-        {/* Main Grid Layout */}
-        <div className="grid grid-cols-12 gap-4">
+      {/* Mobile scroll/zoom wrapper: on mobile keep inner min-width to preserve desktop layout and allow pan/zoom */}
+      <div className="overflow-auto sm:overflow-visible" style={{ WebkitOverflowScrolling: 'touch' }}>
+        <div className="container mx-auto px-4 pb-6 max-w-[1400px] min-w-[1200px] sm:min-w-0">
+        {/* Main Grid Layout - stacked on mobile, 12-col at lg+ to preserve desktop layout */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
           {/* Left Sidebar - Profile & Stats */}
-          <div className="col-span-3 space-y-4">
+          <div className="col-span-12 lg:col-span-3 space-y-4">
             {/* Profile Card */}
             {getCurrentAccount() && (
               <motion.div
@@ -1792,7 +1794,7 @@ export default function MatchHistoryPage() {
                     {/* Outer glow border */}
                     <div className="absolute -inset-1 bg-gradient-to-br from-cyan-400 via-[#5383E8] to-cyan-400 opacity-50 blur-md"></div>
                     
-                    <div className="relative w-24 h-24 overflow-hidden border-2 border-cyan-400/50 bg-gradient-to-br from-[#0a1628] to-[#1a2f4a]">
+                    <div className="relative w-20 h-20 lg:w-24 lg:h-24 overflow-hidden border-2 border-cyan-400/50 bg-gradient-to-br from-[#0a1628] to-[#1a2f4a]">
                       <Image
                         src={lolService.getSummonerIconUrl(getCurrentAccount()?.profileIconId || 0)}
                         alt="Profile Icon"
@@ -2054,12 +2056,12 @@ export default function MatchHistoryPage() {
                   
                   return (
                     <div className="space-y-2 relative z-10">
-                      {/* Table Header */}
-                      <div className="grid grid-cols-12 gap-2 pb-2 border-b border-cyan-400/20 text-xs font-mono text-gray-500 uppercase tracking-wider">
-                        <div className="col-span-5">Summoner</div>
-                        <div className="col-span-2 text-center">Played</div>
-                        <div className="col-span-3 text-center">W - L</div>
-                        <div className="col-span-2 text-right">Win Ratio</div>
+                      {/* Table Header - stack on xs, grid on sm+ to preserve desktop */}
+                      <div className="grid grid-cols-1 sm:grid-cols-12 gap-2 pb-2 border-b border-cyan-400/20 text-xs font-mono text-gray-500 uppercase tracking-wider">
+                        <div className="sm:col-span-5">Summoner</div>
+                        <div className="sm:col-span-2 text-center">Played</div>
+                        <div className="sm:col-span-3 text-center">W - L</div>
+                        <div className="sm:col-span-2 text-right">Win Ratio</div>
                       </div>
                       
                       {/* Teammate List */}
@@ -2071,10 +2073,10 @@ export default function MatchHistoryPage() {
                             <button 
                               key={teammate.puuid}
                               onClick={() => navigateToSummoner(teammate.gameName, teammate.tagLine, getCurrentAccount()?.region)}
-                              className="grid grid-cols-12 gap-2 items-center py-2 border-b border-cyan-400/10 hover:bg-cyan-400/5 transition-colors group w-full text-left cursor-pointer"
+                              className="grid grid-cols-1 sm:grid-cols-12 gap-2 items-center py-2 border-b border-cyan-400/10 hover:bg-cyan-400/5 transition-colors group w-full text-left cursor-pointer"
                             >
                               {/* Summoner Info */}
-                              <div className="col-span-5 flex items-center space-x-2">
+                                <div className="sm:col-span-5 flex items-center space-x-2">
                                 <div className="relative w-8 h-8 flex-shrink-0">
                                   <div className="absolute inset-0 bg-cyan-400/20 blur-md opacity-0 group-hover:opacity-100 transition-opacity"></div>
                                   <div className="relative w-full h-full overflow-hidden border border-cyan-400/30 bg-[#0a1628]">
@@ -2093,14 +2095,14 @@ export default function MatchHistoryPage() {
                               </div>
                               
                               {/* Games Played */}
-                              <div className="col-span-2 text-center">
+                              <div className="sm:col-span-2 text-center">
                                 <span className="text-sm font-bold text-cyan-400 font-mono">
                                   {teammate.gamesPlayed}
                                 </span>
                               </div>
                               
                               {/* W - L */}
-                              <div className="col-span-3 text-center">
+                              <div className="sm:col-span-3 text-center">
                                 <span className="text-sm font-mono text-gray-400">
                                   <span className="text-green-400">{teammate.wins}</span>
                                   {' - '}
@@ -2109,7 +2111,7 @@ export default function MatchHistoryPage() {
                               </div>
                               
                               {/* Win Rate */}
-                              <div className="col-span-2 text-right">
+                              <div className="sm:col-span-2 text-right">
                                 <span className={`text-sm font-bold font-mono ${
                                   parseFloat(winRate) >= 50
                                     ? 'text-green-400 drop-shadow-[0_0_5px_rgba(74,222,128,0.5)]'
@@ -2164,7 +2166,7 @@ export default function MatchHistoryPage() {
           </div>
 
           {/* Right Content - Match History */}
-          <div className="col-span-9 space-y-4">
+          <div className="col-span-12 lg:col-span-9 space-y-4">
             {/* Match History Header with Stats */}
             {getCurrentAccount() && matches.length > 0 && (
               <motion.div
@@ -2188,7 +2190,7 @@ export default function MatchHistoryPage() {
                     </h3>
                     
                     {/* Recent Performance Summary */}
-                    <div className="flex items-center space-x-6">
+                    <div className="flex flex-wrap items-center gap-6">
                     {/* All Loaded Games Stats */}
                     <div className="flex items-center space-x-3">
                       <div className="text-center">
@@ -2355,7 +2357,7 @@ export default function MatchHistoryPage() {
                   )}
                 
                   {/* Top 3 Most Played Champions */}
-                  <div className="flex items-center justify-center space-x-6 mt-4 pt-4 border-t border-cyan-400/10">
+                  <div className="flex flex-wrap items-center justify-center gap-4 md:gap-6 mt-4 pt-4 border-t border-cyan-400/10">
                   {(() => {
                     const championStats = new Map<string, { 
                       count: number; 
@@ -2592,7 +2594,7 @@ export default function MatchHistoryPage() {
                         
                         <div className="flex items-center justify-between relative z-10">
                           {/* Left Section: Game Info */}
-                          <div className="flex flex-col items-start w-24 flex-shrink-0 relative">
+                          <div className="flex flex-col items-start w-16 lg:w-24 flex-shrink-0 relative">
                             {/* Holographic Corner */}
                             <div className={`absolute -left-2 -top-2 w-12 h-12 border-l-2 border-t-2 ${
                               playerData.win ? 'border-[#5383E8]/30' : 'border-[#E84057]/30'
@@ -2724,7 +2726,7 @@ export default function MatchHistoryPage() {
                             </div>
 
                             {/* KDA & Stats */}
-                            <div className="flex items-center space-x-6">
+                            <div className="flex flex-wrap items-center gap-4 md:gap-6">
                               <div className="text-center relative">
                                 {/* Holographic background glow */}
                                 <div className="absolute inset-0 bg-gradient-to-r from-cyan-400/5 via-transparent to-cyan-400/5 blur-xl"></div>
@@ -4858,7 +4860,7 @@ export default function MatchHistoryPage() {
                                       {/* Header with Champion */}
                                       <div className="relative bg-gradient-to-br from-purple-900/30 via-indigo-900/30 to-purple-900/30 border-2 border-purple-400/40 p-6 overflow-hidden">
                                         <div className="absolute top-0 left-0 w-full h-0.5 bg-gradient-to-r from-transparent via-purple-400 to-transparent"></div>
-                                        <div className="flex items-center space-x-6">
+                                        <div className="flex flex-wrap items-center gap-4 md:gap-6">
                                           {/* Champion Portrait */}
                                           <div className="relative group">
                                             <div className="absolute inset-0 bg-purple-400/30 blur-xl group-hover:bg-purple-400/50 transition-all"></div>
@@ -5734,6 +5736,7 @@ export default function MatchHistoryPage() {
           </>
         )}
       </AnimatePresence>
+      </div>
       </div>
     </div>
   );
