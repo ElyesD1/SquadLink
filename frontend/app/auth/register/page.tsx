@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
@@ -193,26 +193,32 @@ export default function RegisterPage() {
         {/* Scan lines */}
         <div className="absolute inset-0 bg-[linear-gradient(to_bottom,transparent_0%,rgba(0,255,255,0.03)_50%,transparent_100%)] bg-[length:100%_4px]" />
         
-        {/* Floating Particles */}
-        {[...Array(15)].map((_, i) => (
-          <motion.div
-            key={i}
-            className="absolute w-1 h-1 bg-cyan-400/30"
-            style={{
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
-            }}
-            animate={{
-              y: [0, -30, 0],
-              opacity: [0.3, 0.6, 0.3],
-            }}
-            transition={{
-              duration: 3 + Math.random() * 2,
-              repeat: Infinity,
-              delay: Math.random() * 2,
-            }}
-          />
-        ))}
+        {/* Floating Particles (stable across re-renders) */}
+        {useMemo(() => {
+          const parts = Array.from({ length: 15 }).map((_, i) => ({
+            left: `${Math.random() * 100}%`,
+            top: `${Math.random() * 100}%`,
+            duration: 3 + Math.random() * 2,
+            delay: Math.random() * 2,
+          }));
+
+          return parts.map((p, i) => (
+            <motion.div
+              key={i}
+              className="absolute w-1 h-1 bg-cyan-400/30"
+              style={{ left: p.left, top: p.top }}
+              animate={{
+                y: [0, -30, 0],
+                opacity: [0.3, 0.6, 0.3],
+              }}
+              transition={{
+                duration: p.duration,
+                repeat: Infinity,
+                delay: p.delay,
+              }}
+            />
+          ));
+        }, [])}
         
         {/* Tech Lines */}
         <motion.div
