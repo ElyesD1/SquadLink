@@ -8,7 +8,7 @@ import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { FiLogOut, FiEdit, FiPlus, FiTrash2, FiX, FiChevronDown, FiLink } from 'react-icons/fi';
+import { FiLogOut, FiEdit, FiX, FiChevronDown, FiLink } from 'react-icons/fi';
 import { Zap, Sun, Moon } from 'lucide-react';
 import { AnimatedLogo } from '@/components/ui/AnimatedLogo';
 import NavigationDrawer from '@/components/ui/NavigationDrawer';
@@ -30,18 +30,6 @@ interface UserProfile {
   lolAccount?: LolAccount;
 }
 
-interface Game {
-  id: string;
-  name: string;
-  icon: string;
-}
-
-const availableGames: Game[] = [
-  { id: 'league-of-legends', name: 'League of Legends', icon: '/league.png' },
-  { id: 'valorant', name: 'Valorant', icon: '/valorant.png' },
-  { id: 'fortnite', name: 'Fortnite', icon: '/fortnite.png' }
-];
-
 const avatars = [
   '/a1.png', '/a2.png', '/a3.png', '/a4.png',
   '/a5.png', '/a6.png', '/a7.png', '/a8.png'
@@ -56,8 +44,6 @@ export default function ProfilePage() {
   const [isLoading, setIsLoading] = useState(true);
   const [showAvatarSelector, setShowAvatarSelector] = useState(false);
   const [selectedAvatar, setSelectedAvatar] = useState<string>('👤');
-  const [showGameSelector, setShowGameSelector] = useState(false);
-  const [selectedGames, setSelectedGames] = useState<string[]>([]);
   const [showLolLinking, setShowLolLinking] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -137,54 +123,6 @@ export default function ProfilePage() {
     }
   };
 
-  const addGamePreference = async (gameId: string) => {
-    try {
-      const response = await fetch(`${API_URL}/users/game-preferences/add`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ 
-          game: gameId,
-          email: session?.user?.email 
-        }),
-      });
-
-      if (response.ok) {
-        setUserProfile(prev => prev ? {
-          ...prev,
-          gamePreferences: [...prev.gamePreferences, gameId]
-        } : null);
-        setShowGameSelector(false);
-      }
-    } catch (error) {
-      console.error('Error adding game preference:', error);
-    }
-  };
-
-  const removeGamePreference = async (gameId: string) => {
-    try {
-      const response = await fetch(`${API_URL}/users/game-preferences/${gameId}`, {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          email: session?.user?.email
-        }),
-      });
-
-      if (response.ok) {
-        setUserProfile(prev => prev ? {
-          ...prev,
-          gamePreferences: prev.gamePreferences.filter(game => game !== gameId)
-        } : null);
-      }
-    } catch (error) {
-      console.error('Error removing game preference:', error);
-    }
-  };
-
   const handleLogout = () => {
     storage.clearAutoLogin();
     signOut({ callbackUrl: '/' });
@@ -247,11 +185,6 @@ export default function ProfilePage() {
       </div>
     );
   }
-
-  const getGameById = (id: string) => availableGames.find(game => game.id === id);
-  const availableGamesToAdd = availableGames.filter(game => 
-    !userProfile.gamePreferences.includes(game.id)
-  );
 
   // Show LoL Account Linking if requested
   if (showLolLinking) {
@@ -434,96 +367,9 @@ export default function ProfilePage() {
               <div className="absolute bottom-0 left-0 w-8 h-8 border-b-2 border-l-2 border-cyan-400/40"></div>
               <div className="absolute bottom-0 right-0 w-8 h-8 border-b-2 border-r-2 border-cyan-400/40"></div>
 
-              <div className="flex items-center justify-between mb-6 relative z-10">
-                <h3 className="text-sm font-bold text-cyan-400 font-mono tracking-wider uppercase drop-shadow-[0_0_10px_rgba(0,255,255,0.3)]">
-                  GAME PREFERENCES
-                </h3>
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={() => setShowGameSelector(true)}
-                  disabled={availableGamesToAdd.length === 0}
-                  className="bg-gradient-to-r from-[#5383E8] to-cyan-400 hover:from-cyan-400 hover:to-[#5383E8] disabled:from-gray-600 disabled:to-gray-700 disabled:cursor-not-allowed text-white px-4 py-2 border border-cyan-400/50 disabled:border-gray-500/50 shadow-[0_0_15px_rgba(0,255,255,0.3)] hover:shadow-[0_0_25px_rgba(0,255,255,0.5)] disabled:shadow-none transition-all duration-300 relative overflow-hidden group"
-                >
-                  {/* Corner accents */}
-                  <div className="absolute top-0 left-0 w-2 h-2 border-t border-l border-white/50"></div>
-                  <div className="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-white/50"></div>
-                  
-                  <div className="flex items-center gap-2 text-xs font-bold font-mono tracking-wider uppercase relative z-10">
-                    <FiPlus className="w-3 h-3" />
-                    ADD GAME
-                  </div>
-                </motion.button>
-              </div>
-
               <div className="relative z-10">
-                {userProfile.gamePreferences.length === 0 ? (
-                  <div className="text-center py-12">
-                    <div className="text-gray-400 font-mono text-sm mb-4">NO GAMES SELECTED YET</div>
-                    <motion.button
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      onClick={() => setShowGameSelector(true)}
-                      className="bg-gradient-to-r from-[#5383E8] to-cyan-400 hover:from-cyan-400 hover:to-[#5383E8] text-white px-6 py-3 border border-cyan-400/50 shadow-[0_0_15px_rgba(0,255,255,0.3)] hover:shadow-[0_0_25px_rgba(0,255,255,0.5)] transition-all duration-300 relative overflow-hidden group"
-                    >
-                      <div className="absolute top-0 left-0 w-2 h-2 border-t border-l border-white/50"></div>
-                      <div className="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-white/50"></div>
-                      <div className="flex items-center gap-2 text-sm font-bold font-mono tracking-wider uppercase relative z-10">
-                        <FiPlus className="w-4 h-4" />
-                        ADD YOUR FIRST GAME
-                      </div>
-                    </motion.button>
-                  </div>
-                ) : (
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {userProfile.gamePreferences.map((gameId) => {
-                      const game = getGameById(gameId);
-                      if (!game) return null;
-
-                      return (
-                        <motion.div
-                          key={gameId}
-                          initial={{ opacity: 0, scale: 0.9 }}
-                          animate={{ opacity: 1, scale: 1 }}
-                          className="bg-gradient-to-br from-[#0f1f3a]/60 to-[#0a1628]/60 border border-cyan-400/20 p-4 flex items-center justify-between group hover:border-cyan-400/40 hover:shadow-[0_0_20px_rgba(0,255,255,0.2)] transition-all duration-300 relative overflow-hidden"
-                        >
-                          {/* Hover glow */}
-                          <div className="absolute inset-0 bg-gradient-to-br from-cyan-400/5 via-[#5383E8]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                          
-                          {/* Small corner brackets */}
-                          <div className="absolute top-0 left-0 w-3 h-3 border-t border-l border-cyan-400/30"></div>
-                          <div className="absolute bottom-0 right-0 w-3 h-3 border-b border-r border-cyan-400/30"></div>
-                          
-                          <div className="flex items-center gap-3 relative z-10">
-                            <div className="w-12 h-12 bg-gradient-to-br from-cyan-400/10 to-[#5383E8]/10 border border-cyan-400/30 flex items-center justify-center relative">
-                              <div className="absolute top-0 left-0 w-2 h-2 border-t border-l border-cyan-400/50"></div>
-                              <div className="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-cyan-400/50"></div>
-                              <Image
-                                src={game.icon}
-                                alt={game.name}
-                                width={32}
-                                height={32}
-                                className="w-8 h-8 relative z-10"
-                              />
-                            </div>
-                            <span className="text-white font-mono font-semibold tracking-wide drop-shadow-[0_0_5px_rgba(255,255,255,0.2)]">{game.name}</span>
-                          </div>
-                          <button
-                            onClick={() => removeGamePreference(gameId)}
-                            className="text-red-400 hover:text-red-300 hover:bg-red-400/20 p-2 border border-transparent hover:border-red-400/30 transition-all relative z-10"
-                            title="Remove game"
-                          >
-                            <FiTrash2 className="w-4 h-4" />
-                          </button>
-                        </motion.div>
-                      );
-                    })}
-                  </div>
-                )}
-
                 {/* League of Legends Account Section */}
-                {userProfile.gamePreferences.includes('league-of-legends') && (
-                  <div className="mt-6 pt-6 border-t border-cyan-400/20">
+                <div className="mt-6 pt-6 border-t border-cyan-400/20">
                     <div className="flex items-center justify-between mb-4">
                       <h3 className="text-white font-mono font-bold tracking-wider uppercase text-sm flex items-center gap-2 drop-shadow-[0_0_10px_rgba(255,255,255,0.3)]">
                         <Image
@@ -565,9 +411,7 @@ export default function ProfilePage() {
                         </motion.button>
                       </div>
                     )}
-                  </div>
-                )}
-              </div>
+                </div>
             </motion.div>
           </div>
         </div>
@@ -663,71 +507,6 @@ export default function ProfilePage() {
                   />
                 </motion.button>
               ))}
-            </div>
-          </motion.div>
-        </div>
-      )}
-
-      {/* Game Selector Modal */}
-      {showGameSelector && (
-        <div className="fixed inset-0 bg-black/70 backdrop-blur-md z-50 flex items-center justify-center p-4">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="bg-gradient-to-br from-[#0a1628] via-[#0f1f3a] to-[#0a1628] rounded-none p-6 border-2 border-cyan-400/30 shadow-[0_0_40px_rgba(0,255,255,0.3)] max-w-md w-full relative overflow-hidden"
-          >
-            {/* Corner brackets */}
-            <div className="absolute top-0 left-0 w-8 h-8 border-t-2 border-l-2 border-cyan-400/50"></div>
-            <div className="absolute top-0 right-0 w-8 h-8 border-t-2 border-r-2 border-cyan-400/50"></div>
-            <div className="absolute bottom-0 left-0 w-8 h-8 border-b-2 border-l-2 border-cyan-400/50"></div>
-            <div className="absolute bottom-0 right-0 w-8 h-8 border-b-2 border-r-2 border-cyan-400/50"></div>
-            
-            <div className="flex items-center justify-between mb-6 relative z-10">
-              <h3 className="text-lg font-bold text-cyan-400 font-mono tracking-wider uppercase drop-shadow-[0_0_10px_rgba(0,255,255,0.4)]">ADD GAME</h3>
-              <button
-                onClick={() => setShowGameSelector(false)}
-                className="text-gray-400 hover:text-cyan-400 transition-colors p-2 hover:bg-cyan-400/10 border border-transparent hover:border-cyan-400/30"
-              >
-                <FiX className="w-5 h-5" />
-              </button>
-            </div>
-            
-            <div className="space-y-3 relative z-10">
-              {availableGamesToAdd.length === 0 ? (
-                <div className="text-gray-400 font-mono text-sm text-center py-4">
-                  All available games have been added!
-                </div>
-              ) : (
-                availableGamesToAdd.map((game) => (
-                  <motion.button
-                    key={game.id}
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    onClick={() => addGamePreference(game.id)}
-                    className="w-full bg-gradient-to-br from-[#0f1f3a]/60 to-[#0a1628]/60 border border-cyan-400/20 hover:border-cyan-400/40 hover:shadow-[0_0_20px_rgba(0,255,255,0.2)] p-4 flex items-center gap-3 transition-all duration-300 relative overflow-hidden group"
-                  >
-                    {/* Hover glow */}
-                    <div className="absolute inset-0 bg-gradient-to-br from-cyan-400/5 via-[#5383E8]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                    
-                    {/* Small corner brackets */}
-                    <div className="absolute top-0 left-0 w-3 h-3 border-t border-l border-cyan-400/30"></div>
-                    <div className="absolute bottom-0 right-0 w-3 h-3 border-b border-r border-cyan-400/30"></div>
-                    
-                    <div className="w-12 h-12 bg-gradient-to-br from-cyan-400/10 to-[#5383E8]/10 border border-cyan-400/30 flex items-center justify-center relative z-10">
-                      <div className="absolute top-0 left-0 w-2 h-2 border-t border-l border-cyan-400/50"></div>
-                      <div className="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-cyan-400/50"></div>
-                      <Image
-                        src={game.icon}
-                        alt={game.name}
-                        width={32}
-                        height={32}
-                        className="w-8 h-8"
-                      />
-                    </div>
-                    <span className="text-white font-mono font-semibold tracking-wide relative z-10">{game.name}</span>
-                  </motion.button>
-                ))
-              )}
             </div>
           </motion.div>
         </div>

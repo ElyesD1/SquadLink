@@ -22,8 +22,8 @@ export default function WelcomePage() {
     const autoLoginData = storage.getAutoLogin();
     
     if (rememberMe && session && autoLoginData) {
-      // User is logged in and has remember me enabled, redirect to home
-      router.push('/home');
+      // User is logged in and has remember me enabled, redirect to profile
+      router.push('/profile');
     } else if (rememberMe && !session) {
       // Remember me is enabled but no session, clear auto login data
       storage.clearAutoLogin();

@@ -91,7 +91,7 @@ export default function LoginPage() {
           storage.clearAutoLogin();
         }
         
-        router.push('/home');
+        router.push('/profile');
       }
     } catch {
       setError('Something went wrong. Please try again.');
@@ -111,7 +111,7 @@ export default function LoginPage() {
       });
     }
     
-    signIn('google', { callbackUrl: '/home' });
+    signIn('google', { callbackUrl: '/profile' });
   };
 
   return (
