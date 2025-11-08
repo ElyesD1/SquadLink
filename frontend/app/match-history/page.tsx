@@ -1765,13 +1765,13 @@ export default function MatchHistoryPage() {
         {/* Main Grid Layout - stacked on mobile, 12-col at lg+ to preserve desktop layout */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
           {/* Left Sidebar - Profile & Stats */}
-          <div className="col-span-12 lg:col-span-3 space-y-4">
+          <div className="col-span-12 lg:col-span-3 space-y-2 sm:space-y-4">
             {/* Profile Card */}
             {getCurrentAccount() && (
               <motion.div
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
-                className="bg-gradient-to-br from-[#0a1628] via-[#0f1f3a] to-[#0a1628] rounded-none p-6 border-2 border-cyan-400/20 shadow-[0_0_30px_rgba(83,131,232,0.2)] relative overflow-hidden"
+                className="bg-gradient-to-br from-[#0a1628] via-[#0f1f3a] to-[#0a1628] rounded-none p-4 sm:p-6 border-2 border-cyan-400/20 shadow-[0_0_30px_rgba(83,131,232,0.2)] relative overflow-hidden"
               >
                 {/* Top tech line */}
                 <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-cyan-400/50 to-transparent"></div>
@@ -1786,7 +1786,7 @@ export default function MatchHistoryPage() {
                 <div className="absolute bottom-0 right-0 w-8 h-8 border-b-2 border-r-2 border-cyan-400/40"></div>
                 
                 {/* Summoner Info */}
-                <div className="flex items-center space-x-4 mb-6 relative z-10">
+                <div className="flex items-center space-x-4 mb-4 sm:mb-6 relative z-10">
                   <div className="relative group">
                     {/* Icon glow effect */}
                     <div className="absolute inset-0 shadow-[0_0_30px_rgba(0,255,255,0.4)] group-hover:shadow-[0_0_40px_rgba(0,255,255,0.6)] transition-all duration-300"></div>
@@ -1794,7 +1794,7 @@ export default function MatchHistoryPage() {
                     {/* Outer glow border */}
                     <div className="absolute -inset-1 bg-gradient-to-br from-cyan-400 via-[#5383E8] to-cyan-400 opacity-50 blur-md"></div>
                     
-                    <div className="relative w-20 h-20 lg:w-24 lg:h-24 overflow-hidden border-2 border-cyan-400/50 bg-gradient-to-br from-[#0a1628] to-[#1a2f4a]">
+                    <div className="relative w-16 h-16 sm:w-20 sm:h-20 lg:w-24 lg:h-24 overflow-hidden border-2 border-cyan-400/50 bg-gradient-to-br from-[#0a1628] to-[#1a2f4a]">
                       <Image
                         src={lolService.getSummonerIconUrl(getCurrentAccount()?.profileIconId || 0)}
                         alt="Profile Icon"
@@ -1817,7 +1817,7 @@ export default function MatchHistoryPage() {
                     </div>
                   </div>
                   <div className="flex-1">
-                    <h2 className="text-xl font-bold text-white mb-2 drop-shadow-[0_0_10px_rgba(255,255,255,0.3)]">
+                    <h2 className="text-lg sm:text-xl font-bold text-white mb-2 drop-shadow-[0_0_10px_rgba(255,255,255,0.3)]">
                       {getCurrentAccount()?.gameName || 'Unknown'}
                       <span className="text-gray-500 font-mono">#{getCurrentAccount()?.tagLine || 'NA'}</span>
                     </h2>
@@ -1978,7 +1978,7 @@ export default function MatchHistoryPage() {
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.1 }}
-                className="bg-gradient-to-br from-[#0a1628] via-[#0f1f3a] to-[#0a1628] rounded-none p-5 border-2 border-cyan-400/20 shadow-[0_0_30px_rgba(83,131,232,0.2)] relative overflow-hidden"
+                className="bg-gradient-to-br from-[#0a1628] via-[#0f1f3a] to-[#0a1628] rounded-none p-4 sm:p-5 border-2 border-cyan-400/20 shadow-[0_0_30px_rgba(83,131,232,0.2)] relative overflow-hidden"
               >
                 {/* Top tech line */}
                 <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-cyan-400/50 to-transparent"></div>
@@ -2055,7 +2055,7 @@ export default function MatchHistoryPage() {
                     .slice(0, 5);
                   
                   return (
-                    <div className="space-y-2 relative z-10">
+                    <div className="space-y-1 sm:space-y-2 relative z-10">
                       {/* Table Header - stack on xs, grid on sm+ to preserve desktop */}
                       <div className="grid grid-cols-1 sm:grid-cols-12 gap-2 pb-2 border-b border-cyan-400/20 text-xs font-mono text-gray-500 uppercase tracking-wider">
                         <div className="sm:col-span-5">Summoner</div>
@@ -2073,7 +2073,7 @@ export default function MatchHistoryPage() {
                             <button 
                               key={teammate.puuid}
                               onClick={() => navigateToSummoner(teammate.gameName, teammate.tagLine, getCurrentAccount()?.region)}
-                              className="grid grid-cols-1 sm:grid-cols-12 gap-2 items-center py-2 border-b border-cyan-400/10 hover:bg-cyan-400/5 transition-colors group w-full text-left cursor-pointer"
+                              className="grid grid-cols-1 sm:grid-cols-12 gap-2 items-center py-1 sm:py-2 border-b border-cyan-400/10 hover:bg-cyan-400/5 transition-colors group w-full text-left cursor-pointer"
                             >
                               {/* Summoner Info */}
                                 <div className="sm:col-span-5 flex items-center space-x-2">
