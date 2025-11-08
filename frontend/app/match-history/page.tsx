@@ -1761,7 +1761,7 @@ export default function MatchHistoryPage() {
 
       {/* Mobile scroll/zoom wrapper: on mobile keep inner min-width to preserve desktop layout and allow pan/zoom */}
       <div className="overflow-auto sm:overflow-visible" style={{ WebkitOverflowScrolling: 'touch' }}>
-        <div className="container mx-auto px-3 sm:px-4 pb-6 max-w-[1400px] min-w-[1200px] sm:min-w-0">
+  <div className="container mx-auto px-3 sm:px-4 pb-6 max-w-[1400px] min-w-0 sm:min-w-[1200px]">
         {/* Main Grid Layout - stacked on mobile, 12-col at lg+ to preserve desktop layout */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
           {/* Left Sidebar - Profile & Stats */}
@@ -1771,7 +1771,7 @@ export default function MatchHistoryPage() {
               <motion.div
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
-                className="bg-gradient-to-br from-[#0a1628] via-[#0f1f3a] to-[#0a1628] rounded-none p-3 sm:p-6 border-2 border-cyan-400/20 shadow-[0_0_30px_rgba(83,131,232,0.2)] relative overflow-hidden"
+                className="bg-gradient-to-br from-[#0a1628] via-[#0f1f3a] to-[#0a1628] rounded-none p-3 sm:p-6 border-2 border-cyan-400/20 shadow-[0_0_30px_rgba(83,131,232,0.2)] relative overflow-hidden w-full max-w-full"
               >
                 {/* Top tech line */}
                 <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-cyan-400/50 to-transparent"></div>
@@ -1786,7 +1786,7 @@ export default function MatchHistoryPage() {
                 <div className="absolute bottom-0 right-0 w-8 h-8 border-b-2 border-r-2 border-cyan-400/40"></div>
                 
                 {/* Summoner Info */}
-                <div className="flex flex-col sm:flex-row items-center space-y-2 sm:space-y-0 sm:space-x-4 mb-4 sm:mb-6 relative z-10">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-4 mb-4 sm:mb-6 relative z-10">
                   <div className="relative group">
                     {/* Icon glow effect */}
                     <div className="absolute inset-0 shadow-[0_0_30px_rgba(0,255,255,0.4)] group-hover:shadow-[0_0_40px_rgba(0,255,255,0.6)] transition-all duration-300"></div>
@@ -1978,7 +1978,7 @@ export default function MatchHistoryPage() {
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.1 }}
-                className="bg-gradient-to-br from-[#0a1628] via-[#0f1f3a] to-[#0a1628] rounded-none p-3 sm:p-5 border-2 border-cyan-400/20 shadow-[0_0_30px_rgba(83,131,232,0.2)] relative overflow-hidden"
+                className="bg-gradient-to-br from-[#0a1628] via-[#0f1f3a] to-[#0a1628] rounded-none p-3 sm:p-5 border-2 border-cyan-400/20 shadow-[0_0_30px_rgba(83,131,232,0.2)] relative overflow-hidden w-full max-w-full"
               >
                 {/* Top tech line */}
                 <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-cyan-400/50 to-transparent"></div>
@@ -1991,7 +1991,7 @@ export default function MatchHistoryPage() {
                 <div className="absolute top-0 right-0 w-8 h-8 border-t-2 border-r-2 border-cyan-400/40"></div>
                 
                 {/* Header */}
-                <div className="flex items-center justify-between mb-4 relative z-10">
+                <div className="flex items-start sm:items-center justify-between mb-4 relative z-10">
                   <h3 className="text-xs sm:text-sm font-bold text-white font-mono tracking-wider uppercase drop-shadow-[0_0_10px_rgba(255,255,255,0.3)]">
                     Recently Played With
                   </h3>
@@ -2073,7 +2073,7 @@ export default function MatchHistoryPage() {
                             <button 
                               key={teammate.puuid}
                               onClick={() => navigateToSummoner(teammate.gameName, teammate.tagLine, getCurrentAccount()?.region)}
-                              className="grid grid-cols-1 sm:grid-cols-12 gap-2 items-center py-1 sm:py-2 border-b border-cyan-400/10 hover:bg-cyan-400/5 transition-colors group w-full text-left cursor-pointer"
+                              className="grid grid-cols-1 sm:grid-cols-12 gap-2 items-start sm:items-center py-1 sm:py-2 border-b border-cyan-400/10 hover:bg-cyan-400/5 transition-colors group w-full text-left cursor-pointer"
                             >
                               {/* Summoner Info */}
                                 <div className="sm:col-span-5 flex items-center space-x-2">
@@ -2528,7 +2528,7 @@ export default function MatchHistoryPage() {
 
             {/* Matches List */}
             {getCurrentAccount() && (
-              <div className="space-y-2">
+              <div className="flex sm:block sm:space-y-2 overflow-x-auto sm:overflow-visible space-x-3 sm:space-x-0 px-2 -mx-2">
                 {getFilteredMatches().length === 0 ? (
                   <motion.div
                     initial={{ opacity: 0, y: 10 }}
@@ -2569,7 +2569,7 @@ export default function MatchHistoryPage() {
                         playerData.win
                           ? 'bg-gradient-to-r from-[#0a1628] via-[#0f1f3a] to-[#0a1628] shadow-[0_0_20px_rgba(83,131,232,0.15)] hover:shadow-[0_0_30px_rgba(83,131,232,0.3)]'
                           : 'bg-gradient-to-r from-[#1a0a0f] via-[#2d1419] to-[#1a0a0f] shadow-[0_0_20px_rgba(232,64,87,0.15)] hover:shadow-[0_0_30px_rgba(232,64,87,0.3)]'
-                      }`}
+                      } min-w-[300px] sm:min-w-0 flex-shrink-0`}
                     >
                       {/* Futuristic Side Accent */}
                       <div className={`absolute left-0 top-0 bottom-0 w-1 ${
