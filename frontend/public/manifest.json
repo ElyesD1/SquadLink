@@ -3,15 +3,68 @@
   "short_name": "SquadLink",
   "description": "Find your League of Legends squad and dominate the Rift together",
   "start_url": "/",
+  "scope": "/",
   "display": "standalone",
+  "orientation": "any",
   "background_color": "#050a15",
   "theme_color": "#00ffff",
+  "dir": "ltr",
+  "lang": "en",
+  "categories": ["games", "social", "entertainment"],
   "icons": [
+    {
+      "src": "/icon.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
     {
       "src": "/Logo-Photoroom.png",
       "sizes": "any",
       "type": "image/png",
       "purpose": "any maskable"
     }
-  ]
+  ],
+  "screenshots": [],
+  "shortcuts": [
+    {
+      "name": "Match History",
+      "short_name": "Matches",
+      "description": "View your match history",
+      "url": "/match-history",
+      "icons": [
+        {
+          "src": "/icon.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Parties",
+      "short_name": "Parties",
+      "description": "Create or join a party",
+      "url": "/parties",
+      "icons": [
+        {
+          "src": "/icon.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    }
+  ],
+  "prefer_related_applications": false
 }
