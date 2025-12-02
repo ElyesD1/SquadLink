@@ -59,7 +59,17 @@ export default function NavigationDrawer({ children }: NavigationDrawerProps) {
   ];
 
   const handleSignOut = async () => {
-    await signOut({ redirect: true, callbackUrl: '/auth/login' });
+    // Clear all client-side storage
+    if (typeof window !== 'undefined') {
+      localStorage.clear();
+      sessionStorage.clear();
+    }
+    
+    // Sign out and redirect to login
+    await signOut({ 
+      callbackUrl: '/auth/login',
+      redirect: true 
+    });
   };
 
   return (

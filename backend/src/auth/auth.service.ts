@@ -63,7 +63,14 @@ export class AuthService {
     }
 
     const userId = (user as any)._id.toString();
-    const payload = { sub: userId, email: user.email };
+    
+    // Create JWT payload with user info and timestamp
+    const payload = { 
+      sub: userId, 
+      email: user.email,
+      iat: Math.floor(Date.now() / 1000), // Issued at timestamp
+    };
+    
     return {
       access_token: this.jwtService.sign(payload),
       user: {
@@ -111,7 +118,14 @@ export class AuthService {
 
   async googleLogin(user: User) {
     const userId = (user as any)._id.toString();
-    const payload = { sub: userId, email: user.email };
+    
+    // Create JWT payload with user info and timestamp
+    const payload = { 
+      sub: userId, 
+      email: user.email,
+      iat: Math.floor(Date.now() / 1000), // Issued at timestamp
+    };
+    
     return {
       access_token: this.jwtService.sign(payload),
       user: {
@@ -156,7 +170,14 @@ export class AuthService {
     }
 
     const userId = (user as any)._id.toString();
-    const payload = { sub: userId, email: user.email };
+    
+    // Create JWT payload with user info and timestamp
+    const payload = { 
+      sub: userId, 
+      email: user.email,
+      iat: Math.floor(Date.now() / 1000), // Issued at timestamp
+    };
+    
     return {
       access_token: this.jwtService.sign(payload),
       user: {

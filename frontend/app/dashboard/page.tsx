@@ -22,8 +22,18 @@ export default function DashboardPage() {
     }
   }, [isAuthenticated, isLoading, isOnline, router]);
 
-  const handleLogout = () => {
-    signOut({ callbackUrl: '/' });
+  const handleLogout = async () => {
+    // Clear all client-side storage
+    if (typeof window !== 'undefined') {
+      localStorage.clear();
+      sessionStorage.clear();
+    }
+    
+    // Sign out and redirect to login
+    await signOut({ 
+      callbackUrl: '/auth/login',
+      redirect: true 
+    });
   };
 
   if (isLoading) {

@@ -77,7 +77,7 @@ const handler = NextAuth({
     async signIn({ user, account, profile }) {
       if (account?.provider === 'google') {
         try {
-          // Check if user exists or create new user
+          // Send Google user data to backend to get/create user and receive access token
           const googleProfile = profile as GoogleProfile;
           const res = await fetch(`${API_URL}/auth/google`, {
             method: 'POST',
@@ -91,19 +91,26 @@ const handler = NextAuth({
           });
           
           if (res.ok) {
+            const data = await res.json();
+            // CRITICAL FIX: Store the backend access token in the user object
+            // This will be passed to the JWT callback
+            (user as ExtendedUser).accessToken = data.access_token;
+            (user as ExtendedUser).id = data.user.id;
+            (user as ExtendedUser).name = `${data.user.firstName} ${data.user.lastName}`;
             return true;
           }
+          return false;
         } catch (error) {
           console.error('Google OAuth error:', error);
+          return false;
         }
       }
       return true;
     },
     async jwt({ token, user, account, trigger }) {
-      // CRITICAL FIX: Use trigger === 'signIn' instead of user && account
-      // user && account only works on FIRST login, not subsequent logins
-      // trigger === 'signIn' fires EVERY time user signs in
-      if (trigger === 'signIn' && user) {
+      // CRITICAL FIX: Completely replace token on new sign-in
+      // This ensures fresh user data on every login, not just the first one
+      if (trigger === 'signIn' || (user && account)) {
         // This is a new sign-in, completely replace token with fresh user data
         console.log('JWT Callback - New Sign In:', { userId: (user as ExtendedUser).id, email: (user as ExtendedUser).email });
         return {

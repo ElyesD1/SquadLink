@@ -74,20 +74,12 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      // CRITICAL: Clear all cookies and session data first
-      // Delete all NextAuth cookies manually
-      document.cookie.split(';').forEach(c => {
-        const cookieName = c.split('=')[0].trim();
-        if (cookieName.includes('next-auth') || cookieName.includes('session')) {
-          document.cookie = `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
-        }
-      });
-      
-      // Sign out to clear server-side session
+      // CRITICAL: Sign out first to clear any existing session
+      // This ensures no stale user data persists
       await signOut({ redirect: false });
       
-      // Wait for cleanup to complete
-      await new Promise(resolve => setTimeout(resolve, 200));
+      // Wait a moment for cleanup to complete
+      await new Promise(resolve => setTimeout(resolve, 100));
       
       const result = await signIn('credentials', {
         redirect: false,

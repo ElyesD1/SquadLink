@@ -110,8 +110,18 @@ export default function ProfilePage() {
     }
   };
 
-  const handleLogout = () => {
-    signOut({ callbackUrl: '/' });
+  const handleLogout = async () => {
+    // Clear all client-side storage
+    if (typeof window !== 'undefined') {
+      localStorage.clear();
+      sessionStorage.clear();
+    }
+    
+    // Sign out and redirect to login
+    await signOut({ 
+      callbackUrl: '/auth/login',
+      redirect: true 
+    });
   };
 
   const handleLolAccountSuccess = (accountData: any) => {

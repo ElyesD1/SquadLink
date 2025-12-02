@@ -53,4 +53,16 @@ export class AuthController {
     // Redirect to frontend with token
     res.redirect(`${frontendUrl}/auth/callback?token=${result.access_token}`);
   }
+
+  @Post('logout')
+  async logout(@Request() req, @Res() res: Response) {
+    // Clear any server-side session data if needed
+    // For JWT-based auth, logout is primarily client-side
+    // but we can invalidate tokens here if we implement a token blacklist
+    
+    return res.status(200).json({ 
+      message: 'Logged out successfully',
+      success: true 
+    });
+  }
 }

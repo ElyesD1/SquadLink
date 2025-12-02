@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Calendar, ChevronLeft, ChevronRight } from 'lucide-react';
 import { format, subYears, startOfDay, differenceInYears, startOfMonth, endOfMonth, eachDayOfInterval, isSameDay, addMonths, subMonths, getYear, getMonth } from 'date-fns';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -14,11 +14,22 @@ interface DatePickerProps {
 export function DatePicker({ value, onChange, placeholder = "Select your birth date" }: DatePickerProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(value);
-  const [currentMonth, setCurrentMonth] = useState<Date>(value || subYears(new Date(), 25));
-
-  const today = new Date();
-  const minDate = subYears(today, 120); // 120 years ago
-  const maxDate = subYears(today, 13); // 13 years ago (minimum age)
+  
+  // Use useMemo to create stable date values that won't cause hydration mismatches
+  const today = useMemo(() => new Date(), []);
+  const minDate = useMemo(() => subYears(today, 120), [today]); // 120 years ago
+  const maxDate = useMemo(() => subYears(today, 13), [today]); // 13 years ago (minimum age)
+  const defaultMonth = useMemo(() => subYears(today, 25), [today]);
+  
+  const [currentMonth, setCurrentMonth] = useState<Date>(defaultMonth);
+  
+  // Sync with prop changes
+  useEffect(() => {
+    if (value) {
+      setSelectedDate(value);
+      setCurrentMonth(value);
+    }
+  }, [value]);
 
   const handleDateSelect = (date: Date) => {
     // Check if date is within valid range
