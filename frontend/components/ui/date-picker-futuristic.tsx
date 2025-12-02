@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import { Calendar, ChevronLeft, ChevronRight } from 'lucide-react';
 import { format, subYears, startOfDay, differenceInYears, startOfMonth, endOfMonth, eachDayOfInterval, isSameDay, addMonths, subMonths, getYear, getMonth } from 'date-fns';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -12,24 +12,40 @@ interface DatePickerProps {
 }
 
 export function DatePicker({ value, onChange, placeholder = "Select your birth date" }: DatePickerProps) {
+  const [mounted, setMounted] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(value);
+  const [currentMonth, setCurrentMonth] = useState<Date | null>(null);
   
-  // Use useMemo to create stable date values that won't cause hydration mismatches
-  const today = useMemo(() => new Date(), []);
-  const minDate = useMemo(() => subYears(today, 120), [today]); // 120 years ago
-  const maxDate = useMemo(() => subYears(today, 13), [today]); // 13 years ago (minimum age)
-  const defaultMonth = useMemo(() => subYears(today, 25), [today]);
-  
-  const [currentMonth, setCurrentMonth] = useState<Date>(defaultMonth);
-  
-  // Sync with prop changes
+  // Only initialize dates after component mounts (client-side only)
   useEffect(() => {
-    if (value) {
-      setSelectedDate(value);
-      setCurrentMonth(value);
+    setMounted(true);
+    const today = new Date();
+    if (!currentMonth) {
+      setCurrentMonth(value || subYears(today, 25));
     }
-  }, [value]);
+  }, [value, currentMonth]);
+  
+  // Return early during SSR to prevent hydration issues
+  if (!mounted || !currentMonth) {
+    return (
+      <div className="relative">
+        <div className="relative cursor-pointer opacity-50">
+          <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-cyan-400/60" />
+          <div 
+            className="pl-12 pr-4 py-3 h-12 bg-[#0f1f3a]/50 border-2 border-cyan-400/30 flex items-center"
+            style={{ clipPath: 'polygon(3px 0, 100% 0, 100% calc(100% - 3px), calc(100% - 3px) 100%, 0 100%, 0 3px)' }}
+          >
+            <span className="text-gray-500">{placeholder}</span>
+          </div>
+        </div>
+      </div>
+    );
+  }
+  
+  const today = new Date();
+  const minDate = subYears(today, 120); // 120 years ago
+  const maxDate = subYears(today, 13); // 13 years ago (minimum age)
 
   const handleDateSelect = (date: Date) => {
     // Check if date is within valid range

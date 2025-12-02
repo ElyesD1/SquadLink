@@ -2,6 +2,11 @@
 
 import { useState, useMemo, useEffect } from 'react';
 import { signIn } from 'next-auth/react';
+
+// Force dynamic rendering - no caching
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+export const fetchCache = 'force-no-store';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';

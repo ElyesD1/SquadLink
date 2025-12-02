@@ -2,6 +2,11 @@
 
 import { useState, useEffect } from 'react';
 import { signIn, signOut } from 'next-auth/react';
+
+// Force dynamic rendering - no caching
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+export const fetchCache = 'force-no-store';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -74,13 +79,8 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      // CRITICAL: Sign out first to clear any existing session
-      // This ensures no stale user data persists
-      await signOut({ redirect: false });
-      
-      // Wait a moment for cleanup to complete
-      await new Promise(resolve => setTimeout(resolve, 100));
-      
+      // Direct login without pre-clearing session
+      // NextAuth and middleware handle session cleanup
       const result = await signIn('credentials', {
         redirect: false,
         email: formData.email,
