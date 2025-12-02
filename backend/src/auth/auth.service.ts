@@ -29,9 +29,10 @@ export class AuthService {
     });
 
     const userId = (user as any)._id.toString();
-    const payload = { sub: userId, email: user.email };
+    
+    // Return user data without access token to prevent auto-login
     return {
-      access_token: this.jwtService.sign(payload),
+      message: 'User registered successfully',
       user: {
         id: userId,
         firstName: user.firstName,

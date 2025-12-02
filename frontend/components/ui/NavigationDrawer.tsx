@@ -18,6 +18,7 @@ import {
   Zap
 } from 'lucide-react';
 import { signOut } from 'next-auth/react';
+import { storage } from '@/lib/storage';
 import { AnimatedLogo } from '@/components/ui/AnimatedLogo';
 
 interface NavigationDrawerProps {
@@ -59,6 +60,8 @@ export default function NavigationDrawer({ children }: NavigationDrawerProps) {
   ];
 
   const handleSignOut = async () => {
+    // Clear all local storage auth data
+    storage.clearAutoLogin();
     await signOut({ redirect: true, callbackUrl: '/auth/login' });
   };
 

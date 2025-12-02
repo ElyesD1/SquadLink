@@ -1,8 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { signIn } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
@@ -14,7 +14,8 @@ import {
   Mail, 
   Lock, 
   Zap, 
-  AlertCircle, 
+  AlertCircle,
+  CheckCircle,
   ArrowRight, 
   Users, 
   Shield, 
@@ -51,15 +52,24 @@ const PARTICLE_POSITIONS = [
 
 export default function LoginPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [formData, setFormData] = useState({
     email: '',
     password: '',
   });
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(storage.getRememberMe());
   const [showPasswordReset, setShowPasswordReset] = useState(false);
+
+  // Check if user just registered
+  useEffect(() => {
+    if (searchParams.get('registered') === 'true') {
+      setSuccess('Account created successfully! Please login with your credentials.');
+    }
+  }, [searchParams]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -67,6 +77,9 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
+      // Clear any existing sessions before login
+      storage.clearAutoLogin();
+      
       const result = await signIn('credentials', {
         redirect: false,
         email: formData.email,
@@ -101,6 +114,9 @@ export default function LoginPage() {
   };
 
   const handleGoogleSignIn = () => {
+    // Clear any existing sessions before Google OAuth
+    storage.clearAutoLogin();
+    
     // Store remember me preference before Google OAuth
     storage.setRememberMe(rememberMe);
     
@@ -395,6 +411,18 @@ export default function LoginPage() {
                 >
                   <AlertCircle className="w-5 h-5 flex-shrink-0" />
                   <p className="text-sm font-medium">{error}</p>
+                </motion.div>
+              )}
+              
+              {success && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="flex items-center gap-2 p-4 bg-cyan-500/10 border border-cyan-500/30 text-cyan-400"
+                  style={{ clipPath: 'polygon(4px 0, 100% 0, 100% calc(100% - 4px), calc(100% - 4px) 100%, 0 100%, 0 4px)' }}
+                >
+                  <CheckCircle className="w-5 h-5 flex-shrink-0" />
+                  <p className="text-sm font-medium">{success}</p>
                 </motion.div>
               )}
 

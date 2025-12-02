@@ -1,4 +1,5 @@
 import NextAuth from 'next-auth';
+import type { Session, DefaultSession } from 'next-auth';
 import GoogleProvider from 'next-auth/providers/google';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import { API_URL } from '@/lib/constants';
@@ -15,8 +16,14 @@ interface ExtendedUser {
   accessToken?: string;
 }
 
-interface ExtendedSession {
+interface ExtendedSession extends Session {
   accessToken?: string;
+  user?: {
+    id?: string;
+    name?: string | null;
+    email?: string | null;
+    image?: string | null;
+  };
 }
 
 const handler = NextAuth({
@@ -94,13 +101,22 @@ const handler = NextAuth({
     },
     async jwt({ token, user, account }) {
       if (account && user) {
+        // Store the access token and user ID in the JWT token
         token.accessToken = (user as ExtendedUser).accessToken;
+        token.userId = (user as ExtendedUser).id;
+        token.email = (user as ExtendedUser).email;
       }
       return token;
     },
     async session({ session, token }) {
-      (session as ExtendedSession).accessToken = token.accessToken as string;
-      return session;
+      // Add access token and user ID to the session
+      const extendedSession = session as ExtendedSession;
+      extendedSession.accessToken = token.accessToken as string;
+      if (extendedSession.user) {
+        extendedSession.user.id = token.userId as string;
+        extendedSession.user.email = token.email as string;
+      }
+      return extendedSession;
     },
   },
   pages: {

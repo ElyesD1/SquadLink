@@ -105,15 +105,10 @@ export default function RegisterPage() {
 
       setSuccess(true);
       
-      // Auto sign in after registration
-      setTimeout(async () => {
-        await signIn('credentials', {
-          redirect: false,
-          email: formData.email,
-          password: formData.password,
-        });
-        router.push('/home');
-      }, 1500);
+      // Redirect to login page after successful registration
+      setTimeout(() => {
+        router.push('/auth/login?registered=true');
+      }, 2000);
     } catch (err: any) {
       setError(err.message || 'Something went wrong. Please try again.');
     } finally {
@@ -137,7 +132,7 @@ export default function RegisterPage() {
 
   if (success) {
     return (
-      <div className="min-h-screen flex items-center justify-center p-6 bg-background">
+      <div className="min-h-screen flex items-center justify-center p-6 bg-gradient-to-br from-[#0a1628] via-[#050a15] to-[#0f1f3a]">
         <motion.div
           initial={{ scale: 0.8, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
@@ -146,12 +141,12 @@ export default function RegisterPage() {
           <motion.div
             animate={{ scale: [1, 1.2, 1] }}
             transition={{ repeat: Infinity, duration: 2 }}
-            className="w-24 h-24 mx-auto bg-gradient-to-br from-green-500 to-emerald-500 rounded-full flex items-center justify-center"
+            className="w-24 h-24 mx-auto bg-gradient-to-br from-cyan-400 to-blue-500 rounded-full flex items-center justify-center"
           >
-            <CheckCircle className="w-12 h-12 text-white" />
+            <CheckCircle className="w-12 h-12 text-black" />
           </motion.div>
-          <h2 className="text-3xl font-black">Welcome to SquadLink!</h2>
-          <p className="text-muted-foreground">Redirecting you to your dashboard...</p>
+          <h2 className="text-3xl font-black text-cyan-400">Account Created Successfully!</h2>
+          <p className="text-gray-400">Redirecting you to login page...</p>
         </motion.div>
       </div>
     );
