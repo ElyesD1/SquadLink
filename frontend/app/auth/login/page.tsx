@@ -78,14 +78,14 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      // CRITICAL: Complete auth reset before login
-      completeAuthReset();
+      // CRITICAL: Complete aggressive auth reset before login
+      await completeAuthReset();
       
       // Sign out first to clear any existing session
       await signOut({ redirect: false });
       
-      // Small delay to ensure session is cleared
-      await new Promise(resolve => setTimeout(resolve, 200));
+      // Longer delay to ensure all cookies are cleared
+      await new Promise(resolve => setTimeout(resolve, 300));
       
       const result = await signIn('credentials', {
         redirect: false,
@@ -95,7 +95,8 @@ export default function LoginPage() {
 
       if (result?.error) {
         setError('Invalid email or password. Please try again.');
-      } else {
+        setLoading(false);
+      } else if (result?.ok) {
         // Store remember me preference
         storage.setRememberMe(rememberMe);
         
@@ -108,20 +109,25 @@ export default function LoginPage() {
           });
         }
         
-        // Force page reload to ensure clean session
-        window.location.href = '/profile';
+        // Force hard reload to ensure completely fresh session
+        window.location.replace('/profile');
+      } else {
+        setError('Login failed. Please try again.');
+        setLoading(false);
       }
     } catch (err) {
       console.error('Login error:', err);
       setError('Something went wrong. Please try again.');
-    } finally {
       setLoading(false);
     }
   };
 
-  const handleGoogleSignIn = () => {
+  const handleGoogleSignIn = async () => {
     // Complete auth reset before Google OAuth
-    completeAuthReset();
+    await completeAuthReset();
+    
+    // Small delay after reset
+    await new Promise(resolve => setTimeout(resolve, 200));
     
     // Store remember me preference before Google OAuth
     storage.setRememberMe(rememberMe);

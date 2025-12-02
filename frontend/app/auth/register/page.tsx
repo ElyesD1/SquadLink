@@ -83,6 +83,7 @@ export default function RegisterPage() {
 
   const submitRegistration = async (age: number) => {
     setLoading(true);
+    setError(''); // Clear any previous errors
     
     try {
       const response = await fetch(`${API_URL}/auth/register`, {
@@ -103,16 +104,19 @@ export default function RegisterPage() {
         throw new Error(data.message || 'Registration failed');
       }
 
+      // Registration successful
       setSuccess(true);
       
-      // Redirect to login page after successful registration
+      // Wait a bit to show success message, then redirect
       setTimeout(() => {
-        router.push('/auth/login?registered=true');
-      }, 2000);
+        // Use replace to prevent going back to register page
+        window.location.replace('/auth/login?registered=true');
+      }, 2500);
     } catch (err: any) {
+      console.error('Registration error:', err);
       setError(err.message || 'Something went wrong. Please try again.');
-    } finally {
       setLoading(false);
+      setSuccess(false);
     }
   };
 

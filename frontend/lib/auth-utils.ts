@@ -12,21 +12,31 @@ export function clearAllAuthCookies() {
   // Get all cookies
   const cookies = document.cookie.split(';');
   
-  // Clear all cookies related to NextAuth
+  // Clear all cookies (not just NextAuth ones)
   cookies.forEach(cookie => {
     const cookieName = cookie.split('=')[0].trim();
     
-    // Clear NextAuth specific cookies
-    if (
-      cookieName.startsWith('next-auth') ||
-      cookieName.startsWith('__Secure-next-auth') ||
-      cookieName.startsWith('__Host-next-auth')
-    ) {
-      // Clear cookie for all possible paths and domains
-      document.cookie = `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
-      document.cookie = `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=${window.location.hostname};`;
-      document.cookie = `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=.${window.location.hostname};`;
-    }
+    // Multiple deletion attempts with different configurations
+    const deletionConfigs = [
+      { path: '/', domain: '' },
+      { path: '/', domain: window.location.hostname },
+      { path: '/', domain: `.${window.location.hostname}` },
+      { path: '/', domain: window.location.hostname.split('.').slice(-2).join('.') },
+      { path: '/', domain: `.${window.location.hostname.split('.').slice(-2).join('.')}` },
+      { path: '/api/auth', domain: '' },
+      { path: '/api/auth', domain: window.location.hostname },
+    ];
+    
+    deletionConfigs.forEach(config => {
+      document.cookie = `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=${config.path}; ${config.domain ? `domain=${config.domain};` : ''} SameSite=Lax`;
+      document.cookie = `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=${config.path}; ${config.domain ? `domain=${config.domain};` : ''} SameSite=Strict`;
+      document.cookie = `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=${config.path}; ${config.domain ? `domain=${config.domain};` : ''} SameSite=None; Secure`;
+    });
+  });
+  
+  // Force clear any remaining cookies
+  document.cookie.split(';').forEach(c => {
+    document.cookie = c.replace(/^ +/, '').replace(/=.*/, `=;expires=${new Date(0).toUTCString()};path=/`);
   });
 }
 
@@ -37,20 +47,8 @@ export function clearAllAuthStorage() {
   if (typeof window === 'undefined') return;
   
   try {
-    // Clear all localStorage keys related to auth
-    const keysToRemove = [];
-    for (let i = 0; i < localStorage.length; i++) {
-      const key = localStorage.key(i);
-      if (key && (
-        key.includes('auth') ||
-        key.includes('token') ||
-        key.includes('session') ||
-        key.includes('user')
-      )) {
-        keysToRemove.push(key);
-      }
-    }
-    keysToRemove.forEach(key => localStorage.removeItem(key));
+    // Clear ALL localStorage
+    localStorage.clear();
     
     // Clear all sessionStorage
     sessionStorage.clear();
@@ -60,9 +58,41 @@ export function clearAllAuthStorage() {
 }
 
 /**
- * Complete auth reset - clears everything
+ * Clear IndexedDB storage (sometimes used by NextAuth)
  */
-export function completeAuthReset() {
+export async function clearIndexedDB() {
+  if (typeof window === 'undefined') return;
+  
+  try {
+    const dbs = await window.indexedDB.databases();
+    dbs.forEach(db => {
+      if (db.name) {
+        window.indexedDB.deleteDatabase(db.name);
+      }
+    });
+  } catch (error) {
+    console.error('Error clearing IndexedDB:', error);
+  }
+}
+
+/**
+ * Complete auth reset - clears everything aggressively
+ */
+export async function completeAuthReset() {
   clearAllAuthCookies();
   clearAllAuthStorage();
+  await clearIndexedDB();
+  
+  // Additional aggressive clearing
+  if (typeof window !== 'undefined') {
+    try {
+      // Clear service worker caches
+      if ('caches' in window) {
+        const cacheNames = await caches.keys();
+        await Promise.all(cacheNames.map(name => caches.delete(name)));
+      }
+    } catch (error) {
+      console.error('Error clearing caches:', error);
+    }
+  }
 }
