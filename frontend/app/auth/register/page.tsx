@@ -530,11 +530,15 @@ export default function RegisterPage() {
 
                 <div className="space-y-2">
                   <label className="text-sm font-bold font-mono uppercase tracking-wider text-cyan-400">Birth Date</label>
-                  <DatePicker
-                    value={formData.birthDate}
-                    onChange={(date) => setFormData({ ...formData, birthDate: date })}
-                    placeholder="Select your birth date"
-                  />
+                  <div onClick={(e) => e.stopPropagation()}>
+                    <DatePicker
+                      value={formData.birthDate}
+                      onChange={(date) => {
+                        setFormData({ ...formData, birthDate: date });
+                      }}
+                      placeholder="Select your birth date"
+                    />
+                  </div>
                   <p className="text-xs text-gray-500">
                     {formData.birthDate && `Age: ${getAge(formData.birthDate)}`}
                   </p>

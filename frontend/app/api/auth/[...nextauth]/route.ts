@@ -100,10 +100,12 @@ const handler = NextAuth({
       return true;
     },
     async jwt({ token, user, account, trigger }) {
-      // CRITICAL: Always use fresh user data from sign-in
-      // This ensures each login gets the correct user
-      if (user && account) {
-        // This is a new sign-in, completely replace token with new user data
+      // CRITICAL FIX: Use trigger === 'signIn' instead of user && account
+      // user && account only works on FIRST login, not subsequent logins
+      // trigger === 'signIn' fires EVERY time user signs in
+      if (trigger === 'signIn' && user) {
+        // This is a new sign-in, completely replace token with fresh user data
+        console.log('JWT Callback - New Sign In:', { userId: (user as ExtendedUser).id, email: (user as ExtendedUser).email });
         return {
           accessToken: (user as ExtendedUser).accessToken,
           userId: (user as ExtendedUser).id,
@@ -112,7 +114,8 @@ const handler = NextAuth({
         };
       }
       
-      // For session refresh (no user object), return existing token
+      // For session refresh (no trigger), return existing token
+      console.log('JWT Callback - Session Refresh:', { userId: token.userId });
       return token;
     },
     async session({ session, token }) {
@@ -142,10 +145,21 @@ const handler = NextAuth({
   },
   session: {
     strategy: 'jwt',
-    maxAge: 30 * 24 * 60 * 60, // 30 days
+    maxAge: 7 * 24 * 60 * 60, // 7 days (reduced from 30)
   },
   jwt: {
-    maxAge: 30 * 24 * 60 * 60, // 30 days
+    maxAge: 7 * 24 * 60 * 60, // 7 days (reduced from 30)
+  },
+  cookies: {
+    sessionToken: {
+      name: `next-auth.session-token`,
+      options: {
+        httpOnly: true,
+        sameSite: 'lax',
+        path: '/',
+        secure: process.env.NODE_ENV === 'production',
+      },
+    },
   },
   debug: process.env.NODE_ENV === 'development',
 });

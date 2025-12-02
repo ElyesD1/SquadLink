@@ -74,11 +74,20 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      // CRITICAL: Sign out first to clear any existing session/token
+      // CRITICAL: Clear all cookies and session data first
+      // Delete all NextAuth cookies manually
+      document.cookie.split(';').forEach(c => {
+        const cookieName = c.split('=')[0].trim();
+        if (cookieName.includes('next-auth') || cookieName.includes('session')) {
+          document.cookie = `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
+        }
+      });
+      
+      // Sign out to clear server-side session
       await signOut({ redirect: false });
       
-      // Small delay to ensure signOut completes
-      await new Promise(resolve => setTimeout(resolve, 100));
+      // Wait for cleanup to complete
+      await new Promise(resolve => setTimeout(resolve, 200));
       
       const result = await signIn('credentials', {
         redirect: false,
@@ -89,8 +98,8 @@ export default function LoginPage() {
       if (result?.error) {
         setError('Invalid email or password. Please try again.');
       } else if (result?.ok) {
-        // Use router push for clean navigation
-        router.push('/profile');
+        // Force a full page reload to ensure clean session
+        window.location.href = '/profile';
       } else {
         setError('Login failed. Please try again.');
       }
