@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
@@ -33,6 +33,7 @@ import { AnimatedLogo } from '@/components/ui/AnimatedLogo';
 
 export default function RegisterPage() {
   const router = useRouter();
+  const [mounted, setMounted] = useState(false);
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -44,6 +45,15 @@ export default function RegisterPage() {
   const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
   const [showMinorPopup, setShowMinorPopup] = useState(false);
+
+  // Ensure component only renders on client to avoid hydration errors
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    return null;
+  }
 
   const getAge = (birthDate: Date) => {
     return differenceInYears(startOfDay(new Date()), startOfDay(birthDate));

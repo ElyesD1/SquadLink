@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { signIn } from 'next-auth/react';
+import { signIn, signOut } from 'next-auth/react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -74,6 +74,12 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
+      // CRITICAL: Sign out first to clear any existing session/token
+      await signOut({ redirect: false });
+      
+      // Small delay to ensure signOut completes
+      await new Promise(resolve => setTimeout(resolve, 100));
+      
       const result = await signIn('credentials', {
         redirect: false,
         email: formData.email,

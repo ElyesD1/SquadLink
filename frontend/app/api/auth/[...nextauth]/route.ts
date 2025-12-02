@@ -100,16 +100,19 @@ const handler = NextAuth({
       return true;
     },
     async jwt({ token, user, account, trigger }) {
-      // On sign in, store user data in token
-      if (account && user) {
-        token.accessToken = (user as ExtendedUser).accessToken;
-        token.userId = (user as ExtendedUser).id;
-        token.email = (user as ExtendedUser).email;
-        token.name = (user as ExtendedUser).name;
+      // CRITICAL: Always use fresh user data from sign-in
+      // This ensures each login gets the correct user
+      if (user && account) {
+        // This is a new sign-in, completely replace token with new user data
+        return {
+          accessToken: (user as ExtendedUser).accessToken,
+          userId: (user as ExtendedUser).id,
+          email: (user as ExtendedUser).email,
+          name: (user as ExtendedUser).name,
+        };
       }
       
-      // For subsequent requests, token already has the data
-      // Important: Don't modify token on subsequent calls to prevent stale data
+      // For session refresh (no user object), return existing token
       return token;
     },
     async session({ session, token }) {
@@ -122,6 +125,15 @@ const handler = NextAuth({
         extendedSession.user.name = token.name as string;
       }
       return extendedSession;
+    },
+  },
+  events: {
+    async signOut({ token }) {
+      // Clear token data on sign out
+      delete token.accessToken;
+      delete token.userId;
+      delete token.email;
+      delete token.name;
     },
   },
   pages: {
