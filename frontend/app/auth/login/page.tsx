@@ -1,14 +1,13 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { signIn, signOut } from 'next-auth/react';
+import { signIn } from 'next-auth/react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Switch } from '@/components/ui/switch';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { 
   Mail, 
@@ -27,8 +26,6 @@ import {
   BarChart3
 } from 'lucide-react';
 import { FcGoogle } from 'react-icons/fc';
-import { storage } from '@/lib/storage';
-import { completeAuthReset } from '@/lib/auth-utils';
 import { AnimatedLogo } from '@/components/ui/AnimatedLogo';
 import { PasswordResetModal } from '@/components/ui/PasswordResetModal';
 
@@ -62,7 +59,6 @@ export default function LoginPage() {
   const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [rememberMe, setRememberMe] = useState(storage.getRememberMe());
   const [showPasswordReset, setShowPasswordReset] = useState(false);
 
   // Check if user just registered
@@ -78,15 +74,6 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      // CRITICAL: Complete aggressive auth reset before login
-      await completeAuthReset();
-      
-      // Sign out first to clear any existing session
-      await signOut({ redirect: false });
-      
-      // Longer delay to ensure all cookies are cleared
-      await new Promise(resolve => setTimeout(resolve, 300));
-      
       const result = await signIn('credentials', {
         redirect: false,
         email: formData.email,
@@ -95,50 +82,21 @@ export default function LoginPage() {
 
       if (result?.error) {
         setError('Invalid email or password. Please try again.');
-        setLoading(false);
       } else if (result?.ok) {
-        // Store remember me preference
-        storage.setRememberMe(rememberMe);
-        
-        if (rememberMe) {
-          // Store auto-login data for future sessions
-          storage.setAutoLogin({
-            email: formData.email,
-            provider: 'credentials',
-            lastLogin: new Date().toISOString()
-          });
-        }
-        
-        // Force hard reload to ensure completely fresh session
-        window.location.replace('/profile');
+        // Use router push for clean navigation
+        router.push('/profile');
       } else {
         setError('Login failed. Please try again.');
-        setLoading(false);
       }
     } catch (err) {
       console.error('Login error:', err);
       setError('Something went wrong. Please try again.');
+    } finally {
       setLoading(false);
     }
   };
 
-  const handleGoogleSignIn = async () => {
-    // Complete auth reset before Google OAuth
-    await completeAuthReset();
-    
-    // Small delay after reset
-    await new Promise(resolve => setTimeout(resolve, 200));
-    
-    // Store remember me preference before Google OAuth
-    storage.setRememberMe(rememberMe);
-    
-    if (rememberMe) {
-      storage.setAutoLogin({
-        provider: 'google',
-        lastLogin: new Date().toISOString()
-      });
-    }
-    
+  const handleGoogleSignIn = () => {
     signIn('google', { callbackUrl: '/profile' });
   };
 
@@ -510,17 +468,6 @@ export default function LoginPage() {
                       {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                     </button>
                   </div>
-                </div>
-
-                {/* Remember Me Switch */}
-                <div className="pt-2">
-                  <Switch
-                    checked={rememberMe}
-                    onCheckedChange={setRememberMe}
-                    label="Remember me"
-                    description="Stay signed in for faster access"
-                    className="w-full"
-                  />
                 </div>
 
                 <Button

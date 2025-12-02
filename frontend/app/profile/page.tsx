@@ -111,7 +111,6 @@ export default function ProfilePage() {
   };
 
   const handleLogout = () => {
-    storage.clearAutoLogin();
     signOut({ callbackUrl: '/' });
   };
 

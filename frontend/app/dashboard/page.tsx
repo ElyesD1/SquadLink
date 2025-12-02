@@ -23,7 +23,6 @@ export default function DashboardPage() {
   }, [isAuthenticated, isLoading, isOnline, router]);
 
   const handleLogout = () => {
-    storage.clearAutoLogin();
     signOut({ callbackUrl: '/' });
   };
 
