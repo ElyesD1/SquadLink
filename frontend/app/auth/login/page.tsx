@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { signIn } from 'next-auth/react';
+import { signIn, signOut } from 'next-auth/react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -28,6 +28,7 @@ import {
 } from 'lucide-react';
 import { FcGoogle } from 'react-icons/fc';
 import { storage } from '@/lib/storage';
+import { completeAuthReset } from '@/lib/auth-utils';
 import { AnimatedLogo } from '@/components/ui/AnimatedLogo';
 import { PasswordResetModal } from '@/components/ui/PasswordResetModal';
 
@@ -77,8 +78,14 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      // Clear any existing sessions before login
-      storage.clearAutoLogin();
+      // CRITICAL: Complete auth reset before login
+      completeAuthReset();
+      
+      // Sign out first to clear any existing session
+      await signOut({ redirect: false });
+      
+      // Small delay to ensure session is cleared
+      await new Promise(resolve => setTimeout(resolve, 200));
       
       const result = await signIn('credentials', {
         redirect: false,
@@ -99,14 +106,13 @@ export default function LoginPage() {
             provider: 'credentials',
             lastLogin: new Date().toISOString()
           });
-        } else {
-          // Clear auto-login data if remember me is disabled
-          storage.clearAutoLogin();
         }
         
-        router.push('/profile');
+        // Force page reload to ensure clean session
+        window.location.href = '/profile';
       }
-    } catch {
+    } catch (err) {
+      console.error('Login error:', err);
       setError('Something went wrong. Please try again.');
     } finally {
       setLoading(false);
@@ -114,8 +120,8 @@ export default function LoginPage() {
   };
 
   const handleGoogleSignIn = () => {
-    // Clear any existing sessions before Google OAuth
-    storage.clearAutoLogin();
+    // Complete auth reset before Google OAuth
+    completeAuthReset();
     
     // Store remember me preference before Google OAuth
     storage.setRememberMe(rememberMe);

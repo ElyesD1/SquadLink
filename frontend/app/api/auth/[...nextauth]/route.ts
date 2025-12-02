@@ -99,13 +99,17 @@ const handler = NextAuth({
       }
       return true;
     },
-    async jwt({ token, user, account }) {
+    async jwt({ token, user, account, trigger }) {
+      // On sign in, store user data in token
       if (account && user) {
-        // Store the access token and user ID in the JWT token
         token.accessToken = (user as ExtendedUser).accessToken;
         token.userId = (user as ExtendedUser).id;
         token.email = (user as ExtendedUser).email;
+        token.name = (user as ExtendedUser).name;
       }
+      
+      // For subsequent requests, token already has the data
+      // Important: Don't modify token on subsequent calls to prevent stale data
       return token;
     },
     async session({ session, token }) {
@@ -115,6 +119,7 @@ const handler = NextAuth({
       if (extendedSession.user) {
         extendedSession.user.id = token.userId as string;
         extendedSession.user.email = token.email as string;
+        extendedSession.user.name = token.name as string;
       }
       return extendedSession;
     },
@@ -125,6 +130,10 @@ const handler = NextAuth({
   },
   session: {
     strategy: 'jwt',
+    maxAge: 30 * 24 * 60 * 60, // 30 days
+  },
+  jwt: {
+    maxAge: 30 * 24 * 60 * 60, // 30 days
   },
   debug: process.env.NODE_ENV === 'development',
 });
